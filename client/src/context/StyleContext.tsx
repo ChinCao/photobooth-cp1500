@@ -1,17 +1,10 @@
 "use client";
+import {StyleOptions} from "@/constants/constants";
 import {createContext, ReactNode, useContext, useState} from "react";
 
-interface StyleOptions {
-  theme: {
-    name: string;
-    background: string;
-  };
-  quantity: number;
-}
-
 interface ImageStyleContextType {
-  imageStyle: StyleOptions;
-  setImageStyle: React.Dispatch<React.SetStateAction<StyleOptions>>;
+  imageStyle: StyleOptions | undefined;
+  setImageStyle: React.Dispatch<React.SetStateAction<StyleOptions>> | undefined;
 }
 
 const defaultStyle: StyleOptions = {
@@ -22,7 +15,7 @@ const defaultStyle: StyleOptions = {
   quantity: 2,
 };
 
-const ImageStyleContext = createContext<ImageStyleContextType | undefined>(undefined);
+const ImageStyleContext = createContext<ImageStyleContextType>({imageStyle: undefined, setImageStyle: undefined});
 
 export const StyleProvider = ({children}: {children: ReactNode}) => {
   const [imageStyle, setImageStyle] = useState<StyleOptions>(defaultStyle);
