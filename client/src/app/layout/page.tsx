@@ -3,7 +3,7 @@ import NavBar from "@/components/NavBar/NavBar";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {FrameOptions, ValidTheme} from "@/constants/constants";
-import {useStyle} from "@/context/StyleContext";
+import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,16 +11,16 @@ import {FaArrowLeft, FaArrowRight} from "react-icons/fa6";
 import {IoIosCheckmark} from "react-icons/io";
 
 const LayoutPage = () => {
-  const {imageStyle, setImageStyle} = useStyle();
+  const {photo, setPhoto} = usePhoto();
   const maxQuantity = 5;
   const handleQuantityChange = (quantity: number) => {
-    setImageStyle!((prevStyle) => ({
+    setPhoto!((prevStyle) => ({
       ...prevStyle,
       quantity: quantity,
     }));
   };
   const handleFrameChange = (frameAttribute: (typeof FrameOptions)[ValidTheme][number]) => {
-    setImageStyle!((prevStyle) => ({
+    setPhoto!((prevStyle) => ({
       ...prevStyle,
       theme: {
         ...prevStyle.theme,
@@ -44,12 +44,12 @@ const LayoutPage = () => {
             <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng</h1>
             <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
               {Array.from({length: maxQuantity}, (_, index) => {
-                const quantiy = (index + 1) * (imageStyle?.theme.frame.type == "singular" ? 1 : 2);
+                const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
                 return (
                   <Button
                     key={index}
                     onClick={() => handleQuantityChange(quantiy)}
-                    className={cn("text-2xl p-9 px-8 hover:bg-unset", imageStyle?.quantity == quantiy ? "bg-green-700" : "bg-black")}
+                    className={cn("text-2xl p-9 px-8 hover:bg-unset", photo?.quantity == quantiy ? "bg-green-700" : "bg-black")}
                   >
                     {quantiy}
                   </Button>
@@ -65,10 +65,10 @@ const LayoutPage = () => {
                 width={250}
                 height={250}
                 alt="Frame"
-                src={imageStyle!.theme.frame.src}
+                src={photo!.theme.frame.src}
               />
               <div className="flex gap-4">
-                {FrameOptions[imageStyle!.theme.name].map((item, index) => {
+                {FrameOptions[photo!.theme.name].map((item, index) => {
                   const thumbnail = item.thumbnail!;
                   return (
                     <div
@@ -86,10 +86,7 @@ const LayoutPage = () => {
 
                       <IoIosCheckmark
                         color="#4ade80 "
-                        className={cn(
-                          "absolute w-full h-full top-0 bg-black/50",
-                          imageStyle?.theme.frame.thumbnail == thumbnail ? "block" : "hidden"
-                        )}
+                        className={cn("absolute w-full h-full top-0 bg-black/50", photo?.theme.frame.thumbnail == thumbnail ? "block" : "hidden")}
                         size={50}
                       />
                     </div>

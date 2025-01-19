@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
-import {StyleProvider} from "@/context/StyleContext";
+import {PhotoProvider} from "@/context/StyleContext";
 import NextTopLoader from "nextjs-toploader";
 import Image from "next/image";
 
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <StyleProvider>
+    <PhotoProvider>
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col`}
@@ -49,6 +49,6 @@ export default function RootLayout({
           </footer>
         </body>
       </html>
-    </StyleProvider>
+    </PhotoProvider>
   );
 }

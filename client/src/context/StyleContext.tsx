@@ -1,26 +1,27 @@
 "use client";
-import {FrameDefaults, StyleOptions, ValidTheme} from "@/constants/constants";
+import {FrameDefaults, PhotoOptions, ValidTheme} from "@/constants/constants";
 import {createContext, ReactNode, useContext, useState} from "react";
 
-interface ImageStyleContextType {
-  imageStyle: StyleOptions<ValidTheme> | undefined;
-  setImageStyle: React.Dispatch<React.SetStateAction<StyleOptions<ValidTheme>>> | undefined;
+interface PhotoContextType {
+  photo: PhotoOptions<ValidTheme> | undefined;
+  setPhoto: React.Dispatch<React.SetStateAction<PhotoOptions<ValidTheme>>> | undefined;
 }
 
-const defaultStyle: StyleOptions<"prom"> = {
+const defaultStyle: PhotoOptions<"prom"> = {
   theme: {
     name: "prom",
     frame: FrameDefaults.prom,
   },
   quantity: 1,
+  images: [],
 };
 
-const ImageStyleContext = createContext<ImageStyleContextType>({imageStyle: undefined, setImageStyle: undefined});
+const PhotoContext = createContext<PhotoContextType>({photo: undefined, setPhoto: undefined});
 
-export const StyleProvider = ({children}: {children: ReactNode}) => {
-  const [imageStyle, setImageStyle] = useState<StyleOptions<ValidTheme>>(defaultStyle);
+export const PhotoProvider = ({children}: {children: ReactNode}) => {
+  const [photo, setPhoto] = useState<PhotoOptions<ValidTheme>>(defaultStyle);
 
-  return <ImageStyleContext.Provider value={{imageStyle, setImageStyle}}>{children}</ImageStyleContext.Provider>;
+  return <PhotoContext.Provider value={{photo, setPhoto}}>{children}</PhotoContext.Provider>;
 };
 
-export const useStyle = () => useContext(ImageStyleContext);
+export const usePhoto = () => useContext(PhotoContext);

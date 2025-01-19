@@ -63,10 +63,11 @@ export const FrameDefaults: {
   [key in ValidTheme]: (typeof FrameOptions)[key][number];
 } = {prom: FrameOptions.prom[0], usagyuun: FrameOptions.usagyuun[0]};
 
-export interface StyleOptions<T extends ValidTheme> {
+export interface PhotoOptions<T extends ValidTheme> {
   theme: {
     name: T;
     frame: (typeof FrameOptions)[T][number];
   };
   quantity: number;
+  images: string[] | undefined;
 }

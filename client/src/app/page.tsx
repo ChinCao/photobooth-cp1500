@@ -1,17 +1,17 @@
 "use client";
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
-import {FrameDefaults, StyleOptions, ThemeSelectButton, ValidTheme} from "@/constants/constants";
-import {useStyle} from "@/context/StyleContext";
+import {FrameDefaults, PhotoOptions, ThemeSelectButton, ValidTheme} from "@/constants/constants";
+import {usePhoto} from "@/context/StyleContext";
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import NavBar from "@/components/NavBar/NavBar";
 
 const ThemePage = () => {
-  const {setImageStyle} = useStyle();
+  const {setPhoto} = usePhoto();
 
   const handleThemeChange = (name: ValidTheme) => {
-    setImageStyle!((prevStyle: StyleOptions<typeof name>) => ({
+    setPhoto!((prevStyle: PhotoOptions<typeof name>) => ({
       ...prevStyle,
       theme: {
         ...prevStyle.theme,
