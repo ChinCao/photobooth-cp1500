@@ -3,7 +3,7 @@ import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {StyleProvider} from "@/context/StyleContext";
 import NextTopLoader from "nextjs-toploader";
-import NavBar from "@/components/NavBar/NavBar";
+import Image from "next/image";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +29,24 @@ export default function RootLayout({
     <StyleProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col`}
         >
           <NextTopLoader
             color="#e77f1e"
             zIndex={100000}
           />
           {children}
-          <NavBar />
+          <footer className="w-full fixed bottom-0">
+            <p className=" flex items-center justify-center min-w-screen bg-black text-orange-500 text-center text-md p-2 gap-3">
+              Ứng dụng này được phát triển và tài trợ bởi CLB VECTR
+              <Image
+                width={25}
+                height={25}
+                src="/vectr.png"
+                alt="Vectr logo"
+              />
+            </p>
+          </footer>
         </body>
       </html>
     </StyleProvider>

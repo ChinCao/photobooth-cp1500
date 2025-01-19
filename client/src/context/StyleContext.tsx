@@ -1,24 +1,24 @@
 "use client";
-import {StyleOptions} from "@/constants/constants";
+import {FrameDefaults, StyleOptions, ValidTheme} from "@/constants/constants";
 import {createContext, ReactNode, useContext, useState} from "react";
 
 interface ImageStyleContextType {
-  imageStyle: StyleOptions | undefined;
-  setImageStyle: React.Dispatch<React.SetStateAction<StyleOptions>> | undefined;
+  imageStyle: StyleOptions<ValidTheme> | undefined;
+  setImageStyle: React.Dispatch<React.SetStateAction<StyleOptions<ValidTheme>>> | undefined;
 }
 
-const defaultStyle: StyleOptions = {
+const defaultStyle: StyleOptions<"prom"> = {
   theme: {
-    name: "PROM",
-    background: "default",
+    name: "prom",
+    frame: FrameDefaults.prom,
   },
-  quantity: 2,
+  quantity: 1,
 };
 
 const ImageStyleContext = createContext<ImageStyleContextType>({imageStyle: undefined, setImageStyle: undefined});
 
 export const StyleProvider = ({children}: {children: ReactNode}) => {
-  const [imageStyle, setImageStyle] = useState<StyleOptions>(defaultStyle);
+  const [imageStyle, setImageStyle] = useState<StyleOptions<ValidTheme>>(defaultStyle);
 
   return <ImageStyleContext.Provider value={{imageStyle, setImageStyle}}>{children}</ImageStyleContext.Provider>;
 };

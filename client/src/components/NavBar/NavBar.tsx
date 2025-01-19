@@ -50,7 +50,7 @@ const NavBar = () => {
         <div className="w-max cursor-pointer shadow-lg rounded-xl bg-card text-card-foreground">
           <NavLink
             className="flex items-center justify-center uppercase px-4 font-bold h-full"
-            href="/print"
+            href="/capture/print"
           >
             <IoMdImages
               size={50}
