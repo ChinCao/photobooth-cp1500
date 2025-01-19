@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import NavLink from "./NavLink";
-import {IoMdImages} from "react-icons/io";
 
 const NavBar = () => {
   return (
@@ -47,17 +46,7 @@ const NavBar = () => {
             </NavLink>
           </div>
         </div>
-        <div className="w-max cursor-pointer shadow-lg rounded-xl bg-card text-card-foreground">
-          <NavLink
-            className="flex items-center justify-center uppercase px-4 font-bold h-full"
-            href="/capture/print"
-          >
-            <IoMdImages
-              size={50}
-              color="black"
-            />
-          </NavLink>
-        </div>
+        <div></div>
       </nav>
     </header>
   );

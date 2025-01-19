@@ -69,5 +69,8 @@ export interface PhotoOptions<T extends ValidTheme> {
     frame: (typeof FrameOptions)[T][number];
   };
   quantity: number;
-  images: string[] | undefined;
+  images: Array<{
+    id: string;
+    data: string;
+  }>;
 }

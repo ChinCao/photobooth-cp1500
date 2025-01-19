@@ -62,6 +62,22 @@ body {
   }
 }
 
+.flash-efect {
+  opacity: 1;
+  animation: flash-animation 0.7s forwards;
+}
+
+@keyframes flash-animation {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
