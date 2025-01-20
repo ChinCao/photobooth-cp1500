@@ -49,14 +49,15 @@ export const FrameOptions: {
     type: "singular" | "double";
     src: `/frame/${key}/${key}_${number}.png`;
     thumbnail?: `/frame/${key}/thumbnail/${key}_${number}.${string}`;
+    imageSlot: number;
   }>;
 } = {
   prom: [
-    {type: "singular", src: "/frame/prom/prom_1.png", thumbnail: "/frame/prom/thumbnail/prom_1.jpg"},
-    {type: "singular", src: "/frame/prom/prom_2.png", thumbnail: "/frame/prom/thumbnail/prom_2.jpg"},
+    {type: "singular", src: "/frame/prom/prom_1.png", thumbnail: "/frame/prom/thumbnail/prom_1.jpg", imageSlot: 2},
+    {type: "singular", src: "/frame/prom/prom_2.png", thumbnail: "/frame/prom/thumbnail/prom_2.jpg", imageSlot: 2},
   ],
 
-  usagyuun: [{type: "double", src: "/frame/usagyuun/usagyuun_1.png"}],
+  usagyuun: [{type: "double", src: "/frame/usagyuun/usagyuun_1.png", imageSlot: 4}],
 };
 
 export const FrameDefaults: {
@@ -71,6 +72,7 @@ export interface PhotoOptions<T extends ValidTheme> {
   quantity: number;
   images: Array<{
     id: string;
-    data: string;
+    data: string | "placeholder";
+    position?: string;
   }>;
 }

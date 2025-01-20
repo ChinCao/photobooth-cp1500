@@ -99,6 +99,7 @@ const CapturePage = () => {
       return () => clearInterval(timer);
     }
   }, [count, cycles, handleCapture, image, isCountingDown, playCameraShutterSound, router, setPhoto]);
+
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
       <div className="relative">
