@@ -14,6 +14,7 @@ const defaultStyle: PhotoOptions<"prom"> = {
   },
   quantity: 1,
   images: [],
+  selectedImages: [],
 };
 
 const PhotoContext = createContext<PhotoContextType>({photo: undefined, setPhoto: undefined});

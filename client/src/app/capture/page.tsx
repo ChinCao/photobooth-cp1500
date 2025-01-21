@@ -5,6 +5,7 @@ import {cn} from "@/lib/utils";
 import {useState, useEffect, useRef, useCallback} from "react";
 import {useRouter} from "next/navigation";
 import useSound from "use-sound";
+import {NUM_OF_IMAGE} from "@/constants/constants";
 
 const CapturePage = () => {
   const duration = 5;
@@ -12,7 +13,7 @@ const CapturePage = () => {
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(true);
   const [cycles, setCycles] = useState(1);
-  const maxCycles = 4;
+  const maxCycles = NUM_OF_IMAGE;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [image, setImage] = useState<Array<{id: string; data: string}>>([]);
   const [, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -63,6 +64,8 @@ const CapturePage = () => {
       if (context) {
         canvas.width = cameraSize!.width || 640;
         canvas.height = cameraSize!.height || 480;
+        context.scale(-1, 1);
+        context.translate(-canvas.width, 0);
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         const dataURL = canvas.toDataURL("image/png");
         setImage((prevItems) => [...prevItems, {id: cycles.toString(), data: dataURL}]);
@@ -91,14 +94,14 @@ const CapturePage = () => {
               images: image,
             }));
             setIsCountingDown(false);
-            router.push("/capture/print");
+            router.push("/capture/select");
           }
         }
       }, 1000);
 
       return () => clearInterval(timer);
     }
-  }, [count, cycles, handleCapture, image, isCountingDown, playCameraShutterSound, router, setPhoto]);
+  }, [count, cycles, handleCapture, image, isCountingDown, maxCycles, playCameraShutterSound, router, setPhoto]);
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">

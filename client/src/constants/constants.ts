@@ -114,7 +114,12 @@ export interface PhotoOptions<T extends ValidTheme> {
   quantity: number;
   images: Array<{
     id: string;
-    data: string | "placeholder";
-    position?: string;
+    data: string;
+  }>;
+  selectedImages: Array<{
+    id: string;
+    data: string;
   }>;
 }
+
+export const NUM_OF_IMAGE = 6;

@@ -31,67 +31,69 @@ const LayoutPage = () => {
   return (
     <>
       <NavBar />
-      <Card className="bg-background w-[75%] min-h-[75vh] mt-28 mb-8 flex items-center justify-start p-8 flex-col gap-9">
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 self-start hover:opacity-[85%]"
-        >
-          <FaArrowLeft />
-          Chọn theme
-        </Link>
-        <div className="flex flex-col gap-10 items-start">
-          <div className="flex gap-10 items-center justify-center">
-            <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng</h1>
-            <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
-              {Array.from({length: maxQuantity}, (_, index) => {
-                const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
-                return (
-                  <Button
-                    key={index}
-                    onClick={() => handleQuantityChange(quantiy)}
-                    className={cn("text-2xl p-9 px-8 hover:bg-unset", photo?.quantity == quantiy ? "bg-green-700" : "bg-black")}
-                  >
-                    {quantiy}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-28">
-            <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn frame</h1>
-            <div className=" flex gap-8">
-              <Image
-                width={250}
-                height={250}
-                alt="Frame"
-                src={photo!.theme.frame.src}
-              />
-              <div className="flex gap-4">
-                {FrameOptions[photo!.theme.name].map((item, index) => {
-                  const thumbnail = item.thumbnail!;
+      <Card className="bg-background w-[75%] min-h-[75vh] mt-28 mb-8 flex items-center justify-between p-8 flex-col gap-9">
+        <div className="flex flex-col items-center justify-start gap-8 w-full">
+          <Link
+            href="/"
+            className="flex items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 self-start hover:opacity-[85%]"
+          >
+            <FaArrowLeft />
+            Chọn theme
+          </Link>
+          <div className="flex flex-col gap-10 items-start">
+            <div className="flex gap-10 items-center justify-center">
+              <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng</h1>
+              <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
+                {Array.from({length: maxQuantity}, (_, index) => {
+                  const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
                   return (
-                    <div
+                    <Button
                       key={index}
-                      onClick={() => handleFrameChange(item)}
-                      className="relative h-max"
+                      onClick={() => handleQuantityChange(quantiy)}
+                      className={cn("text-2xl p-9 px-8 hover:bg-unset", photo?.quantity == quantiy ? "bg-green-700" : "bg-black")}
                     >
-                      <Image
-                        src={thumbnail}
-                        height={75}
-                        width={75}
-                        alt="Option"
-                        className="hover:cursor-pointer rounded"
-                      />
-
-                      <IoIosCheckmark
-                        color="#4ade80 "
-                        className={cn("absolute w-full h-full top-0 bg-black/50", photo?.theme.frame.thumbnail == thumbnail ? "block" : "hidden")}
-                        size={50}
-                      />
-                    </div>
+                      {quantiy}
+                    </Button>
                   );
                 })}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-28">
+              <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn frame</h1>
+              <div className=" flex gap-8">
+                <Image
+                  width={250}
+                  height={250}
+                  alt="Frame"
+                  src={photo!.theme.frame.src}
+                />
+                <div className="flex gap-4">
+                  {FrameOptions[photo!.theme.name].map((item, index) => {
+                    const thumbnail = item.thumbnail!;
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => handleFrameChange(item)}
+                        className="relative h-max"
+                      >
+                        <Image
+                          src={thumbnail}
+                          height={75}
+                          width={75}
+                          alt="Option"
+                          className="hover:cursor-pointer rounded"
+                        />
+
+                        <IoIosCheckmark
+                          color="#4ade80 "
+                          className={cn("absolute w-full h-full top-0 bg-black/50", photo?.theme.frame.thumbnail == thumbnail ? "block" : "hidden")}
+                          size={50}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
