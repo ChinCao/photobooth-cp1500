@@ -25,6 +25,7 @@ const PrintPage = () => {
   const capturedRef = useRef<LayerElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
   const [timeLeft, setTimeLeft] = useState(5);
+  const photoRef = useRef(photo);
 
   useEffect(() => {
     if (capturedRef.current) {
@@ -49,19 +50,21 @@ const PrintPage = () => {
       }, 1000);
       return () => clearInterval(timerId);
     } else {
-      const itemLeft = photo!.theme.frame.imageSlot - selectedImage.length;
+      const itemLeft = photoRef.current!.theme.frame.imageSlot - selectedImage.length;
       if (itemLeft > 0) {
-        const unselectedImage = photo!.images.filter((item) => !selectedImage.includes(item));
+        const unselectedImage = photoRef.current!.images.filter((item) => !selectedImage.includes(item));
         for (let i = unselectedImage.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [unselectedImage[i], unselectedImage[j]] = [unselectedImage[j], unselectedImage[i]];
         }
         handleContextSelect([...selectedImage, ...unselectedImage.slice(0, itemLeft)]);
         setSelectedImage((prevImages) => [...prevImages, ...unselectedImage.slice(0, itemLeft)]);
+      } else {
+        handleContextSelect(selectedImage);
       }
       router.push("/capture/select/filter");
     }
-  }, [handleContextSelect, photo, router, selectedImage, timeLeft]);
+  }, [handleContextSelect, router, selectedImage, timeLeft]);
 
   const handleSelect = (image: {id: string; data: string}) => {
     if (timeLeft > 0 && photo) {
