@@ -25,6 +25,7 @@ const PrintPage = () => {
   const capturedRef = useRef(null);
   const stageRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState<string[]>([]);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.images, "id", slotItemMap, setSlotItemMap), [photo]);
 
@@ -68,27 +69,31 @@ const PrintPage = () => {
         <h1 className="text-5xl font-bold">Chọn hình</h1>
 
         <Stage
-          width={frameImg ? frameImg?.width / 4 : undefined}
-          height={frameImg ? frameImg?.height / 4 : undefined}
+          width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
+          height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
           ref={stageRef}
           className="bg-white"
         >
           <Layer>
             <KonvaImage
               image={frameImg}
-              height={frameImg ? frameImg?.height / 4 : undefined}
-              width={frameImg ? frameImg?.width / 4 : undefined}
+              height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
+              width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
             />
           </Layer>
           <Layer ref={capturedRef}>
-            <CapturedImage
-              url={selectedImage[0]}
-              y={20}
-            />
-            <CapturedImage
-              url={selectedImage[1]}
-              y={345}
-            />
+            {Array.from({length: photo!.theme.frame.imageSlot}, (_, index) => {
+              return (
+                <CapturedImage
+                  key={index}
+                  url={selectedImage[index]}
+                  y={photo!.theme.frame.modifers.image[index].position.y}
+                  x={photo!.theme.frame.modifers.image[index].position.x}
+                  widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
+                  heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
+                />
+              );
+            })}
           </Layer>
         </Stage>
       </div>
@@ -129,14 +134,26 @@ const PrintPage = () => {
 
 export default PrintPage;
 
-const CapturedImage = ({url, y}: {url: string; y: number}) => {
+const CapturedImage = ({
+  url,
+  y,
+  x,
+  heightMultiplier,
+  widthMultiplier,
+}: {
+  url: string;
+  y: number;
+  x: number;
+  heightMultiplier: number;
+  widthMultiplier: number;
+}) => {
   const [image] = useImage(url);
   return (
     <KonvaImage
       image={image}
-      height={image ? image?.height / 1.9 : undefined}
-      width={image ? image?.width / 1.8 : undefined}
-      x={38.8}
+      height={image ? image?.height / heightMultiplier : undefined}
+      width={image ? image?.width / widthMultiplier : undefined}
+      x={x}
       y={y}
     />
   );

@@ -50,19 +50,61 @@ export const FrameOptions: {
     src: `/frame/${key}/${key}_${number}.png`;
     thumbnail?: `/frame/${key}/thumbnail/${key}_${number}.${string}`;
     imageSlot: number;
+    modifers: {
+      frame_scale_multiplier: number;
+      image: {
+        scale_multiplier: {
+          height: number;
+          width: number;
+        };
+        position: {
+          x: number;
+          y: number;
+        };
+      }[];
+    };
   }>;
 } = {
   prom: [
-    {type: "singular", src: "/frame/prom/prom_1.png", thumbnail: "/frame/prom/thumbnail/prom_1.jpg", imageSlot: 2},
-    {type: "singular", src: "/frame/prom/prom_2.png", thumbnail: "/frame/prom/thumbnail/prom_2.jpg", imageSlot: 2},
-  ],
+    {
+      type: "singular",
+      src: "/frame/prom/prom_1.png",
+      thumbnail: "/frame/prom/thumbnail/prom_1.jpg",
+      imageSlot: 2,
+      modifers: {
+        frame_scale_multiplier: 4,
+        image: [
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
 
-  usagyuun: [{type: "double", src: "/frame/usagyuun/usagyuun_1.png", imageSlot: 4}],
+            position: {
+              y: 20,
+              x: 38.8,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 345,
+              x: 38.8,
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 
 export const FrameDefaults: {
   [key in ValidTheme]: (typeof FrameOptions)[key][number];
-} = {prom: FrameOptions.prom[0], usagyuun: FrameOptions.usagyuun[0]};
+} = {prom: FrameOptions.prom[0]};
 
 export interface PhotoOptions<T extends ValidTheme> {
   theme: {
