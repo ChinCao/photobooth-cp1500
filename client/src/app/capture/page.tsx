@@ -12,7 +12,7 @@ const CapturePage = () => {
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(true);
   const [cycles, setCycles] = useState(1);
-  const maxCycles = 6;
+  const maxCycles = 4;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [image, setImage] = useState<Array<{id: string; data: string}>>([]);
   const [, setDevices] = useState<MediaDeviceInfo[]>([]);

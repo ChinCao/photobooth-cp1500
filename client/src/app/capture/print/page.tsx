@@ -4,10 +4,12 @@ import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
-import Image from "next/image";
 import {useRouter} from "next/navigation";
 import {useEffect, useMemo, useRef, useState} from "react";
 import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
+import {Layer, Stage} from "react-konva";
+import useImage from "use-image";
+import {Image as KonvaImage} from "react-konva";
 
 const PrintPage = () => {
   const {photo} = usePhoto();
@@ -16,9 +18,12 @@ const PrintPage = () => {
     if (photo!.images!.length == 0) return router.push("/");
   }, [photo, router]);
   const swapyRef = useRef<Swapy | null>(null);
+  const [frameImg] = useImage(photo!.theme.frame.src);
   const [slotItemMap, setSlotItemMap] = useState<SlotItemMapArray>(utils.initSlotItemMap(photo!.images, "id"));
   const slottedItems = useMemo(() => utils.toSlottedItems(photo!.images, "id", slotItemMap), [photo, slotItemMap]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const capturedRef = useRef(null);
+  const stageRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState<string[]>([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.images, "id", slotItemMap, setSlotItemMap), [photo]);
@@ -43,6 +48,12 @@ const PrintPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (capturedRef.current) {
+      capturedRef.current.moveToBottom();
+    }
+  }, [selectedImage]);
+
   const handleSelect = (image: string) => {
     if (selectedImage.includes(image)) {
       setSelectedImage((prevImages) => prevImages.filter((a) => a != image));
@@ -55,14 +66,31 @@ const PrintPage = () => {
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center p-8 ">
       <div className="flex flex-col items-center justify-center gap-10">
         <h1 className="text-5xl font-bold">Chọn hình</h1>
-        <Image
-          width={500}
-          height={500}
-          alt="Frame"
-          useMap=""
-          className="relative z-[1]"
-          src={photo!.theme.frame.src}
-        />
+
+        <Stage
+          width={frameImg ? frameImg?.width / 4 : undefined}
+          height={frameImg ? frameImg?.height / 4 : undefined}
+          ref={stageRef}
+          className="bg-white"
+        >
+          <Layer>
+            <KonvaImage
+              image={frameImg}
+              height={frameImg ? frameImg?.height / 4 : undefined}
+              width={frameImg ? frameImg?.width / 4 : undefined}
+            />
+          </Layer>
+          <Layer ref={capturedRef}>
+            <CapturedImage
+              url={selectedImage[0]}
+              y={20}
+            />
+            <CapturedImage
+              url={selectedImage[1]}
+              y={345}
+            />
+          </Layer>
+        </Stage>
       </div>
       <div
         className="flex flex-wrap w-[55%] gap-4 items-center justify-center "
@@ -100,3 +128,16 @@ const PrintPage = () => {
 };
 
 export default PrintPage;
+
+const CapturedImage = ({url, y}: {url: string; y: number}) => {
+  const [image] = useImage(url);
+  return (
+    <KonvaImage
+      image={image}
+      height={image ? image?.height / 1.9 : undefined}
+      width={image ? image?.width / 1.8 : undefined}
+      x={38.8}
+      y={y}
+    />
+  );
+};
