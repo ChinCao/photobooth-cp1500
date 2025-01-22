@@ -170,7 +170,7 @@ const LayoutPage = () => {
           <div className="flex gap-10 items-center flex-col justify-between">
             <div className="flex flex-col items-center justify-center gap-8">
               <div className="flex flex-col items-center justify-center gap-4">
-                <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng</h1>
+                <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng in</h1>
                 <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
                   {Array.from({length: maxQuantity}, (_, index) => {
                     const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
@@ -226,7 +226,7 @@ const LayoutPage = () => {
               </Link>
               <Link
                 href="/capture"
-                className="flex text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full"
+                className="flex text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full bg-green-700"
               >
                 Chụp
                 <FaArrowRight />

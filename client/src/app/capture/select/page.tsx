@@ -24,7 +24,7 @@ const PrintPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const capturedRef = useRef<LayerElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(25);
+  const [timeLeft, setTimeLeft] = useState(17);
   const photoRef = useRef(photo);
 
   useEffect(() => {

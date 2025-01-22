@@ -7,12 +7,14 @@ const SelectedImage = ({
   x,
   heightMultiplier,
   widthMultiplier,
+  filter,
 }: {
   url: string;
   y: number;
   x: number;
   heightMultiplier: number;
   widthMultiplier: number;
+  filter?: string;
 }) => {
   const [image] = useImage(url);
   return (

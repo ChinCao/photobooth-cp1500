@@ -15,6 +15,15 @@
       {
         "button-name": "off"
       }
+    ],
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "text-wrap",
+          "text-wrap: nowrap"
+        ]
+      }
     ]
   }
 }
