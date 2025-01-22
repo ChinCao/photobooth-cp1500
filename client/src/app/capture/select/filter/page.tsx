@@ -57,7 +57,7 @@ const FilterPage = () => {
       <div className="flex gap-4 items-center justify-center">
         <LuArrowUpDown size={50} />
         <div
-          className="flex flex-col"
+          className="flex flex-col gap-8"
           ref={containerRef}
         >
           {slottedItems.map(

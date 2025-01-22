@@ -25,15 +25,18 @@ const LayoutPage = () => {
       quantity: quantity,
     }));
   };
-  const handleFrameChange = (frameAttribute: (typeof FrameOptions)[ValidTheme][number]) => {
-    setPhoto!((prevStyle) => ({
-      ...prevStyle,
-      theme: {
-        ...prevStyle.theme,
-        frame: frameAttribute,
-      },
-    }));
-  };
+  const handleFrameChange = useCallback(
+    (frameAttribute: (typeof FrameOptions)[ValidTheme][number]) => {
+      setPhoto!((prevStyle) => ({
+        ...prevStyle,
+        theme: {
+          ...prevStyle.theme,
+          frame: frameAttribute,
+        },
+      }));
+    },
+    [setPhoto]
+  );
 
   const handleLeftClick = useCallback(() => {
     api?.scrollPrev();
@@ -62,19 +65,20 @@ const LayoutPage = () => {
 
     const handleSelect = () => {
       setCurrent(api.selectedScrollSnap() + 1);
+      handleFrameChange(FrameOptions[photo!.theme.name][api.selectedScrollSnap()]);
     };
 
     api.on("select", handleSelect);
     return () => {
       api.off("select", handleSelect);
     };
-  }, [api, apiPreview]);
+  }, [api, apiPreview, handleFrameChange, photo]);
 
   return (
     <>
       <NavBar />
       <Card className="bg-background w-[75%] min-h-[75vh] mt-28 mb-8 flex items-center justify-between p-8 flex-col gap-9">
-        <div className="flex items-start justify-center gap-10">
+        <div className="flex items-stretch justify-center gap-10">
           <div className="flex items-start flex-col justify-center gap-4 w-max">
             <h1 className="text-4xl font-bold uppercase">Chọn frame</h1>
             <div
@@ -138,12 +142,15 @@ const LayoutPage = () => {
                     <CarouselItem
                       key={index}
                       className="flex items-center justify-center basis-1/4 cursor-pointer"
-                      onClick={() => handleCarouselItemClick(index)}
+                      onClick={() => {
+                        handleCarouselItemClick(index);
+                        handleFrameChange(item);
+                      }}
                     >
                       <div
                         className={cn(
                           "bg-gray-100 p-3 rounded border border-gray-300",
-                          current === index + 1 ? "scale-[1.05] border-2 border-rose-400" : null
+                          current === index + 1 ? "scale-[1.05] border-4 border-rose-500" : null
                         )}
                       >
                         <Image
@@ -160,57 +167,71 @@ const LayoutPage = () => {
               </Carousel>
             </div>
           </div>
-          <div className="flex gap-10 items-center flex-col justify-center h-full">
-            <div className="flex flex-col items-center justify-center gap-4">
-              <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng</h1>
-              <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
-                {Array.from({length: maxQuantity}, (_, index) => {
-                  const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
+          <div className="flex gap-10 items-center flex-col justify-between">
+            <div className="flex flex-col items-center justify-center gap-8">
+              <div className="flex flex-col items-center justify-center gap-4">
+                <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng</h1>
+                <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
+                  {Array.from({length: maxQuantity}, (_, index) => {
+                    const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
+                    return (
+                      <Button
+                        key={index}
+                        onClick={() => handleQuantityChange(quantiy)}
+                        className={cn("text-2xl p-9 px-8 hover:bg-unset", photo?.quantity == quantiy ? "bg-green-700" : "bg-black")}
+                      >
+                        {quantiy}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="flex gap-4 flex-wrap items-center justify-center w-[350px]">
+                {FrameOptions[photo!.theme.name].map((item, index) => {
+                  const thumbnail = item.thumbnail!;
                   return (
-                    <Button
+                    <div
                       key={index}
-                      onClick={() => handleQuantityChange(quantiy)}
-                      className={cn("text-2xl p-9 px-8 hover:bg-unset", photo?.quantity == quantiy ? "bg-green-700" : "bg-black")}
+                      onClick={() => {
+                        handleFrameChange(item);
+                        handleCarouselItemClick(index);
+                      }}
+                      className="relative h-max"
                     >
-                      {quantiy}
-                    </Button>
+                      <Image
+                        src={thumbnail}
+                        height={100}
+                        width={100}
+                        alt="Option"
+                        className="hover:cursor-pointer rounded"
+                      />
+
+                      <IoIosCheckmark
+                        color="#4ade80 "
+                        className={cn("absolute w-full h-full top-0 bg-black/50", photo?.theme.frame.thumbnail == thumbnail ? "block" : "hidden")}
+                        size={50}
+                      />
+                    </div>
                   );
                 })}
               </div>
             </div>
-            <div className="flex gap-4 flex-wrap items-center justify-center w-[350px]">
-              {FrameOptions[photo!.theme.name].map((item, index) => {
-                const thumbnail = item.thumbnail!;
-                return (
-                  <div
-                    key={index}
-                    onClick={() => handleFrameChange(item)}
-                    className="relative h-max"
-                  >
-                    <Image
-                      src={thumbnail}
-                      height={100}
-                      width={100}
-                      alt="Option"
-                      className="hover:cursor-pointer rounded"
-                    />
-
-                    <IoIosCheckmark
-                      color="#4ade80 "
-                      className={cn("absolute w-full h-full top-0 bg-black/50", photo?.theme.frame.thumbnail == thumbnail ? "block" : "hidden")}
-                      size={50}
-                    />
-                  </div>
-                );
-              })}
+            <div className="flex flex-col gap-4 w-[75%]">
+              <Link
+                href="/"
+                className="flex  text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full"
+              >
+                <FaArrowLeft />
+                Chọn lại theme
+              </Link>
+              <Link
+                href="/capture"
+                className="flex text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full"
+              >
+                Chụp
+                <FaArrowRight />
+              </Link>
             </div>
-            <Link
-              href="/capture"
-              className="flex w-[75%] text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%]"
-            >
-              Chụp
-              <FaArrowRight />
-            </Link>
           </div>
         </div>
       </Card>
