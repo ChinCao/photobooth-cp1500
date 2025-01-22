@@ -24,7 +24,7 @@ const PrintPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const capturedRef = useRef<LayerElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(25);
   const photoRef = useRef(photo);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const PrintPage = () => {
       <div className="flex items-start justify-center w-full gap-4">
         <div className="flex flex-col items-center justify-center ">
           <h1 className="text-5xl font-bold mb-4">
-            Chọn hình <span className="text-rose-500">{timeLeft}</span>
+            Chọn hình <span className="text-rose-500">{timeLeft}s</span>
           </h1>
           <Stage
             width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}

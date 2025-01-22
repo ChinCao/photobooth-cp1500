@@ -13,6 +13,8 @@
     "@radix-ui/react-tabs": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.5.2",
+    "embla-carousel-wheel-gestures": "^8.0.1",
     "konva": "^9.3.18",
     "lucide-react": "^0.472.0",
     "next": "15.1.4",

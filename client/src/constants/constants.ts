@@ -99,6 +99,171 @@ export const FrameOptions: {
         ],
       },
     },
+    {
+      type: "singular",
+      src: "/frame/prom/prom_2.png",
+      thumbnail: "/frame/prom/thumbnail/prom_2.jpg",
+      imageSlot: 2,
+      modifers: {
+        frame_scale_multiplier: 4,
+        image: [
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 20,
+              x: 38.8,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 345,
+              x: 38.8,
+            },
+          },
+        ],
+      },
+    },
+    {
+      type: "singular",
+      src: "/frame/prom/prom_3.png",
+      thumbnail: "/frame/prom/thumbnail/prom_3.jpg",
+      imageSlot: 2,
+      modifers: {
+        frame_scale_multiplier: 4,
+        image: [
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 20,
+              x: 38.8,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 345,
+              x: 38.8,
+            },
+          },
+        ],
+      },
+    },
+    {
+      type: "singular",
+      src: "/frame/prom/prom_4.png",
+      thumbnail: "/frame/prom/thumbnail/prom_4.jpg",
+      imageSlot: 2,
+      modifers: {
+        frame_scale_multiplier: 4,
+        image: [
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 20,
+              x: 38.8,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 345,
+              x: 38.8,
+            },
+          },
+        ],
+      },
+    },
+    {
+      type: "singular",
+      src: "/frame/prom/prom_5.png",
+      thumbnail: "/frame/prom/thumbnail/prom_5.jpg",
+      imageSlot: 2,
+      modifers: {
+        frame_scale_multiplier: 4,
+        image: [
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 20,
+              x: 38.8,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 345,
+              x: 38.8,
+            },
+          },
+        ],
+      },
+    },
+    {
+      type: "singular",
+      src: "/frame/prom/prom_6.png",
+      thumbnail: "/frame/prom/thumbnail/prom_6.jpg",
+      imageSlot: 2,
+      modifers: {
+        frame_scale_multiplier: 4,
+        image: [
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 20,
+              x: 38.8,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 1.9,
+              width: 1.8,
+            },
+
+            position: {
+              y: 345,
+              x: 38.8,
+            },
+          },
+        ],
+      },
+    },
   ],
 };
 
@@ -122,4 +287,4 @@ export interface PhotoOptions<T extends ValidTheme> {
   }>;
 }
 
-export const NUM_OF_IMAGE = 6;
+export const NUM_OF_IMAGE = 4;
