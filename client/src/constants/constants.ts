@@ -393,3 +393,13 @@ export const FILTERS: {
   {name: "Willow", filter: "filter-willow", value: "brightness(1.2) contrast(0.85) saturate(0.05) sepia(0.2)"},
   {name: "X-Pro II", filter: "filter-xpro-ii", value: "sepia(0.45) contrast(1.25) brightness(1.75) saturate(1.3) hue-rotate(-5deg)"},
 ];
+
+export const DEFAULT_STYLE: PhotoOptions<"prom"> = {
+  theme: {
+    name: "prom",
+    frame: FrameDefaults.prom,
+  },
+  quantity: 1,
+  images: [],
+  selectedImages: [],
+};

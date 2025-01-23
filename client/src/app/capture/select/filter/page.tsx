@@ -3,7 +3,7 @@
 import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {useRouter} from "next/navigation";
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
 import {LuArrowUpDown} from "react-icons/lu";
 import useImage from "use-image";
@@ -11,13 +11,13 @@ import {Image as KonvaImage} from "react-konva";
 import {Layer, Stage} from "react-konva";
 import SelectedImage from "@/components/SelectedImage";
 import {Button} from "@/components/ui/button";
-import {FILTERS} from "@/constants/constants";
+import {DEFAULT_STYLE, FILTERS} from "@/constants/constants";
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
 
 const FilterPage = () => {
-  const {photo} = usePhoto();
+  const {photo, setPhoto} = usePhoto();
   const router = useRouter();
   useEffect(() => {
     if (photo!.selectedImages.length == 0) return router.push("/");
@@ -31,6 +31,8 @@ const FilterPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.selectedImages, "id", slotItemMap, setSlotItemMap), [photo]);
   const stageRef = useRef<StageElement | null>(null);
+  const [timeLeft, setTimeLeft] = useState(25);
+  const [printed, setPrinted] = useState(false);
 
   useEffect(() => {
     swapyRef.current = createSwapy(containerRef.current!, {
@@ -52,8 +54,9 @@ const FilterPage = () => {
     };
   }, []);
 
-  const printImage = () => {
+  const printImage = useCallback(() => {
     if (stageRef.current) {
+      setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
       const link = document.createElement("a");
       link.download = `${photo?.theme.name}.jpg`;
@@ -61,8 +64,21 @@ const FilterPage = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setPhoto!(DEFAULT_STYLE);
+      router.push("/");
     }
-  };
+  }, [photo?.theme.name, router, setPhoto]);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timerId = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+      return () => clearInterval(timerId);
+    } else {
+      printImage();
+    }
+  }, [printImage, router, setPhoto, timeLeft]);
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center flex-col justify-evenly p-8 relative">
@@ -185,9 +201,10 @@ const FilterPage = () => {
       </div>
       <Button
         className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full"
+        disabled={printed}
         onClick={printImage}
       >
-        In
+        In {timeLeft}s
       </Button>
     </Card>
   );

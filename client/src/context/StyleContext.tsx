@@ -1,5 +1,5 @@
 "use client";
-import {FrameDefaults, PhotoOptions, ValidTheme} from "@/constants/constants";
+import {DEFAULT_STYLE, PhotoOptions, ValidTheme} from "@/constants/constants";
 import {createContext, ReactNode, useContext, useState} from "react";
 
 interface PhotoContextType {
@@ -7,20 +7,10 @@ interface PhotoContextType {
   setPhoto: React.Dispatch<React.SetStateAction<PhotoOptions<ValidTheme>>> | undefined;
 }
 
-const defaultStyle: PhotoOptions<"prom"> = {
-  theme: {
-    name: "prom",
-    frame: FrameDefaults.prom,
-  },
-  quantity: 1,
-  images: [],
-  selectedImages: [],
-};
-
 const PhotoContext = createContext<PhotoContextType>({photo: undefined, setPhoto: undefined});
 
 export const PhotoProvider = ({children}: {children: ReactNode}) => {
-  const [photo, setPhoto] = useState<PhotoOptions<ValidTheme>>(defaultStyle);
+  const [photo, setPhoto] = useState<PhotoOptions<ValidTheme>>(DEFAULT_STYLE);
 
   return <PhotoContext.Provider value={{photo, setPhoto}}>{children}</PhotoContext.Provider>;
 };

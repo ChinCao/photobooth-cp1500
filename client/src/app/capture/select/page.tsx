@@ -22,7 +22,7 @@ const PrintPage = () => {
   const [frameImg] = useImage(photo!.theme.frame.src);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(200000);
+  const [timeLeft, setTimeLeft] = useState(15);
   const photoRef = useRef(photo);
 
   const handleContextSelect = useCallback(
