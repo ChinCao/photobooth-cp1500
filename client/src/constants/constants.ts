@@ -272,50 +272,50 @@ export const FrameOptions: {
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_1.png",
       imageSlot: 4,
       modifers: {
-        frame_scale_multiplier: 0.5,
+        frame_scale_multiplier: 1,
         image: [
           {
             scale_multiplier: {
               height: 3.2,
-              width: 2.4,
+              width: 2.9,
             },
 
             position: {
               y: 15,
-              x: 20,
+              x: 19,
             },
           },
           {
             scale_multiplier: {
               height: 3.2,
-              width: 2.4,
+              width: 3.1,
             },
 
             position: {
               y: 164,
-              x: 20,
+              x: 19,
             },
           },
           {
             scale_multiplier: {
               height: 3.2,
-              width: 2.4,
+              width: 3.1,
             },
 
             position: {
               y: 164 * 2 - 15,
-              x: 20,
+              x: 19,
             },
           },
           {
             scale_multiplier: {
               height: 3.2,
-              width: 2.4,
+              width: 3.1,
             },
 
             position: {
               y: 164 * 3 - 30,
-              x: 20,
+              x: 19,
             },
           },
         ],
@@ -344,7 +344,7 @@ export interface PhotoOptions<T extends ValidTheme> {
   }>;
 }
 
-export const NUM_OF_IMAGE = 4;
+export const NUM_OF_IMAGE = 6;
 
 export const FILTERS: {
   name: string;

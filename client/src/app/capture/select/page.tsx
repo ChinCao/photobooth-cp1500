@@ -22,7 +22,7 @@ const PrintPage = () => {
   const [frameImg] = useImage(photo!.theme.frame.src);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(4);
+  const [timeLeft, setTimeLeft] = useState(1);
   const photoRef = useRef(photo);
 
   const handleContextSelect = useCallback(
@@ -81,8 +81,8 @@ const PrintPage = () => {
           </h1>
           {frameImg && (
             <Stage
-              width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
-              height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+              width={(frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier) * (photo?.theme.frame.type == "singular" ? 1 : 2)}
+              height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
             >
               <Layer>
                 {Array.from({length: photo!.theme.frame.imageSlot}, (_, index) => {
@@ -102,8 +102,8 @@ const PrintPage = () => {
               <Layer>
                 <KonvaImage
                   image={frameImg}
-                  height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
-                  width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+                  height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
+                  width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
                 />
               </Layer>
             </Stage>

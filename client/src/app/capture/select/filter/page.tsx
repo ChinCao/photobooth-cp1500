@@ -14,6 +14,7 @@ import {Button} from "@/components/ui/button";
 import {FILTERS} from "@/constants/constants";
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
+import {Stage as StageElement} from "konva/lib/Stage";
 
 const FilterPage = () => {
   const {photo} = usePhoto();
@@ -29,6 +30,7 @@ const FilterPage = () => {
   const [filter, setFilter] = useState<string | null>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.selectedImages, "id", slotItemMap, setSlotItemMap), [photo]);
+  const stageRef = useRef<StageElement | null>(null);
 
   useEffect(() => {
     swapyRef.current = createSwapy(containerRef.current!, {
@@ -49,6 +51,18 @@ const FilterPage = () => {
       swapyRef.current?.destroy();
     };
   }, []);
+
+  const printImage = () => {
+    if (stageRef.current) {
+      const dataURL = stageRef.current.toDataURL({pixelRatio: 3});
+      const link = document.createElement("a");
+      link.download = `${photo?.theme.name}.jpg`;
+      link.href = dataURL;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center flex-col justify-evenly p-8 relative">
@@ -88,8 +102,9 @@ const FilterPage = () => {
         </div>
         {frameImg && (
           <Stage
-            width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
-            height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+            ref={stageRef}
+            width={(frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier) * (photo?.theme.frame.type == "singular" ? 1 : 2)}
+            height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
           >
             <Layer>
               {slottedItems.map(({slotId, item}, index) => {
@@ -116,7 +131,7 @@ const FilterPage = () => {
                       key={slotId}
                       url={item.data}
                       y={photo!.theme.frame.modifers.image[index].position.y}
-                      x={photo!.theme.frame.modifers.image[index].position.x + frameImg.width}
+                      x={photo!.theme.frame.modifers.image[index].position.x + frameImg.width - 1}
                       widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
                       heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
                       filter={filter}
@@ -125,21 +140,16 @@ const FilterPage = () => {
                 );
               })}
             </Layer>
-            <Layer>
-              <KonvaImage
-                image={frameImg}
-                height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
-                width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
-              />
-            </Layer>
-            <Layer>
-              <KonvaImage
-                image={frameImg}
-                x={246}
-                height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
-                width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
-              />
-            </Layer>
+            {Array.from({length: photo!.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
+              <Layer key={index}>
+                <KonvaImage
+                  image={frameImg}
+                  x={(frameImg.width - 1) * index}
+                  height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
+                  width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
+                />
+              </Layer>
+            ))}
           </Stage>
         )}
         <div className="flex items-center justify-center flex-col gap-5">
@@ -173,7 +183,10 @@ const FilterPage = () => {
           </Button>
         </div>
       </div>
-      <Button className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full">
+      <Button
+        className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full"
+        onClick={printImage}
+      >
         In
       </Button>
     </Card>
