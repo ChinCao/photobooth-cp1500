@@ -11,7 +11,7 @@ import {Image as KonvaImage} from "react-konva";
 import {Layer, Stage} from "react-konva";
 import SelectedImage from "@/components/SelectedImage";
 import {Button} from "@/components/ui/button";
-import {DEFAULT_STYLE, FILTERS} from "@/constants/constants";
+import {DEFAULT_STYLE, FILTERS, IMAGE_HEIGHT, IMAGE_WIDTH} from "@/constants/constants";
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
@@ -116,53 +116,39 @@ const FilterPage = () => {
             </div>
           </div>
         </div>
-        {frameImg && (
+        {photo && frameImg && (
           <Stage
             ref={stageRef}
-            width={(frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier) * (photo?.theme.frame.type == "singular" ? 1 : 2)}
-            height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
+            width={IMAGE_WIDTH}
+            height={IMAGE_HEIGHT}
           >
-            <Layer>
-              {slottedItems.map(({slotId, item}, index) => {
-                return (
-                  item && (
-                    <SelectedImage
-                      key={slotId}
-                      url={item.data}
-                      y={photo!.theme.frame.modifers.image[index].position.y}
-                      x={photo!.theme.frame.modifers.image[index].position.x}
-                      widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
-                      heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
-                      filter={filter}
-                    />
-                  )
-                );
-              })}
-            </Layer>
-            <Layer>
-              {slottedItems.map(({slotId, item}, index) => {
-                return (
-                  item && (
-                    <SelectedImage
-                      key={slotId}
-                      url={item.data}
-                      y={photo!.theme.frame.modifers.image[index].position.y}
-                      x={photo!.theme.frame.modifers.image[index].position.x + frameImg.width - 1}
-                      widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
-                      heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
-                      filter={filter}
-                    />
-                  )
-                );
-              })}
-            </Layer>
-            {Array.from({length: photo!.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
+            {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, _index) => (
+              <Layer key={_index}>
+                {slottedItems.map(({slotId, item}, index) => {
+                  return (
+                    item && (
+                      <SelectedImage
+                        key={slotId}
+                        url={item.data}
+                        y={photo.theme.frame.slotPositions[index].y}
+                        x={photo.theme.frame.slotPositions[index].x + (IMAGE_WIDTH / 2 - 5) * _index}
+                        height={photo.theme.frame.slotDimensions.height}
+                        width={photo.theme.frame.slotDimensions.width}
+                        filter={filter}
+                      />
+                    )
+                  );
+                })}
+              </Layer>
+            ))}
+
+            {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
               <Layer key={index}>
                 <KonvaImage
                   image={frameImg}
-                  x={(frameImg.width - 1) * index}
-                  height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
-                  width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
+                  x={(IMAGE_WIDTH / 2 - 1) * index}
+                  height={IMAGE_HEIGHT}
+                  width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
                 />
               </Layer>
             ))}

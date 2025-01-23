@@ -5,15 +5,15 @@ const SelectedImage = ({
   url,
   y,
   x,
-  heightMultiplier,
-  widthMultiplier,
+  height,
+  width,
   filter,
 }: {
   url: string | undefined | null;
   y: number;
   x: number;
-  heightMultiplier: number;
-  widthMultiplier: number;
+  height: number;
+  width: number;
   filter?: string | null;
 }) => {
   const [image, setImage] = useState<HTMLCanvasElement | null>(null);
@@ -43,13 +43,15 @@ const SelectedImage = ({
   }, [loadImage, url, filter]);
 
   return (
-    <KonvaImage
-      image={image!}
-      height={image ? image.height / heightMultiplier : undefined}
-      width={image ? image.width / widthMultiplier : undefined}
-      x={x}
-      y={y}
-    />
+    image && (
+      <KonvaImage
+        image={image}
+        height={height}
+        width={width}
+        x={x}
+        y={y}
+      />
+    )
   );
 };
 

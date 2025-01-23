@@ -12,6 +12,7 @@ import {FaArrowRight} from "react-icons/fa6";
 import Image from "next/image";
 import SelectedImage from "@/components/SelectedImage";
 import Link from "next/link";
+import {IMAGE_HEIGHT, IMAGE_WIDTH} from "@/constants/constants";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -22,7 +23,7 @@ const PrintPage = () => {
   const [frameImg] = useImage(photo!.theme.frame.src);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(10005);
   const photoRef = useRef(photo);
 
   const handleContextSelect = useCallback(
@@ -79,22 +80,22 @@ const PrintPage = () => {
           <h1 className="text-5xl font-bold mb-4">
             Chọn hình <span className="text-rose-500">{timeLeft}s</span>
           </h1>
-          {frameImg && (
+          {frameImg && photo && (
             <Stage
-              width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
-              height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
+              width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+              height={IMAGE_HEIGHT}
             >
               <Layer>
-                {Array.from({length: photo!.theme.frame.imageSlot}, (_, index) => {
+                {Array.from({length: photo.theme.frame.imageSlot}, (_, index) => {
                   return (
                     <SelectedImage
                       key={index}
                       url={selectedImage[index]?.data}
-                      y={photo!.theme.frame.modifers.image[index].position.y}
-                      x={photo!.theme.frame.modifers.image[index].position.x}
-                      widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
-                      heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
+                      y={photo.theme.frame.slotPositions[index].y}
+                      x={photo.theme.frame.slotPositions[index].x}
                       filter={null}
+                      height={photo.theme.frame.slotDimensions.height}
+                      width={photo.theme.frame.slotDimensions.width}
                     />
                   );
                 })}
@@ -102,8 +103,8 @@ const PrintPage = () => {
               <Layer>
                 <KonvaImage
                   image={frameImg}
-                  height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
-                  width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
+                  height={IMAGE_HEIGHT}
+                  width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
                 />
               </Layer>
             </Stage>

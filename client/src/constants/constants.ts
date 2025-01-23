@@ -50,19 +50,14 @@ export const FrameOptions: {
     src: `/frame/${key}/${key}_${number}.png`;
     thumbnail?: `/frame/${key}/thumbnail/${key}_${number}.${string}`;
     imageSlot: number;
-    modifers: {
-      frame_scale_multiplier: number;
-      image: {
-        scale_multiplier: {
-          height: number;
-          width: number;
-        };
-        position: {
-          x: number;
-          y: number;
-        };
-      }[];
+    slotDimensions: {
+      width: number;
+      height: number;
     };
+    slotPositions: {
+      x: number;
+      y: number;
+    }[];
   }>;
 } = {
   prom: [
@@ -71,198 +66,127 @@ export const FrameOptions: {
       src: "/frame/prom/prom_1.png",
       thumbnail: "/frame/prom/thumbnail/prom_1.jpg",
       imageSlot: 2,
-      modifers: {
-        frame_scale_multiplier: 4,
-        image: [
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 20,
-              x: 38.8,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 345,
-              x: 38.8,
-            },
-          },
-        ],
+      slotDimensions: {
+        height: 300,
+        width: 500,
       },
+      slotPositions: [
+        {
+          y: 20,
+          x: 38.8,
+        },
+
+        {
+          y: 345,
+          x: 38.8,
+        },
+      ],
     },
     {
       type: "singular",
       src: "/frame/prom/prom_2.png",
       thumbnail: "/frame/prom/thumbnail/prom_2.jpg",
       imageSlot: 2,
-      modifers: {
-        frame_scale_multiplier: 4,
-        image: [
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 20,
-              x: 38.8,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 345,
-              x: 38.8,
-            },
-          },
-        ],
+      slotDimensions: {
+        height: 300,
+        width: 500,
       },
+      slotPositions: [
+        {
+          y: 20,
+          x: 38.8,
+        },
+
+        {
+          y: 345,
+          x: 38.8,
+        },
+      ],
     },
     {
       type: "singular",
       src: "/frame/prom/prom_3.png",
       thumbnail: "/frame/prom/thumbnail/prom_3.jpg",
       imageSlot: 2,
-      modifers: {
-        frame_scale_multiplier: 4,
-        image: [
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 20,
-              x: 38.8,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 345,
-              x: 38.8,
-            },
-          },
-        ],
+      slotDimensions: {
+        height: 300,
+        width: 500,
       },
+      slotPositions: [
+        {
+          y: 20,
+          x: 38.8,
+        },
+
+        {
+          y: 345,
+          x: 38.8,
+        },
+      ],
     },
     {
       type: "singular",
       src: "/frame/prom/prom_4.png",
       thumbnail: "/frame/prom/thumbnail/prom_4.jpg",
       imageSlot: 2,
-      modifers: {
-        frame_scale_multiplier: 4,
-        image: [
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 20,
-              x: 38.8,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 345,
-              x: 38.8,
-            },
-          },
-        ],
+      slotDimensions: {
+        height: 300,
+        width: 500,
       },
+      slotPositions: [
+        {
+          y: 20,
+          x: 38.8,
+        },
+
+        {
+          y: 345,
+          x: 38.8,
+        },
+      ],
     },
+
     {
       type: "singular",
       src: "/frame/prom/prom_5.png",
       thumbnail: "/frame/prom/thumbnail/prom_5.jpg",
       imageSlot: 2,
-      modifers: {
-        frame_scale_multiplier: 4,
-        image: [
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 20,
-              x: 38.8,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 345,
-              x: 38.8,
-            },
-          },
-        ],
+      slotDimensions: {
+        height: 300,
+        width: 500,
       },
+      slotPositions: [
+        {
+          y: 20,
+          x: 38.8,
+        },
+
+        {
+          y: 345,
+          x: 38.8,
+        },
+      ],
     },
     {
       type: "singular",
       src: "/frame/prom/prom_6.png",
       thumbnail: "/frame/prom/thumbnail/prom_6.jpg",
       imageSlot: 2,
-      modifers: {
-        frame_scale_multiplier: 4,
-        image: [
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 20,
-              x: 38.8,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 1.9,
-              width: 1.8,
-            },
-
-            position: {
-              y: 345,
-              x: 38.8,
-            },
-          },
-        ],
+      slotDimensions: {
+        height: 300,
+        width: 500,
       },
+      slotPositions: [
+        {
+          y: 20,
+          x: 38.8,
+        },
+
+        {
+          y: 345,
+          x: 38.8,
+        },
+      ],
     },
   ],
   usagyuun: [
@@ -271,55 +195,31 @@ export const FrameOptions: {
       src: "/frame/usagyuun/usagyuun_1.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_1.png",
       imageSlot: 4,
-      modifers: {
-        frame_scale_multiplier: 1,
-        image: [
-          {
-            scale_multiplier: {
-              height: 3.2,
-              width: 2.9,
-            },
-
-            position: {
-              y: 15,
-              x: 19,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 3.2,
-              width: 3.1,
-            },
-
-            position: {
-              y: 164,
-              x: 19,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 3.2,
-              width: 3.1,
-            },
-
-            position: {
-              y: 164 * 2 - 15,
-              x: 19,
-            },
-          },
-          {
-            scale_multiplier: {
-              height: 3.2,
-              width: 3.1,
-            },
-
-            position: {
-              y: 164 * 3 - 30,
-              x: 19,
-            },
-          },
-        ],
+      slotDimensions: {
+        height: 115,
+        width: 190,
       },
+      slotPositions: [
+        {
+          y: 15,
+          x: 15,
+        },
+
+        {
+          y: 130,
+          x: 15,
+        },
+
+        {
+          y: 130 * 2 - 15,
+          x: 15,
+        },
+
+        {
+          y: 130 * 3 - 30,
+          x: 15,
+        },
+      ],
     },
   ],
 };
@@ -344,7 +244,7 @@ export interface PhotoOptions<T extends ValidTheme> {
   }>;
 }
 
-export const NUM_OF_IMAGE = 6;
+export const NUM_OF_IMAGE = 4;
 
 export const FILTERS: {
   name: string;
@@ -403,3 +303,6 @@ export const DEFAULT_STYLE: PhotoOptions<"prom"> = {
   images: [],
   selectedImages: [],
 };
+
+export const IMAGE_WIDTH = 378;
+export const IMAGE_HEIGHT = 560;
