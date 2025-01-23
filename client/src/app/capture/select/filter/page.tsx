@@ -52,7 +52,7 @@ const FilterPage = () => {
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center flex-col justify-evenly p-8 relative">
-      <div className="flex items-center justify-evenly mb-8 w-full">
+      <div className="flex items-start justify-evenly mb-8 w-full">
         <div className="flex gap-4 items-center justify-center">
           <LuArrowUpDown size={50} />
           <div className="flex flex-col items-center justify-center gap-4">
@@ -77,7 +77,7 @@ const FilterPage = () => {
                         <img
                           src={item.data}
                           alt="image"
-                          className="w-[300px] pointer-events-none"
+                          className={cn("pointer-events-none", photo!.theme.frame.type == "singular" ? "w-[300px]" : "w-[180px]")}
                         />
                       </div>
                     </div>
@@ -86,39 +86,66 @@ const FilterPage = () => {
             </div>
           </div>
         </div>
-        <Stage
-          width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-          height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-        >
-          <Layer>
-            {slottedItems.map(({slotId, item}, index) => {
-              return (
-                item && (
-                  <SelectedImage
-                    key={slotId}
-                    url={item.data}
-                    y={photo!.theme.frame.modifers.image[index].position.y}
-                    x={photo!.theme.frame.modifers.image[index].position.x}
-                    widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
-                    heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
-                    filter={filter}
-                  />
-                )
-              );
-            })}
-          </Layer>
-          <Layer>
-            <KonvaImage
-              image={frameImg}
-              height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-              width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-            />
-          </Layer>
-        </Stage>
-        <div className="flex items-center justify-center flex-col gap-4">
+        {frameImg && (
+          <Stage
+            width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
+            height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+          >
+            <Layer>
+              {slottedItems.map(({slotId, item}, index) => {
+                return (
+                  item && (
+                    <SelectedImage
+                      key={slotId}
+                      url={item.data}
+                      y={photo!.theme.frame.modifers.image[index].position.y}
+                      x={photo!.theme.frame.modifers.image[index].position.x}
+                      widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
+                      heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
+                      filter={filter}
+                    />
+                  )
+                );
+              })}
+            </Layer>
+            <Layer>
+              {slottedItems.map(({slotId, item}, index) => {
+                return (
+                  item && (
+                    <SelectedImage
+                      key={slotId}
+                      url={item.data}
+                      y={photo!.theme.frame.modifers.image[index].position.y}
+                      x={photo!.theme.frame.modifers.image[index].position.x + frameImg.width}
+                      widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
+                      heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
+                      filter={filter}
+                    />
+                  )
+                );
+              })}
+            </Layer>
+            <Layer>
+              <KonvaImage
+                image={frameImg}
+                height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+                width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+              />
+            </Layer>
+            <Layer>
+              <KonvaImage
+                image={frameImg}
+                x={246}
+                height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+                width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+              />
+            </Layer>
+          </Stage>
+        )}
+        <div className="flex items-center justify-center flex-col gap-5">
           <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
           <ScrollArea className=" h-[470px] w-[350px] ">
-            <div className="flex-wrap flex gap-4">
+            <div className="flex-wrap flex gap-4 items-center justify-center">
               {FILTERS.map((item, index) => (
                 <div
                   className={cn(
@@ -138,6 +165,12 @@ const FilterPage = () => {
               ))}
             </div>
           </ScrollArea>
+          <Button
+            className="w-full mt-2"
+            onClick={() => setFilter(null)}
+          >
+            Reset filter
+          </Button>
         </div>
       </div>
       <Button className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full">

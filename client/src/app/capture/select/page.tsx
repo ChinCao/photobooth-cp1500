@@ -22,7 +22,7 @@ const PrintPage = () => {
   const [frameImg] = useImage(photo!.theme.frame.src);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(17);
+  const [timeLeft, setTimeLeft] = useState(4);
   const photoRef = useRef(photo);
 
   const handleContextSelect = useCallback(
@@ -79,33 +79,35 @@ const PrintPage = () => {
           <h1 className="text-5xl font-bold mb-4">
             Chọn hình <span className="text-rose-500">{timeLeft}s</span>
           </h1>
-          <Stage
-            width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-            height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-          >
-            <Layer>
-              {Array.from({length: photo!.theme.frame.imageSlot}, (_, index) => {
-                return (
-                  <SelectedImage
-                    key={index}
-                    url={selectedImage[index]?.data}
-                    y={photo!.theme.frame.modifers.image[index].position.y}
-                    x={photo!.theme.frame.modifers.image[index].position.x}
-                    widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
-                    heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
-                    filter={null}
-                  />
-                );
-              })}
-            </Layer>
-            <Layer>
-              <KonvaImage
-                image={frameImg}
-                height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-                width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-              />
-            </Layer>
-          </Stage>
+          {frameImg && (
+            <Stage
+              width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+              height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+            >
+              <Layer>
+                {Array.from({length: photo!.theme.frame.imageSlot}, (_, index) => {
+                  return (
+                    <SelectedImage
+                      key={index}
+                      url={selectedImage[index]?.data}
+                      y={photo!.theme.frame.modifers.image[index].position.y}
+                      x={photo!.theme.frame.modifers.image[index].position.x}
+                      widthMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.width}
+                      heightMultiplier={photo!.theme.frame.modifers.image[index].scale_multiplier.height}
+                      filter={null}
+                    />
+                  );
+                })}
+              </Layer>
+              <Layer>
+                <KonvaImage
+                  image={frameImg}
+                  height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+                  width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier / 2}
+                />
+              </Layer>
+            </Stage>
+          )}
           <p className="text-rose-500 font-bold mt-4">*Có thể đổi thứ tự hình sau</p>
         </div>
         <div

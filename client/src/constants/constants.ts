@@ -265,11 +265,68 @@ export const FrameOptions: {
       },
     },
   ],
+  usagyuun: [
+    {
+      type: "double",
+      src: "/frame/usagyuun/usagyuun_1.png",
+      thumbnail: "/frame/usagyuun/thumbnail/usagyuun_1.png",
+      imageSlot: 4,
+      modifers: {
+        frame_scale_multiplier: 0.5,
+        image: [
+          {
+            scale_multiplier: {
+              height: 3.2,
+              width: 2.4,
+            },
+
+            position: {
+              y: 15,
+              x: 20,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 3.2,
+              width: 2.4,
+            },
+
+            position: {
+              y: 164,
+              x: 20,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 3.2,
+              width: 2.4,
+            },
+
+            position: {
+              y: 164 * 2 - 15,
+              x: 20,
+            },
+          },
+          {
+            scale_multiplier: {
+              height: 3.2,
+              width: 2.4,
+            },
+
+            position: {
+              y: 164 * 3 - 30,
+              x: 20,
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 
 export const FrameDefaults: {
   [key in ValidTheme]: (typeof FrameOptions)[key][number];
-} = {prom: FrameOptions.prom[0]};
+} = {prom: FrameOptions.prom[0], usagyuun: FrameOptions.usagyuun[0]};
 
 export interface PhotoOptions<T extends ValidTheme> {
   theme: {
@@ -320,7 +377,6 @@ export const FILTERS: {
   {name: "Maven", filter: "filter-maven", value: "sepia(0.35) contrast(1.05) brightness(1.05) saturate(1.75)"},
   {name: "Mayfair", filter: "filter-mayfair", value: "contrast(1.1) brightness(1.15) saturate(1.1)"},
   {name: "Moon", filter: "filter-moon", value: "brightness(1.4) contrast(0.95) saturate(0) sepia(0.35)"},
-  {name: "Nashville", filter: "filter-nashville", value: "sepia(0.25) contrast(1.5) brightness(0.9) hue-rotate(-15deg)"},
   {name: "Perpetua", filter: "filter-perpetua", value: "contrast(1.1) brightness(1.25) saturate(1.1)"},
   {name: "Poprocket", filter: "filter-poprocket", value: "sepia(0.15) brightness(1.2)"},
   {name: "Reyes", filter: "filter-reyes", value: "sepia(0.75) contrast(0.75) brightness(1.25) saturate(1.4)"},

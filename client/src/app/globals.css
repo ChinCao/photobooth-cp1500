@@ -212,11 +212,6 @@ body {
   filter: brightness(1.4) contrast(0.95) saturate(0) sepia(0.35);
 }
 
-.filter-nashville {
-  -webkit-filter: sepia(0.25) contrast(1.5) brightness(0.9) hue-rotate(-15deg);
-  filter: sepia(0.25) contrast(1.5) brightness(0.9) hue-rotate(-15deg);
-}
-
 .filter-perpetua {
   -webkit-filter: contrast(1.1) brightness(1.25) saturate(1.1);
   filter: contrast(1.1) brightness(1.25) saturate(1.1);

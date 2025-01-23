@@ -113,7 +113,7 @@ const LayoutPage = () => {
                             src={item.src}
                             alt="Frame"
                             height={235}
-                            width={235}
+                            width={photo!.theme.frame.type == "singular" ? 235 : 150}
                             className="bg-white"
                           />
                         );
@@ -154,7 +154,7 @@ const LayoutPage = () => {
                         )}
                       >
                         <Image
-                          className="bg-white w-full"
+                          className="bg-white w-full max-h-[100px]"
                           src={item.src}
                           height={100}
                           width={100}
@@ -196,14 +196,14 @@ const LayoutPage = () => {
                         handleFrameChange(item);
                         handleCarouselItemClick(index);
                       }}
-                      className="relative h-max"
+                      className="relative h-[100px] w-[100px] object-cover"
                     >
                       <Image
                         src={thumbnail}
                         height={100}
                         width={100}
                         alt="Option"
-                        className="hover:cursor-pointer rounded"
+                        className="hover:cursor-pointer rounded w-full h-full"
                       />
 
                       <IoIosCheckmark
