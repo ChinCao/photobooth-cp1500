@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import NavLink from "./NavLink";
 
 const NavBar = () => {
   return (
@@ -20,33 +19,6 @@ const NavBar = () => {
             />
           </Link>
         </div>
-        <div className="flex gap-8">
-          <div className="w-max cursor-pointer shadow-lg rounded-xl border bg-card text-card-foreground text-3xl  ">
-            <NavLink
-              className="flex items-center justify-center  uppercase px-6 font-bold h-full"
-              href="/"
-            >
-              Theme
-            </NavLink>
-          </div>
-          <div className="w-max cursor-pointer shadow-lg rounded-xl border bg-card text-card-foreground text-3xl  ">
-            <NavLink
-              className="flex items-center justify-center  uppercase px-6 font-bold h-full"
-              href="/layout"
-            >
-              Layout
-            </NavLink>
-          </div>
-          <div className="w-max cursor-pointer shadow-lg rounded-xl border bg-card text-card-foreground text-3xl  ">
-            <NavLink
-              className="flex items-center justify-center uppercase px-6 font-bold h-full"
-              href="/capture"
-            >
-              Capture
-            </NavLink>
-          </div>
-        </div>
-        <div></div>
       </nav>
     </header>
   );

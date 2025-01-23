@@ -54,7 +54,7 @@ const FilterPage = () => {
 
   const printImage = () => {
     if (stageRef.current) {
-      const dataURL = stageRef.current.toDataURL({pixelRatio: 3});
+      const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
       const link = document.createElement("a");
       link.download = `${photo?.theme.name}.jpg`;
       link.href = dataURL;

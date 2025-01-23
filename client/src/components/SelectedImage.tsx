@@ -9,7 +9,7 @@ const SelectedImage = ({
   widthMultiplier,
   filter,
 }: {
-  url: string;
+  url: string | undefined | null;
   y: number;
   x: number;
   heightMultiplier: number;
@@ -19,6 +19,7 @@ const SelectedImage = ({
   const [image, setImage] = useState<HTMLCanvasElement | null>(null);
 
   const loadImage = useCallback(() => {
+    if (!url) return setImage(null);
     const img = document.createElement("img");
     img.src = url;
 

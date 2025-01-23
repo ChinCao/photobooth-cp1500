@@ -22,7 +22,7 @@ const PrintPage = () => {
   const [frameImg] = useImage(photo!.theme.frame.src);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(200000);
   const photoRef = useRef(photo);
 
   const handleContextSelect = useCallback(
@@ -81,7 +81,7 @@ const PrintPage = () => {
           </h1>
           {frameImg && (
             <Stage
-              width={(frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier) * (photo?.theme.frame.type == "singular" ? 1 : 2)}
+              width={frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier}
               height={frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier}
             >
               <Layer>

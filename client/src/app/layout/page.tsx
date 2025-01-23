@@ -88,7 +88,7 @@ const LayoutPage = () => {
               )}
             >
               <IoIosArrowBack
-                size={100}
+                size={60}
                 className="text-primary hover:cursor-pointer carousel-pointer"
                 onClick={handleLeftClick}
               />
@@ -123,7 +123,7 @@ const LayoutPage = () => {
                 </CarouselContent>
               </Carousel>
               <IoIosArrowForward
-                size={100}
+                size={60}
                 className="text-primary hover:cursor-pointer carousel-pointer"
                 onClick={handleRightClick}
               />
