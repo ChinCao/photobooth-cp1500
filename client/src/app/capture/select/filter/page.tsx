@@ -9,7 +9,6 @@ import {LuArrowUpDown} from "react-icons/lu";
 import useImage from "use-image";
 import {Image as KonvaImage} from "react-konva";
 import {Layer, Stage} from "react-konva";
-import {Layer as LayerElement} from "konva/lib/Layer";
 import SelectedImage from "@/components/SelectedImage";
 import {Button} from "@/components/ui/button";
 import {FILTERS} from "@/constants/constants";
@@ -27,15 +26,9 @@ const FilterPage = () => {
   const slottedItems = useMemo(() => utils.toSlottedItems(photo!.selectedImages, "id", slotItemMap), [photo, slotItemMap]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [frameImg] = useImage(photo!.theme.frame.src);
-  const [filter, setFilter] = useState<string>("");
+  const [filter, setFilter] = useState<string | null>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.selectedImages, "id", slotItemMap, setSlotItemMap), [photo]);
-  const capturedRef = useRef<LayerElement>(null);
-  useEffect(() => {
-    if (capturedRef.current) {
-      capturedRef.current.moveToBottom();
-    }
-  }, [slotItemMap]);
 
   useEffect(() => {
     swapyRef.current = createSwapy(containerRef.current!, {
@@ -98,13 +91,6 @@ const FilterPage = () => {
           height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
         >
           <Layer>
-            <KonvaImage
-              image={frameImg}
-              height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-              width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
-            />
-          </Layer>
-          <Layer ref={capturedRef}>
             {slottedItems.map(({slotId, item}, index) => {
               return (
                 item && (
@@ -121,6 +107,13 @@ const FilterPage = () => {
               );
             })}
           </Layer>
+          <Layer>
+            <KonvaImage
+              image={frameImg}
+              height={frameImg ? frameImg?.height / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
+              width={frameImg ? frameImg?.width / photo!.theme.frame.modifers.frame_scale_multiplier : undefined}
+            />
+          </Layer>
         </Stage>
         <div className="flex items-center justify-center flex-col gap-4">
           <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
@@ -130,10 +123,10 @@ const FilterPage = () => {
                 <div
                   className={cn(
                     "flex flex-col gap-2 items-center justify-center border-2 cursor-pointer rounded hover:border-black",
-                    filter == item.filter ? "border-rose-500 hover:border-rose-500" : null
+                    filter == item.value ? "border-rose-500 hover:border-rose-500" : null
                   )}
                   key={index}
-                  onClick={() => setFilter(item.filter)}
+                  onClick={() => setFilter(item.value)}
                 >
                   <img
                     src={photo?.selectedImages[0]?.data}
