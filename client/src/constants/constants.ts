@@ -283,6 +283,68 @@ export const FrameOptions: {
         },
       ],
     },
+    {
+      type: "double",
+      src: "/frame/usagyuun/usagyuun_4.png",
+      thumbnail: "/frame/usagyuun/thumbnail/usagyuun_4.png",
+      imageSlot: 4,
+      slotDimensions: {
+        height: 115,
+        width: 175,
+      },
+      slotPositions: [
+        {
+          y: 14,
+          x: 14,
+        },
+
+        {
+          y: 129,
+          x: 14,
+        },
+
+        {
+          y: 130 * 2 - 14,
+          x: 14,
+        },
+
+        {
+          y: 130 * 3 - 29,
+          x: 14,
+        },
+      ],
+    },
+    {
+      type: "double",
+      src: "/frame/usagyuun/usagyuun_5.png",
+      thumbnail: "/frame/usagyuun/thumbnail/usagyuun_5.png",
+      imageSlot: 4,
+      slotDimensions: {
+        height: 115,
+        width: 175,
+      },
+      slotPositions: [
+        {
+          y: 14,
+          x: 14,
+        },
+
+        {
+          y: 129,
+          x: 14,
+        },
+
+        {
+          y: 130 * 2 - 14,
+          x: 14,
+        },
+
+        {
+          y: 130 * 3 - 25,
+          x: 14,
+        },
+      ],
+    },
   ],
 };
 
