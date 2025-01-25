@@ -5,14 +5,14 @@ import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
 import {useRouter} from "next/navigation";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {Layer, Stage} from "react-konva";
+import {Layer, Rect, Stage} from "react-konva";
 import useImage from "use-image";
 import {Image as KonvaImage} from "react-konva";
 import {FaArrowRight} from "react-icons/fa6";
 import Image from "next/image";
 import SelectedImage from "@/components/SelectedImage";
 import Link from "next/link";
-import {IMAGE_HEIGHT, IMAGE_WIDTH} from "@/constants/constants";
+import {FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -76,7 +76,7 @@ const PrintPage = () => {
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
       <div className="flex items-start justify-center w-full gap-4">
-        <div className="flex flex-col items-center justify-center ">
+        <div className="flex flex-col items-center justify-center">
           <h1 className="text-5xl font-bold mb-4">
             Chọn hình <span className="text-rose-500">{timeLeft}s</span>
           </h1>
@@ -86,6 +86,16 @@ const PrintPage = () => {
               height={IMAGE_HEIGHT}
             >
               <Layer>
+                <Rect
+                  width={IMAGE_WIDTH}
+                  height={IMAGE_HEIGHT}
+                  fill="yellow"
+                />
+              </Layer>
+              <Layer
+                x={OFFSET_X}
+                y={OFFSET_Y}
+              >
                 {Array.from({length: photo.theme.frame.imageSlot}, (_, index) => {
                   return (
                     <SelectedImage
@@ -100,11 +110,14 @@ const PrintPage = () => {
                   );
                 })}
               </Layer>
-              <Layer>
+              <Layer
+                x={OFFSET_X}
+                y={OFFSET_Y}
+              >
                 <KonvaImage
                   image={frameImg}
-                  height={IMAGE_HEIGHT}
-                  width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                  height={FRAME_HEIGHT}
+                  width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
                 />
               </Layer>
             </Stage>

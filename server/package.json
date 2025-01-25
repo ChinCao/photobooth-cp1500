@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "escpos": "^3.0.0-alpha.6",
     "next": "^15.1.4",
     "socket.io": "^4.8.1"
   },

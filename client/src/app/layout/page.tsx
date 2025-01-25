@@ -141,7 +141,10 @@ const LayoutPage = () => {
                   {FrameOptions[photo!.theme.name].map((item, index) => (
                     <CarouselItem
                       key={index}
-                      className="flex items-center justify-center basis-1/4 cursor-pointer"
+                      className={cn(
+                        "flex items-center justify-center cursor-pointer",
+                        photo?.theme.frame.type == "singular" ? " basis-1/4" : "basis-[15%]"
+                      )}
                       onClick={() => {
                         handleCarouselItemClick(index);
                         handleFrameChange(item);

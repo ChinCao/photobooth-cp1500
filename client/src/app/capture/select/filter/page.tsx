@@ -7,11 +7,11 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
 import {LuArrowUpDown} from "react-icons/lu";
 import useImage from "use-image";
-import {Image as KonvaImage} from "react-konva";
+import {Image as KonvaImage, Rect} from "react-konva";
 import {Layer, Stage} from "react-konva";
 import SelectedImage from "@/components/SelectedImage";
 import {Button} from "@/components/ui/button";
-import {DEFAULT_STYLE, FILTERS, IMAGE_HEIGHT, IMAGE_WIDTH} from "@/constants/constants";
+import {DEFAULT_STYLE, FILTERS, FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
@@ -31,7 +31,7 @@ const FilterPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.selectedImages, "id", slotItemMap, setSlotItemMap), [photo]);
   const stageRef = useRef<StageElement | null>(null);
-  const [timeLeft, setTimeLeft] = useState(25);
+  const [timeLeft, setTimeLeft] = useState(250000);
   const [printed, setPrinted] = useState(false);
 
   useEffect(() => {
@@ -122,8 +122,19 @@ const FilterPage = () => {
             width={IMAGE_WIDTH}
             height={IMAGE_HEIGHT}
           >
+            <Layer>
+              <Rect
+                width={IMAGE_WIDTH}
+                height={IMAGE_HEIGHT}
+                fill="yellow"
+              />
+            </Layer>
             {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, _index) => (
-              <Layer key={_index}>
+              <Layer
+                key={_index}
+                x={OFFSET_X}
+                y={OFFSET_Y}
+              >
                 {slottedItems.map(({slotId, item}, index) => {
                   return (
                     item && (
@@ -131,7 +142,7 @@ const FilterPage = () => {
                         key={slotId}
                         url={item.data}
                         y={photo.theme.frame.slotPositions[index].y}
-                        x={photo.theme.frame.slotPositions[index].x + (IMAGE_WIDTH / 2 - 5) * _index}
+                        x={photo.theme.frame.slotPositions[index].x + (IMAGE_WIDTH / 2) * _index}
                         height={photo.theme.frame.slotDimensions.height}
                         width={photo.theme.frame.slotDimensions.width}
                         filter={filter}
@@ -143,12 +154,16 @@ const FilterPage = () => {
             ))}
 
             {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
-              <Layer key={index}>
+              <Layer
+                key={index}
+                x={OFFSET_X}
+                y={OFFSET_Y}
+              >
                 <KonvaImage
                   image={frameImg}
-                  x={(IMAGE_WIDTH / 2 - 1) * index}
-                  height={IMAGE_HEIGHT}
-                  width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                  x={(FRAME_WIDTH / 2) * index}
+                  height={FRAME_HEIGHT}
+                  width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
                 />
               </Layer>
             ))}

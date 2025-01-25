@@ -44,6 +44,27 @@ export const ThemeSelectButton: {
   },
 ];
 
+export const FRAME_WIDTH = 355;
+export const FRAME_HEIGHT = 525;
+
+export const IMAGE_WIDTH = 378;
+export const IMAGE_HEIGHT = 560;
+
+// export const IMAGE_WIDTH = 1182;
+// export const IMAGE_HEIGHT = 1748;
+
+// export const FRAME_WIDTH = IMAGE_WIDTH - 24;
+// export const FRAME_HEIGHT = IMAGE_HEIGHT - 36;
+
+export const OFFSET_X = (IMAGE_WIDTH - FRAME_WIDTH) / 2;
+export const OFFSET_Y = (IMAGE_HEIGHT - FRAME_HEIGHT) / 3;
+
+const USAGYUUN_X_POS = 14;
+const USAGYUUN_Y_INIT_POS = 14;
+const USAGYUUN_Y_SLOT_SEPERATION = (index: number) => {
+  return 129 * (index + 1) - USAGYUUN_Y_INIT_POS * index;
+};
+
 export const FrameOptions: {
   [key in ValidTheme]: Array<{
     type: "singular" | "double";
@@ -201,23 +222,23 @@ export const FrameOptions: {
       },
       slotPositions: [
         {
-          y: 14,
-          x: 14,
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 129,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 2 - 14,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 3 - 29,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
         },
       ],
     },
@@ -232,23 +253,23 @@ export const FrameOptions: {
       },
       slotPositions: [
         {
-          y: 14,
-          x: 14,
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 129,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 2 - 14,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 3 - 29,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
         },
       ],
     },
@@ -263,23 +284,23 @@ export const FrameOptions: {
       },
       slotPositions: [
         {
-          y: 14,
-          x: 14,
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 129,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 2 - 14,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 3 - 29,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
         },
       ],
     },
@@ -294,23 +315,23 @@ export const FrameOptions: {
       },
       slotPositions: [
         {
-          y: 14,
-          x: 14,
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 129,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 2 - 14,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 3 - 29,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
         },
       ],
     },
@@ -325,23 +346,23 @@ export const FrameOptions: {
       },
       slotPositions: [
         {
-          y: 14,
-          x: 14,
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 129,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 2 - 14,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
         },
 
         {
-          y: 130 * 3 - 25,
-          x: 14,
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
         },
       ],
     },
@@ -427,6 +448,3 @@ export const DEFAULT_STYLE: PhotoOptions<"prom"> = {
   images: [],
   selectedImages: [],
 };
-
-export const IMAGE_WIDTH = 378;
-export const IMAGE_HEIGHT = 560;
