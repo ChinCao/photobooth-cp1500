@@ -9,10 +9,10 @@ export function currentTime() {
   const minutes = currentDate.getMinutes();
   const seconds = currentDate.getSeconds();
 
-  const dateString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-  const timeString = `${String(hours).padStart(2, "0")}_${String(minutes).padStart(2, "0")}_${String(seconds).padStart(2, "0")}`;
+  const dateString = `${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}-${year}`;
+  const timeString = `${String(hours).padStart(2, "0")}h_${String(minutes).padStart(2, "0")}m_${String(seconds).padStart(2, "0")}s`;
 
-  const dateTimeString = `${dateString} ${timeString}`;
+  const dateTimeString = `${dateString}-${timeString}`;
 
   return dateTimeString;
 }
