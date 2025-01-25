@@ -53,10 +53,20 @@ export const IMAGE_HEIGHT = 560;
 export const OFFSET_X = (IMAGE_WIDTH - FRAME_WIDTH) / 2;
 export const OFFSET_Y = 47 / 3;
 
-const USAGYUUN_X_POS = 14;
-const USAGYUUN_Y_INIT_POS = 14;
+const USAGYUUN_X_POS = 13;
+const USAGYUUN_Y_INIT_POS = 13;
+const USAGYUUN_IMAGE_HEIGHT = 106;
+const USAGYUUN_IMAGE_WIDTH = 151;
 const USAGYUUN_Y_SLOT_SEPERATION = (index: number) => {
-  return 129 * (index + 1) - USAGYUUN_Y_INIT_POS * index;
+  return 122 * (index + 1) - USAGYUUN_Y_INIT_POS * index;
+};
+
+const PROM_Y_INIT_POS = 20;
+const PROM_IMAGE_HEIGHT = 210;
+const PROM_IMAGE_WIDTH = 292;
+const PROM_X_POS = 31;
+const PROM_Y_SLOT_SEPERATION = (index: number) => {
+  return 280 * (index + 1) - PROM_Y_INIT_POS * index;
 };
 
 export const FrameOptions: {
@@ -82,18 +92,18 @@ export const FrameOptions: {
       thumbnail: "/frame/prom/thumbnail/prom_1.jpg",
       imageSlot: 2,
       slotDimensions: {
-        height: 300,
-        width: 500,
+        height: PROM_IMAGE_HEIGHT,
+        width: PROM_IMAGE_WIDTH,
       },
       slotPositions: [
         {
-          y: 20,
-          x: 38.8,
+          y: PROM_Y_INIT_POS,
+          x: PROM_X_POS,
         },
 
         {
-          y: 345,
-          x: 38.8,
+          y: PROM_Y_SLOT_SEPERATION(0),
+          x: PROM_X_POS,
         },
       ],
     },
@@ -103,18 +113,18 @@ export const FrameOptions: {
       thumbnail: "/frame/prom/thumbnail/prom_2.jpg",
       imageSlot: 2,
       slotDimensions: {
-        height: 300,
-        width: 500,
+        height: PROM_IMAGE_HEIGHT,
+        width: PROM_IMAGE_WIDTH,
       },
       slotPositions: [
         {
-          y: 20,
-          x: 38.8,
+          y: PROM_Y_INIT_POS,
+          x: PROM_X_POS,
         },
 
         {
-          y: 345,
-          x: 38.8,
+          y: PROM_Y_SLOT_SEPERATION(0),
+          x: PROM_X_POS,
         },
       ],
     },
@@ -124,18 +134,18 @@ export const FrameOptions: {
       thumbnail: "/frame/prom/thumbnail/prom_3.jpg",
       imageSlot: 2,
       slotDimensions: {
-        height: 300,
-        width: 500,
+        height: PROM_IMAGE_HEIGHT,
+        width: PROM_IMAGE_WIDTH,
       },
       slotPositions: [
         {
-          y: 20,
-          x: 38.8,
+          y: PROM_Y_INIT_POS,
+          x: PROM_X_POS,
         },
 
         {
-          y: 345,
-          x: 38.8,
+          y: PROM_Y_SLOT_SEPERATION(0),
+          x: PROM_X_POS,
         },
       ],
     },
@@ -145,18 +155,18 @@ export const FrameOptions: {
       thumbnail: "/frame/prom/thumbnail/prom_4.jpg",
       imageSlot: 2,
       slotDimensions: {
-        height: 300,
-        width: 500,
+        height: PROM_IMAGE_HEIGHT,
+        width: PROM_IMAGE_WIDTH,
       },
       slotPositions: [
         {
-          y: 20,
-          x: 38.8,
+          y: PROM_Y_INIT_POS,
+          x: PROM_X_POS,
         },
 
         {
-          y: 345,
-          x: 38.8,
+          y: PROM_Y_SLOT_SEPERATION(0),
+          x: PROM_X_POS,
         },
       ],
     },
@@ -167,18 +177,18 @@ export const FrameOptions: {
       thumbnail: "/frame/prom/thumbnail/prom_5.jpg",
       imageSlot: 2,
       slotDimensions: {
-        height: 300,
-        width: 500,
+        height: PROM_IMAGE_HEIGHT,
+        width: PROM_IMAGE_WIDTH,
       },
       slotPositions: [
         {
-          y: 20,
-          x: 38.8,
+          y: PROM_Y_INIT_POS,
+          x: PROM_X_POS,
         },
 
         {
-          y: 345,
-          x: 38.8,
+          y: PROM_Y_SLOT_SEPERATION(0),
+          x: PROM_X_POS,
         },
       ],
     },
@@ -188,18 +198,18 @@ export const FrameOptions: {
       thumbnail: "/frame/prom/thumbnail/prom_6.jpg",
       imageSlot: 2,
       slotDimensions: {
-        height: 300,
-        width: 500,
+        height: PROM_IMAGE_HEIGHT,
+        width: PROM_IMAGE_WIDTH,
       },
       slotPositions: [
         {
-          y: 20,
-          x: 38.8,
+          y: PROM_Y_INIT_POS,
+          x: PROM_X_POS,
         },
 
         {
-          y: 345,
-          x: 38.8,
+          y: PROM_Y_SLOT_SEPERATION(0),
+          x: PROM_X_POS,
         },
       ],
     },
@@ -211,8 +221,8 @@ export const FrameOptions: {
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_1.png",
       imageSlot: 4,
       slotDimensions: {
-        height: 115,
-        width: 175,
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
       },
       slotPositions: [
         {
@@ -242,8 +252,8 @@ export const FrameOptions: {
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_2.png",
       imageSlot: 4,
       slotDimensions: {
-        height: 115,
-        width: 175,
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
       },
       slotPositions: [
         {
@@ -273,8 +283,8 @@ export const FrameOptions: {
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_3.png",
       imageSlot: 4,
       slotDimensions: {
-        height: 115,
-        width: 175,
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
       },
       slotPositions: [
         {
@@ -304,8 +314,8 @@ export const FrameOptions: {
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_4.png",
       imageSlot: 4,
       slotDimensions: {
-        height: 115,
-        width: 175,
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
       },
       slotPositions: [
         {
@@ -335,8 +345,8 @@ export const FrameOptions: {
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_5.png",
       imageSlot: 4,
       slotDimensions: {
-        height: 115,
-        width: 175,
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
       },
       slotPositions: [
         {

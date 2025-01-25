@@ -142,7 +142,7 @@ const FilterPage = () => {
                         key={slotId}
                         url={item.data}
                         y={photo.theme.frame.slotPositions[index].y}
-                        x={photo.theme.frame.slotPositions[index].x + (IMAGE_WIDTH / 2) * _index}
+                        x={photo.theme.frame.slotPositions[index].x + (FRAME_WIDTH / 2) * _index}
                         height={photo.theme.frame.slotDimensions.height}
                         width={photo.theme.frame.slotDimensions.width}
                         filter={filter}
