@@ -89,7 +89,7 @@ const PrintPage = () => {
                 <Rect
                   width={IMAGE_WIDTH}
                   height={IMAGE_HEIGHT}
-                  fill="yellow"
+                  fill="white"
                 />
               </Layer>
               <Layer

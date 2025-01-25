@@ -126,7 +126,7 @@ const FilterPage = () => {
               <Rect
                 width={IMAGE_WIDTH}
                 height={IMAGE_HEIGHT}
-                fill="yellow"
+                fill="white"
               />
             </Layer>
             {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, _index) => (

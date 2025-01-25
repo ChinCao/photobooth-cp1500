@@ -45,19 +45,13 @@ export const ThemeSelectButton: {
 ];
 
 export const FRAME_WIDTH = 355;
-export const FRAME_HEIGHT = 525;
+export const FRAME_HEIGHT = 524;
 
 export const IMAGE_WIDTH = 378;
 export const IMAGE_HEIGHT = 560;
 
-// export const IMAGE_WIDTH = 1182;
-// export const IMAGE_HEIGHT = 1748;
-
-// export const FRAME_WIDTH = IMAGE_WIDTH - 24;
-// export const FRAME_HEIGHT = IMAGE_HEIGHT - 36;
-
 export const OFFSET_X = (IMAGE_WIDTH - FRAME_WIDTH) / 2;
-export const OFFSET_Y = (IMAGE_HEIGHT - FRAME_HEIGHT) / 3;
+export const OFFSET_Y = 47 / 3;
 
 const USAGYUUN_X_POS = 14;
 const USAGYUUN_Y_INIT_POS = 14;
