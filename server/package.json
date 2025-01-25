@@ -5,7 +5,7 @@
     "socket.io": "^4.8.1"
   },
   "scripts": {
-    "dev": "nodemon --exec node --no-warnings --loader ts-node/esm server.ts"
+    "dev": "nodemon --exec node --no-warnings --es-module-specifier-resolution=node --loader ts-node/esm server.ts"
   },
   "type": "module",
   "devDependencies": {

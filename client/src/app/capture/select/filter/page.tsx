@@ -15,6 +15,7 @@ import {DEFAULT_STYLE, FILTERS, FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_W
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
+import {io} from "socket.io-client";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -28,6 +29,7 @@ const FilterPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [frameImg] = useImage(photo!.theme.frame.src);
   const [filter, setFilter] = useState<string | null>();
+  const socket = useMemo(() => io("http://localhost:3001"), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.selectedImages, "id", slotItemMap, setSlotItemMap), [photo]);
   const stageRef = useRef<StageElement | null>(null);
@@ -54,20 +56,19 @@ const FilterPage = () => {
     };
   }, []);
 
+  socket.on("connect", () => {
+    console.log("Connected to server.");
+  });
+
   const printImage = useCallback(() => {
-    if (stageRef.current) {
+    if (stageRef.current && photo) {
       setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
-      const link = document.createElement("a");
-      link.download = `${photo?.theme.name}.jpg`;
-      link.href = dataURL;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      socket.emit("print", {quantity: photo.quantity, dataURL: dataURL, theme: photo.theme.name});
       setPhoto!(DEFAULT_STYLE);
       router.push("/");
     }
-  }, [photo?.theme.name, router, setPhoto]);
+  }, [photo, router, setPhoto, socket]);
 
   useEffect(() => {
     if (timeLeft > 0) {
