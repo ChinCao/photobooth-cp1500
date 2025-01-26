@@ -2,7 +2,7 @@ import {Server} from "socket.io";
 import path from "path";
 import fs from "fs";
 import {currentTime} from "./utils";
-import {spawn} from "child_process";
+import {exec} from "child_process";
 
 const io = new Server(3001, {
   cors: {
@@ -27,18 +27,43 @@ io.on("connection", (socket) => {
         console.log("File saved successfully to", filePath);
       }
     });
-    const scriptPath = path.join(process.cwd(), "print-image.ps1");
     const printerName = "Canon SELPHY CP1500 (Copy 1)";
-    const ps = spawn("powershell", ["-executionpolicy", "bypass", "-file", scriptPath, "-imagePath", filePath, "-printer", printerName], {
-      shell: true,
-      stdio: ["pipe"],
-    });
-    ps.stdout.on("data", (data) => {
-      console.log(`Output: ${data}`);
-    });
-
-    ps.stderr.on("data", (data) => {
-      console.error(`Error: ${data}`);
+    const command = `
+    function printImage {
+        param([string]$imagePath, [string]$printer)
+        trap { break; }
+        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+        $bitmap = $null
+        $doc = new-object System.Drawing.Printing.PrintDocument
+        if ($printer -ne "") {
+            $doc.PrinterSettings.PrinterName = $printer
+        }
+        $doc.DocumentName = [System.IO.Path]::GetFileName($imagePath)
+        $doc.add_EndPrint({
+            if ($null -ne $bitmap) {
+                $bitmap.Dispose()
+                $bitmap = $null
+            }
+        })
+        $doc.add_PrintPage({
+            $img = new-object Drawing.Bitmap($imagePath)
+            $_.Graphics.DrawImage($img, $_.Graphics.VisibleClipBounds)
+            $_.HasMorePages = $false;
+        })
+        $doc.Print()
+    }
+    printImage -imagePath "${filePath}" -printer "${printerName}"
+`;
+    exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
     });
   });
 });
