@@ -2,7 +2,7 @@ import {Server} from "socket.io";
 import path from "path";
 import fs from "fs";
 import {currentTime} from "./utils";
-import {exec} from "child_process";
+import {spawn} from "child_process";
 
 const io = new Server(3001, {
   cors: {
@@ -27,17 +27,18 @@ io.on("connection", (socket) => {
         console.log("File saved successfully to", filePath);
       }
     });
-    const command = `Start-Process -FilePath C:/Users/lenovo/OneDrive/React/photobooth-cp1500/server/images/usagyuun/25-01-2025-23h_09m_36s.jpeg -Verb Print`;
-    exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`Stderr: ${stderr}`);
-        return;
-      }
-      console.log(stdout);
+    const scriptPath = path.join(process.cwd(), "print-image.ps1");
+    const printerName = "Canon SELPHY CP1500 (Copy 1)";
+    const ps = spawn("powershell", ["-executionpolicy", "bypass", "-file", scriptPath, "-imagePath", filePath, "-printer", printerName], {
+      shell: true,
+      stdio: ["pipe"],
+    });
+    ps.stdout.on("data", (data) => {
+      console.log(`Output: ${data}`);
+    });
+
+    ps.stderr.on("data", (data) => {
+      console.error(`Error: ${data}`);
     });
   });
 });
