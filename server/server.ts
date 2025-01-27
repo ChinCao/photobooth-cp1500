@@ -11,37 +11,65 @@ const io = new Server(3001, {
   maxHttpBufferSize: Infinity,
 });
 
-io.on("connection", (socket) => {
-  socket.on("print", async (message: {quantity: number; dataURL: string; theme: string}) => {
-    const themePath = path.join(process.cwd(), "images", message.theme);
-    if (!fs.existsSync(themePath)) {
-      fs.mkdirSync(themePath, {recursive: true});
-    }
-    const filePath = path.join(themePath, `${currentTime()}.jpeg`);
-    const [, base64Data] = message.dataURL.split(",");
-    const buffer = Buffer.from(base64Data, "base64");
-    fs.writeFile(filePath, buffer, (err) => {
-      if (err) {
-        console.error("Error writing file:", err);
-      } else {
-        console.log("File saved successfully to", filePath);
-      }
-    });
-
-    const printerName = "Canon SELPHY CP1500 (Copy 1)";
-    const scriptPath = path.join(process.cwd(), "print-image.ps1");
-    const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "${scriptPath}" -imagePath "${filePath}" -printer "${printerName}" -copies ${message.quantity}`;
+function getCP1500Printer(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -Command "(Get-Printer | Where Name -like '*CP1500*').Name"`;
 
     exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
       if (error) {
-        console.error(`PowerShell command failed: ${error.message}`);
+        reject(error);
         return;
       }
       if (stderr) {
-        console.error(`PowerShell stderr: ${stderr}`);
+        reject(new Error(stderr));
         return;
       }
-      console.log(`PowerShell command succeeded:\n${stdout}`);
+      const printerName = stdout.trim();
+      if (!printerName) {
+        reject(new Error("No CP1500 printer found"));
+        return;
+      }
+      resolve(printerName);
     });
+  });
+}
+
+io.on("connection", (socket) => {
+  socket.on("print", async (message: {quantity: number; dataURL: string; theme: string}) => {
+    try {
+      const printerName = await getCP1500Printer();
+      const themePath = path.join(process.cwd(), "images", message.theme);
+      if (!fs.existsSync(themePath)) {
+        fs.mkdirSync(themePath, {recursive: true});
+      }
+      const filePath = path.join(themePath, `${currentTime()}.jpeg`);
+      const [, base64Data] = message.dataURL.split(",");
+      const buffer = Buffer.from(base64Data, "base64");
+      fs.writeFile(filePath, buffer, (err) => {
+        if (err) {
+          console.error("Error writing file:", err);
+        } else {
+          console.log("File saved successfully to", filePath);
+        }
+      });
+
+      const scriptPath = path.join(process.cwd(), "print-image.ps1");
+      const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "${scriptPath}" -imagePath "${filePath}" -printer "${printerName}" -copies ${message.quantity}`;
+
+      exec(command, {shell: "powershell.exe"}, (error, _, stderr) => {
+        if (error) {
+          console.error(`PowerShell command failed: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error("Error printing:", stderr);
+          return;
+        }
+        console.log("Printed successfully");
+      });
+    } catch (error) {
+      console.error("Failed to find CP1500 printer:", error);
+      return;
+    }
   });
 });
