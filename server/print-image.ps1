@@ -42,5 +42,4 @@ function printImage {
     $doc.Print()
 }
 
-# Execute the function with the provided parameters
 printImage -imagePath $imagePath -printer $printer -copies $copies
