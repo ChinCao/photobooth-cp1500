@@ -64,7 +64,11 @@ const FilterPage = () => {
     if (stageRef.current && photo) {
       setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
-      socket.emit("print", {quantity: photo.quantity, dataURL: dataURL, theme: photo.theme.name});
+      socket.emit("print", {
+        quantity: photo.theme.frame.type == "singular" ? photo.quantity : photo.quantity / 2,
+        dataURL: dataURL,
+        theme: photo.theme.name,
+      });
       setPhoto!(DEFAULT_STYLE);
       router.push("/");
     }

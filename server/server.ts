@@ -12,7 +12,7 @@ const io = new Server(3001, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("print", async (message: {quanity: number; dataURL: string; theme: string}) => {
+  socket.on("print", async (message: {quantity: number; dataURL: string; theme: string}) => {
     const themePath = path.join(process.cwd(), "images", message.theme);
     if (!fs.existsSync(themePath)) {
       fs.mkdirSync(themePath, {recursive: true});
@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
         })
         $doc.Print()
     }
-    printImage -imagePath "${filePath}" -printer "${printerName}"
+    printImage -imagePath "${filePath}" -printer "${printerName} -copies "${message.quantity}"
 `;
     exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
       if (error) {

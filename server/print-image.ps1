@@ -1,4 +1,9 @@
-function printImage { param([string]$imagePath , [string]$printer)
+function printImage { 
+    param(
+        [string]$imagePath, 
+        [string]$printer, 
+        [int]$copies = 1
+    )
    
     trap { break; }
    
@@ -8,27 +13,25 @@ function printImage { param([string]$imagePath , [string]$printer)
    
     $doc = new-object System.Drawing.Printing.PrintDocument
     if ($printer -ne "") {
-     $doc.PrinterSettings.PrinterName = $printer
+        $doc.PrinterSettings.PrinterName = $printer
     }
     
     $doc.DocumentName = [System.IO.Path]::GetFileName($imagePath)
+    
+    $doc.PrinterSettings.Copies = $copies
    
     $doc.add_EndPrint({
-     if ($null -ne $bitmap  ) {
-      $bitmap.Dispose()
-      $bitmap = $null
-     }
+        if ($null -ne $bitmap) {
+            $bitmap.Dispose()
+            $bitmap = $null
+        }
     })
     
     $doc.add_PrintPage({
-    
-     $img = new-object Drawing.Bitmap($imagePath)
-    
-     $_.Graphics.DrawImage($img, $_.Graphics.VisibleClipBounds)
-     $_.HasMorePages = $false;
+        $img = new-object Drawing.Bitmap($imagePath)
+        $_.Graphics.DrawImage($img, $_.Graphics.VisibleClipBounds)
+        $_.HasMorePages = $false;
     })
     
     $doc.Print()
-   }
-   
-   
+}
