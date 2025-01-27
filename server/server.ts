@@ -27,43 +27,21 @@ io.on("connection", (socket) => {
         console.log("File saved successfully to", filePath);
       }
     });
+
     const printerName = "Canon SELPHY CP1500 (Copy 1)";
-    const command = `
-    function printImage {
-        param([string]$imagePath, [string]$printer)
-        trap { break; }
-        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
-        $bitmap = $null
-        $doc = new-object System.Drawing.Printing.PrintDocument
-        if ($printer -ne "") {
-            $doc.PrinterSettings.PrinterName = $printer
-        }
-        $doc.DocumentName = [System.IO.Path]::GetFileName($imagePath)
-        $doc.add_EndPrint({
-            if ($null -ne $bitmap) {
-                $bitmap.Dispose()
-                $bitmap = $null
-            }
-        })
-        $doc.add_PrintPage({
-            $img = new-object Drawing.Bitmap($imagePath)
-            $_.Graphics.DrawImage($img, $_.Graphics.VisibleClipBounds)
-            $_.HasMorePages = $false;
-        })
-        $doc.Print()
-    }
-    printImage -imagePath "${filePath}" -printer "${printerName}" -copies ${message.quantity}
-`;
+    const scriptPath = path.join(process.cwd(), "print-image.ps1");
+    const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "${scriptPath}" -imagePath "${filePath}" -printer "${printerName}" -copies ${message.quantity}`;
+
     exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error: ${error.message}`);
+        console.error(`PowerShell command failed: ${error.message}`);
         return;
       }
       if (stderr) {
-        console.error(`stderr: ${stderr}`);
+        console.error(`PowerShell stderr: ${stderr}`);
         return;
       }
-      console.log(`stdout: ${stdout}`);
+      console.log(`PowerShell command succeeded:\n${stdout}`);
     });
   });
 });

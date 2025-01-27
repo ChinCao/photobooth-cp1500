@@ -1,3 +1,9 @@
+param(
+    [string]$imagePath, 
+    [string]$printer, 
+    [int]$copies = 1
+)
+
 function printImage { 
     param(
         [string]$imagePath, 
@@ -35,3 +41,6 @@ function printImage {
     
     $doc.Print()
 }
+
+# Execute the function with the provided parameters
+printImage -imagePath $imagePath -printer $printer -copies $copies
