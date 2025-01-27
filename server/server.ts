@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
         })
         $doc.Print()
     }
-    printImage -imagePath "${filePath}" -printer "${printerName}" -copies "${message.quantity}"
+    printImage -imagePath "${filePath}" -printer "${printerName}" -copies ${message.quantity}
 `;
     exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
       if (error) {
