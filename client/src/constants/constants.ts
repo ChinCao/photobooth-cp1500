@@ -53,10 +53,10 @@ export const IMAGE_HEIGHT = 560;
 export const OFFSET_X = (IMAGE_WIDTH - FRAME_WIDTH) / 2;
 export const OFFSET_Y = 47 / 3;
 
-const USAGYUUN_X_POS = 13;
+const USAGYUUN_X_POS = 12;
 const USAGYUUN_Y_INIT_POS = 13;
 const USAGYUUN_IMAGE_HEIGHT = 106;
-const USAGYUUN_IMAGE_WIDTH = 151;
+const USAGYUUN_IMAGE_WIDTH = 152;
 const USAGYUUN_Y_SLOT_SEPERATION = (index: number) => {
   return 122 * (index + 1) - USAGYUUN_Y_INIT_POS * index;
 };
@@ -343,6 +343,99 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_5.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_5.png",
+      imageSlot: 4,
+      slotDimensions: {
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
+      },
+      slotPositions: [
+        {
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
+        },
+      ],
+    },
+    {
+      type: "double",
+      src: "/frame/usagyuun/usagyuun_6.png",
+      thumbnail: "/frame/usagyuun/thumbnail/usagyuun_6.png",
+      imageSlot: 4,
+      slotDimensions: {
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
+      },
+      slotPositions: [
+        {
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
+        },
+      ],
+    },
+    {
+      type: "double",
+      src: "/frame/usagyuun/usagyuun_7.png",
+      thumbnail: "/frame/usagyuun/thumbnail/usagyuun_7.png",
+      imageSlot: 4,
+      slotDimensions: {
+        height: USAGYUUN_IMAGE_HEIGHT,
+        width: USAGYUUN_IMAGE_WIDTH,
+      },
+      slotPositions: [
+        {
+          y: USAGYUUN_Y_INIT_POS,
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(0),
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(1),
+          x: USAGYUUN_X_POS,
+        },
+
+        {
+          y: USAGYUUN_Y_SLOT_SEPERATION(2),
+          x: USAGYUUN_X_POS,
+        },
+      ],
+    },
+    {
+      type: "double",
+      src: "/frame/usagyuun/usagyuun_8.png",
+      thumbnail: "/frame/usagyuun/thumbnail/usagyuun_8.png",
       imageSlot: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
