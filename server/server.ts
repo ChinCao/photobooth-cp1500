@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
           console.error("Error printing:", stderr);
           return;
         }
-        console.log("Printed successfully");
+        console.log("Printed successfully\n");
       });
     } catch (error) {
       console.error("Failed to find CP1500 printer:", error);

@@ -22,6 +22,8 @@ function printImage {
         $doc.PrinterSettings.PrinterName = $printer
     }
     
+    $doc.PrintController = New-Object System.Drawing.Printing.StandardPrintController
+
     $doc.DocumentName = [System.IO.Path]::GetFileName($imagePath)
     
     $doc.PrinterSettings.Copies = $copies
