@@ -1,7 +1,7 @@
 import {Server} from "socket.io";
 import path from "path";
 import fs from "fs";
-import {currentTime} from "./utils";
+import {currentTime, updatePrinterRegistry, getCP1500Printer} from "./utils";
 import {exec} from "child_process";
 
 const io = new Server(3001, {
@@ -11,33 +11,11 @@ const io = new Server(3001, {
   maxHttpBufferSize: Infinity,
 });
 
-function getCP1500Printer(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -Command "(Get-Printer | Where Name -like '*CP1500*').Name"`;
-
-    exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      if (stderr) {
-        reject(new Error(stderr));
-        return;
-      }
-      const printerName = stdout.trim();
-      if (!printerName) {
-        reject(new Error("No CP1500 printer found"));
-        return;
-      }
-      resolve(printerName);
-    });
-  });
-}
-
 io.on("connection", (socket) => {
   socket.on("print", async (message: {quantity: number; dataURL: string; theme: string}) => {
     try {
       const printerName = await getCP1500Printer();
+      await updatePrinterRegistry(printerName);
       const themePath = path.join(process.cwd(), "images", message.theme);
       if (!fs.existsSync(themePath)) {
         fs.mkdirSync(themePath, {recursive: true});
@@ -53,7 +31,7 @@ io.on("connection", (socket) => {
         }
       });
 
-      const scriptPath = path.join(process.cwd(), "print-image.ps1");
+      const scriptPath = path.join(process.cwd(), "powershell", "print-image.ps1");
       const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "${scriptPath}" -imagePath "${filePath}" -printer "${printerName}" -copies ${message.quantity}`;
 
       exec(command, {shell: "powershell.exe"}, (error, _, stderr) => {
