@@ -4,9 +4,9 @@ import fs from "fs";
 import {currentTime, updatePrinterRegistry, getCP1500Printer} from "./utils";
 import {exec} from "child_process";
 
-const io = new Server(3001, {
+const io = new Server(6969, {
   cors: {
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:8080"],
   },
   maxHttpBufferSize: Infinity,
 });

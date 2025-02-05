@@ -24,11 +24,16 @@ const CapturePage = () => {
 
   useEffect(() => {
     const getVideoDevices = async () => {
-      const deviceInfos = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = deviceInfos.filter((device) => device.kind === "videoinput");
-      setDevices(videoDevices);
-      if (videoDevices.length > 0) {
-        setSelectedDevice(videoDevices[0].deviceId);
+      try {
+        const deviceInfos = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = deviceInfos.filter((device) => device.kind === "videoinput");
+        setDevices(videoDevices);
+        if (videoDevices.length > 0) {
+          setSelectedDevice(videoDevices[0].deviceId);
+        }
+        console.log("Available video devices:", videoDevices); // Debug log
+      } catch (error) {
+        console.error("Error enumerating devices:", error);
       }
     };
 
@@ -37,20 +42,51 @@ const CapturePage = () => {
 
   useEffect(() => {
     const getVideo = async () => {
-      if (!selectedDevice) return;
+      if (!selectedDevice) {
+        console.log("No device selected");
+        return;
+      }
+
+      // Log the current URL to verify protocol
+      console.log("Current URL:", window.location.href);
 
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {deviceId: selectedDevice ? {exact: selectedDevice} : undefined},
-        });
+        console.log("Attempting to access camera...");
+        const constraints = {
+          video: {
+            deviceId: selectedDevice ? {exact: selectedDevice} : undefined,
+            width: {ideal: 1280},
+            height: {ideal: 720},
+          },
+        };
+        console.log("Using constraints:", constraints);
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        console.log("Stream obtained:", stream);
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          videoRef.current.onloadedmetadata = () => {
+            console.log("Video element metadata loaded");
+            videoRef.current
+              ?.play()
+              .then(() => console.log("Video playback started"))
+              .catch((e) => console.error("Video playback failed:", e));
+          };
+
           const videoTrack = stream.getVideoTracks()[0];
           const settings = videoTrack.getSettings();
+          console.log("Camera settings:", settings);
           setCameraSize({width: settings.width || 0, height: settings.height || 0});
+        } else {
+          console.error("Video ref is not available");
         }
       } catch (err) {
         console.error("Error accessing the camera: ", err);
+        if (err instanceof DOMException) {
+          console.error("Error name:", err.name);
+          console.error("Error message:", err.message);
+        }
       }
     };
 
@@ -109,7 +145,14 @@ const CapturePage = () => {
         <video
           ref={videoRef}
           autoPlay
-          className="scale-x-[-1] w-[50vw] h-full rounded pointer-events-none"
+          playsInline
+          muted
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            transform: "scaleX(-1)",
+          }}
         />
         <h1 className={cn("absolute top-1/2 left-1/2 text-8xl text-white", cycles > maxCycles || count == 0 ? "hidden" : null)}>{count}</h1>
         <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>

@@ -29,10 +29,11 @@ const FilterPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [frameImg] = useImage(photo!.theme.frame.src);
   const [filter, setFilter] = useState<string | null>();
-  const socket = useMemo(() => io("http://localhost:3001"), []);
+  const socket = useMemo(() => io("http://localhost:6969"), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.selectedImages, "id", slotItemMap, setSlotItemMap), [photo]);
   const stageRef = useRef<StageElement | null>(null);
+
   const [timeLeft, setTimeLeft] = useState(250000);
   const [printed, setPrinted] = useState(false);
 
