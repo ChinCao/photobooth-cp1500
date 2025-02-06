@@ -147,12 +147,7 @@ const CapturePage = () => {
           autoPlay
           playsInline
           muted
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            transform: "scaleX(-1)",
-          }}
+          className="w-full h-full object-contain -scale-x-100"
         />
         <h1 className={cn("absolute top-1/2 left-1/2 text-8xl text-white", cycles > maxCycles || count == 0 ? "hidden" : null)}>{count}</h1>
         <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>

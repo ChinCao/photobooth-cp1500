@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8080",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "proxy": "node server.js"
+    "start": "next start -p 8080",
+    "lint": "next lint"
   },
   "dependencies": {
     "@radix-ui/react-scroll-area": "^1.2.2",
@@ -18,8 +17,6 @@
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.5.2",
     "embla-carousel-wheel-gestures": "^8.0.1",
-    "express": "^4.21.2",
-    "http-proxy-middleware": "^3.0.3",
     "konva": "^9.3.18",
     "lucide-react": "^0.472.0",
     "next": "15.1.4",
