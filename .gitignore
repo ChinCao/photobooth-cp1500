@@ -2,6 +2,9 @@
 
 # dependencies
 /client/node_modules
+/client/vcp-photobooth/node_modules
+/client/.wrangler
+/client/wrangler.toml
 /server/node_modules
 /server/images
 /.pnp

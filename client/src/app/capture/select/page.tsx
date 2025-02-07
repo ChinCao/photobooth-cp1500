@@ -27,59 +27,21 @@ const PrintPage = () => {
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
 
-  const uploadToR2 = async (images: Array<{id: string; data: string}>) => {
-    try {
-      const uploadedUrls = await Promise.all(
-        images.map(async (image, index) => {
-          const filename = `${Date.now()}-${index}.jpg`;
-
-          const response = await fetch("/api/r2", {
-            method: "POST",
-            body: JSON.stringify({filename}),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-          const {url} = await response.json();
-
-          const base64Response = await fetch(image.data);
-          const blob = await base64Response.blob();
-
-          // Add headers to the upload request
-          await fetch(url, {
-            method: "PUT",
-            body: blob,
-            headers: {
-              "Content-Type": "image/jpeg",
-            },
-          });
-
-          return filename;
-        })
-      );
-
-      return uploadedUrls;
-    } catch (error) {
-      console.error("Error uploading images:", error);
-      throw error;
-    }
-  };
-
   const handleContextSelect = useCallback(
     async (images: Array<{id: string; data: string}>) => {
       try {
-        const uploadedUrls = await uploadToR2(images);
+        const uploadedImages = await uploadToR2(images);
         setPhoto!((prevStyle) => ({
           ...prevStyle,
-          selectedImages: images,
-          r2Urls: uploadedUrls, // Store R2 filenames
+          selectedImages: uploadedImages,
         }));
+        router.push("/capture/select/filter");
       } catch (error) {
+        // Handle error - maybe show a notification to user
         console.error("Failed to upload images:", error);
-        // You might want to show an error message to the user here
       }
     },
-    [setPhoto]
+    [setPhoto, router]
   );
 
   useEffect(() => {
@@ -92,6 +54,36 @@ const PrintPage = () => {
       setIsTimeOver(true);
     }
   }, [timeLeft]);
+
+  const uploadToR2 = async (images: Array<{id: string; data: string}>) => {
+    try {
+      const uploadPromises = images.map(async (image) => {
+        const blob = await fetch(image.data).then((r) => r.blob());
+        const fileName = `${crypto.randomUUID()}.jpg`;
+        const formData = new FormData();
+        formData.append("file", blob);
+
+        const response = await fetch(`/api/r2/upload?filename=${fileName}`, {
+          method: "PUT",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+
+        return {
+          ...image,
+          r2Url: fileName,
+        };
+      });
+
+      return await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     if (!isTimeOver) return;
