@@ -24,6 +24,7 @@ const PrintPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
   const [timeLeft, setTimeLeft] = useState(10005);
+  const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
 
   const handleContextSelect = useCallback(
@@ -43,21 +44,27 @@ const PrintPage = () => {
       }, 1000);
       return () => clearInterval(timerId);
     } else {
-      const itemLeft = photoRef.current!.theme.frame.imageSlot - selectedImage.length;
-      if (itemLeft > 0) {
-        const unselectedImage = photoRef.current!.images.filter((item) => !selectedImage.includes(item));
-        for (let i = unselectedImage.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [unselectedImage[i], unselectedImage[j]] = [unselectedImage[j], unselectedImage[i]];
-        }
-        handleContextSelect([...selectedImage, ...unselectedImage.slice(0, itemLeft)]);
-        setSelectedImage((prevImages) => [...prevImages, ...unselectedImage.slice(0, itemLeft)]);
-      } else {
-        handleContextSelect(selectedImage);
-      }
-      router.push("/capture/select/filter");
+      setIsTimeOver(true);
     }
-  }, [handleContextSelect, router, selectedImage, timeLeft]);
+  }, [timeLeft]);
+
+  useEffect(() => {
+    if (!isTimeOver) return;
+
+    const itemLeft = photoRef.current!.theme.frame.imageSlot - selectedImage.length;
+    if (itemLeft > 0) {
+      const unselectedImage = photoRef.current!.images.filter((item) => !selectedImage.includes(item));
+      for (let i = unselectedImage.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [unselectedImage[i], unselectedImage[j]] = [unselectedImage[j], unselectedImage[i]];
+      }
+      handleContextSelect([...selectedImage, ...unselectedImage.slice(0, itemLeft)]);
+      setSelectedImage((prevImages) => [...prevImages, ...unselectedImage.slice(0, itemLeft)]);
+    } else {
+      handleContextSelect(selectedImage);
+    }
+    router.push("/capture/select/filter");
+  }, [isTimeOver, handleContextSelect, router, selectedImage]);
 
   const handleSelect = (image: {id: string; data: string}) => {
     if (timeLeft > 0 && photo) {
@@ -145,7 +152,7 @@ const PrintPage = () => {
           <p className="text-rose-500 font-bold mt-4">*Ấn vào hình bạn không thích để xóa</p>
         </div>
         <div
-          className="flex flex-wrap w-[55%] gap-4 items-center justify-center "
+          className="flex flex-wrap w-[55%] gap-4 items-center justify-center self-center"
           ref={containerRef}
         >
           {photo && (
@@ -177,7 +184,7 @@ const PrintPage = () => {
         <Link
           href="/capture/select/filter"
           className={cn(
-            "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6",
+            "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
             photo!.theme.frame.imageSlot - selectedImage.length != 0 ? "pointer-events-none opacity-80" : null
           )}
           onClick={() => handleContextSelect(selectedImage)}
