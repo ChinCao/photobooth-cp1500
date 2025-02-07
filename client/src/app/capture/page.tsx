@@ -6,6 +6,8 @@ import {useState, useEffect, useRef, useCallback} from "react";
 import {useRouter} from "next/navigation";
 import useSound from "use-sound";
 import {NUM_OF_IMAGE} from "@/constants/constants";
+import {ImCamera} from "react-icons/im";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const CapturePage = () => {
   const duration = 3;
@@ -183,19 +185,37 @@ const CapturePage = () => {
           muted
           className="w-full h-full object-contain -scale-x-100"
         />
-        <h1
-          className={cn(
-            "absolute top-1/2 left-1/2 text-8xl text-white text-center",
-            !isCameraReady || cycles > maxCycles || count == 0 ? "hidden" : null
-          )}
-        >
-          {count}
-        </h1>
-        <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>
+        {isCameraReady ? (
+          <>
+            <h1
+              className={cn(
+                "absolute top-1/2 left-1/2 text-8xl text-white text-center",
+                !isCameraReady || cycles > maxCycles || count == 0 ? "hidden" : null
+              )}
+            >
+              {count}
+            </h1>
+            <h1 className="font-bold text-5xl text-center mt-6">
+              {cycles}/{maxCycles}
+            </h1>
+            <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center gap-16 flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
+            <div className="relative">
+              <LoadingSpinner
+                size={200}
+                color="black"
+              />
+              <ImCamera
+                className="text-4xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                size={80}
+              />
+            </div>
+            <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">Wating for camera ...</h1>
+          </div>
+        )}
       </div>
-      <h1 className="font-bold text-5xl">
-        {cycles}/{maxCycles}
-      </h1>
     </Card>
   );
 };
