@@ -38,20 +38,21 @@ const FilterPage = () => {
   const [printed, setPrinted] = useState(false);
 
   useEffect(() => {
-    swapyRef.current = createSwapy(containerRef.current!, {
-      manualSwap: true,
-      animation: "dynamic",
-      autoScrollOnDrag: true,
-      swapMode: "hover",
-      enabled: true,
-      dragAxis: "both",
-      dragOnHold: false,
-    });
+    if (containerRef.current) {
+      swapyRef.current = createSwapy(containerRef.current!, {
+        manualSwap: true,
+        animation: "dynamic",
+        autoScrollOnDrag: true,
+        swapMode: "hover",
+        enabled: true,
+        dragAxis: "both",
+        dragOnHold: false,
+      });
 
-    swapyRef.current.onSwap((event) => {
-      setSlotItemMap(event.newSlotItemMap.asArray);
-    });
-
+      swapyRef.current.onSwap((event) => {
+        setSlotItemMap(event.newSlotItemMap.asArray);
+      });
+    }
     return () => {
       swapyRef.current?.destroy();
     };
@@ -122,59 +123,61 @@ const FilterPage = () => {
             </div>
           </div>
         </div>
-        {photo && frameImg && (
-          <Stage
-            ref={stageRef}
-            width={IMAGE_WIDTH}
-            height={IMAGE_HEIGHT}
-          >
-            <Layer>
-              <Rect
-                width={IMAGE_WIDTH}
-                height={IMAGE_HEIGHT}
-                fill="white"
-              />
-            </Layer>
-            {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, _index) => (
-              <Layer
-                key={_index}
-                x={OFFSET_X}
-                y={OFFSET_Y}
-              >
-                {slottedItems.map(({slotId, item}, index) => {
-                  return (
-                    item && (
-                      <SelectedImage
-                        key={slotId}
-                        url={item.data}
-                        y={photo.theme.frame.slotPositions[index].y}
-                        x={photo.theme.frame.slotPositions[index].x + (FRAME_WIDTH / 2) * _index}
-                        height={photo.theme.frame.slotDimensions.height}
-                        width={photo.theme.frame.slotDimensions.width}
-                        filter={filter}
-                      />
-                    )
-                  );
-                })}
-              </Layer>
-            ))}
-
-            {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
-              <Layer
-                key={index}
-                x={OFFSET_X}
-                y={OFFSET_Y}
-              >
-                <KonvaImage
-                  image={frameImg}
-                  x={(FRAME_WIDTH / 2) * index}
-                  height={FRAME_HEIGHT}
-                  width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+        <div className="self-center">
+          {photo && frameImg && (
+            <Stage
+              ref={stageRef}
+              width={IMAGE_WIDTH}
+              height={IMAGE_HEIGHT}
+            >
+              <Layer>
+                <Rect
+                  width={IMAGE_WIDTH}
+                  height={IMAGE_HEIGHT}
+                  fill="white"
                 />
               </Layer>
-            ))}
-          </Stage>
-        )}
+              {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, _index) => (
+                <Layer
+                  key={_index}
+                  x={OFFSET_X}
+                  y={OFFSET_Y}
+                >
+                  {slottedItems.map(({slotId, item}, index) => {
+                    return (
+                      item && (
+                        <SelectedImage
+                          key={slotId}
+                          url={item.data}
+                          y={photo.theme.frame.slotPositions[index].y}
+                          x={photo.theme.frame.slotPositions[index].x + (FRAME_WIDTH / 2) * _index}
+                          height={photo.theme.frame.slotDimensions.height}
+                          width={photo.theme.frame.slotDimensions.width}
+                          filter={filter}
+                        />
+                      )
+                    );
+                  })}
+                </Layer>
+              ))}
+
+              {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
+                <Layer
+                  key={index}
+                  x={OFFSET_X}
+                  y={OFFSET_Y}
+                >
+                  <KonvaImage
+                    image={frameImg}
+                    x={(FRAME_WIDTH / 2) * index}
+                    height={FRAME_HEIGHT}
+                    width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                  />
+                </Layer>
+              ))}
+            </Stage>
+          )}
+        </div>
         <div className="flex items-center justify-center flex-col gap-5">
           <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
           <ScrollArea className=" h-[470px] w-[350px] ">

@@ -8,13 +8,14 @@ import useSound from "use-sound";
 import {NUM_OF_IMAGE} from "@/constants/constants";
 
 const CapturePage = () => {
-  const duration = 5;
-  const {setPhoto} = usePhoto();
+  const duration = 3;
+  const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(true);
   const [cycles, setCycles] = useState(1);
   const maxCycles = NUM_OF_IMAGE;
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const [image, setImage] = useState<Array<{id: string; data: string}>>([]);
   const [, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string | undefined>();
@@ -47,22 +48,31 @@ const CapturePage = () => {
         return;
       }
 
-      // Log the current URL to verify protocol
-      console.log("Current URL:", window.location.href);
-
       try {
         console.log("Attempting to access camera...");
+
+        const initialStream = await navigator.mediaDevices.getUserMedia({
+          video: {deviceId: {exact: selectedDevice}},
+        });
+
+        const track = initialStream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities();
+        const aspectRatio = photo!.theme.frame.slotDimensions.width / photo!.theme.frame.slotDimensions.height;
+        const multiplier =
+          Math.min(
+            Math.floor(capabilities.width!.max! / photo!.theme.frame.slotDimensions.width),
+            Math.floor(capabilities.height!.max! / photo!.theme.frame.slotDimensions.height)
+          ) / aspectRatio;
         const constraints = {
           video: {
-            deviceId: selectedDevice ? {exact: selectedDevice} : undefined,
-            width: {ideal: 1280},
-            height: {ideal: 720},
+            deviceId: {exact: selectedDevice},
+            width: {ideal: photo!.theme.frame.slotDimensions.width * multiplier},
+            height: {ideal: photo!.theme.frame.slotDimensions.height * multiplier},
           },
         };
-        console.log("Using constraints:", constraints);
 
+        track.stop();
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        console.log("Stream obtained:", stream);
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -91,23 +101,24 @@ const CapturePage = () => {
     };
 
     getVideo();
-  }, [selectedDevice]);
+  }, [photo, selectedDevice]);
   const handleCapture = useCallback(() => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
 
       if (context) {
-        canvas.width = cameraSize!.width || 640;
-        canvas.height = cameraSize!.height || 480;
+        canvas.width = cameraSize!.width || photo!.theme.frame.slotDimensions.width;
+        canvas.height = cameraSize!.height || photo!.theme.frame.slotDimensions.height;
         context.scale(-1, 1);
         context.translate(-canvas.width, 0);
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         const dataURL = canvas.toDataURL("image/png");
+
         setImage((prevItems) => [...prevItems, {id: cycles.toString(), data: dataURL}]);
       }
     }
-  }, [cameraSize, cycles]);
+  }, [cameraSize, cycles, photo]);
 
   useEffect(() => {
     if (cycles < maxCycles + 1) {
@@ -137,7 +148,7 @@ const CapturePage = () => {
 
       return () => clearInterval(timer);
     }
-  }, [count, cycles, handleCapture, image, isCountingDown, maxCycles, playCameraShutterSound, router, setPhoto]);
+  }, [count, cycles, duration, handleCapture, image, isCountingDown, maxCycles, playCameraShutterSound, router, setPhoto]);
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
@@ -149,7 +160,9 @@ const CapturePage = () => {
           muted
           className="w-full h-full object-contain -scale-x-100"
         />
-        <h1 className={cn("absolute top-1/2 left-1/2 text-8xl text-white", cycles > maxCycles || count == 0 ? "hidden" : null)}>{count}</h1>
+        <h1 className={cn("absolute top-1/2 left-1/2 text-8xl text-white text-center", cycles > maxCycles || count == 0 ? "hidden" : null)}>
+          {count}
+        </h1>
         <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>
       </div>
       <h1 className="font-bold text-5xl">

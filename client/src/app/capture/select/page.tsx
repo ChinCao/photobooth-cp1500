@@ -81,71 +81,96 @@ const PrintPage = () => {
             Chọn hình <span className="text-rose-500">{timeLeft}s</span>
           </h1>
           {frameImg && photo && (
-            <Stage
-              width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
-              height={IMAGE_HEIGHT}
-            >
-              <Layer>
-                <Rect
-                  width={IMAGE_WIDTH}
-                  height={IMAGE_HEIGHT}
-                  fill="white"
-                />
-              </Layer>
-              <Layer
-                x={OFFSET_X}
-                y={OFFSET_Y}
+            <div className="relative">
+              {Array.from({length: photo.theme.frame.imageSlot}, (_, _index) => (
+                <div
+                  key={_index}
+                  className="absolute bg-transparent hover:cursor-pointer z-10"
+                  style={{
+                    width: photo.theme.frame.slotDimensions.width,
+                    height: photo.theme.frame.slotDimensions.height,
+                    top: photo.theme.frame.slotPositions[_index].y + OFFSET_Y,
+                    left: photo.theme.frame.slotPositions[_index].x + OFFSET_X,
+                  }}
+                  onClick={() => {
+                    if (selectedImage[_index]) {
+                      handleSelect(selectedImage[_index]);
+                    }
+                  }}
+                ></div>
+              ))}
+              <Stage
+                width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                height={IMAGE_HEIGHT}
               >
-                {Array.from({length: photo.theme.frame.imageSlot}, (_, index) => {
-                  return (
-                    <SelectedImage
-                      key={index}
-                      url={selectedImage[index]?.data}
-                      y={photo.theme.frame.slotPositions[index].y}
-                      x={photo.theme.frame.slotPositions[index].x}
-                      filter={null}
-                      height={photo.theme.frame.slotDimensions.height}
-                      width={photo.theme.frame.slotDimensions.width}
-                    />
-                  );
-                })}
-              </Layer>
-              <Layer
-                x={OFFSET_X}
-                y={OFFSET_Y}
-              >
-                <KonvaImage
-                  image={frameImg}
-                  height={FRAME_HEIGHT}
-                  width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
-                />
-              </Layer>
-            </Stage>
+                <Layer>
+                  <Rect
+                    width={IMAGE_WIDTH}
+                    height={IMAGE_HEIGHT}
+                    fill="white"
+                  />
+                </Layer>
+                <Layer
+                  x={OFFSET_X}
+                  y={OFFSET_Y}
+                >
+                  {Array.from({length: photo.theme.frame.imageSlot}, (_, index) => {
+                    return (
+                      <SelectedImage
+                        key={index}
+                        url={selectedImage[index]?.data}
+                        y={photo.theme.frame.slotPositions[index].y}
+                        x={photo.theme.frame.slotPositions[index].x}
+                        filter={null}
+                        height={photo.theme.frame.slotDimensions.height}
+                        width={photo.theme.frame.slotDimensions.width}
+                      />
+                    );
+                  })}
+                </Layer>
+                <Layer
+                  x={OFFSET_X}
+                  y={OFFSET_Y}
+                >
+                  <KonvaImage
+                    image={frameImg}
+                    height={FRAME_HEIGHT}
+                    width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                  />
+                </Layer>
+              </Stage>
+            </div>
           )}
           <p className="text-rose-500 font-bold mt-4">*Có thể đổi thứ tự hình sau</p>
+          <p className="text-rose-500 font-bold mt-4">*Ấn vào hình bạn không thích để xóa</p>
         </div>
         <div
           className="flex flex-wrap w-[55%] gap-4 items-center justify-center "
           ref={containerRef}
         >
-          {photo!.images!.map((item, index) => (
-            <div
-              key={index}
-              className={cn(
-                "bg-gray-200 rounded border-4 border-transparent hover:border-black hover:cursor-pointer",
-                selectedImage.some((img) => img.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
-              )}
-              onClick={() => handleSelect(item)}
-            >
-              <Image
-                height={300}
-                width={300}
-                src={item.data}
-                alt="image"
-                className="w-[300px] pointer-events-none"
-              />
-            </div>
-          ))}
+          {photo && (
+            <>
+              {photo.images.map((item, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "bg-gray-200 rounded border-4 border-transparent hover:border-black hover:cursor-pointer",
+                    selectedImage.some((img) => img.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
+                  )}
+                  onClick={() => handleSelect(item)}
+                >
+                  <Image
+                    height={300}
+                    width={300}
+                    src={item.data}
+                    alt="image"
+                    priority
+                    className="w-[300px] pointer-events-none"
+                  />
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
       <Button asChild>

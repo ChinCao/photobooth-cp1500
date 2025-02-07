@@ -1,4 +1,4 @@
-export type ValidTheme = "prom" | "usagyuun" | "squid" | "bear" | "powerpuff" | "otonya" | "zookiz";
+export type ValidTheme = "prom" | "usagyuun";
 
 export const ThemeSelectButton: {
   title: string;
@@ -15,32 +15,6 @@ export const ThemeSelectButton: {
     title: "Usagyuuun",
     image_src: "/rabbit.jpg",
     theme: "usagyuun",
-  },
-  {
-    title: "Squid game",
-    image_src: "/squid.jpg",
-    theme: "squid",
-  },
-  {
-    title: "Powerpuff girls",
-    image_src: "/powerpuff.webp",
-    theme: "powerpuff",
-    style: {objectPosition: "0% -100px"},
-  },
-  {
-    title: "We bare bears",
-    image_src: "/bear.jpg",
-    theme: "bear",
-  },
-  {
-    title: "Otonya",
-    image_src: "/otonya.jpg",
-    theme: "otonya",
-  },
-  {
-    title: "Zookiz",
-    image_src: "/zookiz.png",
-    theme: "zookiz",
   },
 ];
 
