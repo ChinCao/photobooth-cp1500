@@ -26,6 +26,8 @@ const CapturePage = () => {
   const router = useRouter();
   const [playCameraShutterSound] = useSound("/shutter.mp3", {volume: 1});
 
+  const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
+
   useEffect(() => {
     const getVideoDevices = async () => {
       try {
@@ -49,36 +51,49 @@ const CapturePage = () => {
   }, []);
 
   useEffect(() => {
+    const calculateConstraints = async () => {
+      if (!selectedDevice || !photo?.theme.frame.slotDimensions) return;
+
+      try {
+        const initialStream = await navigator.mediaDevices.getUserMedia({
+          video: {deviceId: {exact: selectedDevice}},
+        });
+        const track = initialStream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities();
+        track.stop();
+
+        const aspectRatio = photo.theme.frame.slotDimensions.width / photo.theme.frame.slotDimensions.height;
+        const multiplier =
+          Math.min(
+            Math.floor(capabilities.width!.max! / photo.theme.frame.slotDimensions.width),
+            Math.floor(capabilities.height!.max! / photo.theme.frame.slotDimensions.height)
+          ) / aspectRatio;
+
+        setCameraConstraints({
+          deviceId: {exact: selectedDevice},
+          width: {ideal: photo.theme.frame.slotDimensions.width * multiplier},
+          height: {ideal: photo.theme.frame.slotDimensions.height * multiplier},
+        });
+      } catch (err) {
+        console.error("Error calculating constraints:", err);
+      }
+    };
+
+    calculateConstraints();
+  }, [selectedDevice, photo?.theme.frame.slotDimensions]);
+
+  useEffect(() => {
     const getVideo = async () => {
-      if (!selectedDevice) {
-        console.log("No device selected");
+      if (!selectedDevice || !cameraConstraints) {
+        console.log("No device or constraints available");
         return;
       }
 
       try {
         console.log("Attempting to access camera...");
-
-        const initialStream = await navigator.mediaDevices.getUserMedia({
-          video: {deviceId: {exact: selectedDevice}},
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: cameraConstraints,
         });
-
-        const track = initialStream.getVideoTracks()[0];
-        const capabilities = track.getCapabilities();
-        const aspectRatio = photo!.theme.frame.slotDimensions.width / photo!.theme.frame.slotDimensions.height;
-        const multiplier =
-          Math.min(
-            Math.floor(capabilities.width!.max! / photo!.theme.frame.slotDimensions.width),
-            Math.floor(capabilities.height!.max! / photo!.theme.frame.slotDimensions.height)
-          ) / aspectRatio;
-        const constraints = {
-          video: {
-            deviceId: {exact: selectedDevice},
-            width: {ideal: photo!.theme.frame.slotDimensions.width * multiplier},
-            height: {ideal: photo!.theme.frame.slotDimensions.height * multiplier},
-          },
-        };
-        track.stop();
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -111,7 +126,7 @@ const CapturePage = () => {
     };
 
     getVideo();
-  }, [photo, selectedDevice]);
+  }, [selectedDevice, cameraConstraints]);
 
   const handleCapture = useCallback(() => {
     if (videoRef.current) {

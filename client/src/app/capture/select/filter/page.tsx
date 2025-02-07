@@ -48,7 +48,6 @@ const FilterPage = () => {
         dragAxis: "both",
         dragOnHold: false,
       });
-
       swapyRef.current.onSwap((event) => {
         setSlotItemMap(event.newSlotItemMap.asArray);
       });
