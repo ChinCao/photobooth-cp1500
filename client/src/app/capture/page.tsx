@@ -11,10 +11,11 @@ const CapturePage = () => {
   const duration = 3;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
-  const [isCountingDown, setIsCountingDown] = useState(true);
+  const [isCountingDown, setIsCountingDown] = useState(false);
   const [cycles, setCycles] = useState(1);
   const maxCycles = NUM_OF_IMAGE;
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isCameraReady, setIsCameraReady] = useState(false);
 
   const [image, setImage] = useState<Array<{id: string; data: string}>>([]);
   const [, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -26,13 +27,17 @@ const CapturePage = () => {
   useEffect(() => {
     const getVideoDevices = async () => {
       try {
+        await navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+          stream.getTracks().forEach((track) => track.stop());
+        });
+
         const deviceInfos = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = deviceInfos.filter((device) => device.kind === "videoinput");
         setDevices(videoDevices);
         if (videoDevices.length > 0) {
           setSelectedDevice(videoDevices[0].deviceId);
         }
-        console.log("Available video devices:", videoDevices); // Debug log
+        console.log("Available video devices:", videoDevices);
       } catch (error) {
         console.error("Error enumerating devices:", error);
       }
@@ -70,7 +75,6 @@ const CapturePage = () => {
             height: {ideal: photo!.theme.frame.slotDimensions.height * multiplier},
           },
         };
-
         track.stop();
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
@@ -80,7 +84,11 @@ const CapturePage = () => {
             console.log("Video element metadata loaded");
             videoRef.current
               ?.play()
-              .then(() => console.log("Video playback started"))
+              .then(() => {
+                console.log("Video playback started");
+                setIsCameraReady(true);
+                setIsCountingDown(true);
+              })
               .catch((e) => console.error("Video playback failed:", e));
           };
 
@@ -102,6 +110,7 @@ const CapturePage = () => {
 
     getVideo();
   }, [photo, selectedDevice]);
+
   const handleCapture = useCallback(() => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
@@ -150,6 +159,20 @@ const CapturePage = () => {
     }
   }, [count, cycles, duration, handleCapture, image, isCountingDown, maxCycles, playCameraShutterSound, router, setPhoto]);
 
+  useEffect(() => {
+    const videoElement = videoRef.current;
+
+    return () => {
+      if (videoElement?.srcObject instanceof MediaStream) {
+        const tracks = (videoElement.srcObject as MediaStream).getTracks();
+        tracks.forEach((track) => {
+          track.stop();
+          console.log("Camera track stopped");
+        });
+      }
+    };
+  }, []);
+
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
       <div className="relative">
@@ -160,7 +183,12 @@ const CapturePage = () => {
           muted
           className="w-full h-full object-contain -scale-x-100"
         />
-        <h1 className={cn("absolute top-1/2 left-1/2 text-8xl text-white text-center", cycles > maxCycles || count == 0 ? "hidden" : null)}>
+        <h1
+          className={cn(
+            "absolute top-1/2 left-1/2 text-8xl text-white text-center",
+            !isCameraReady || cycles > maxCycles || count == 0 ? "hidden" : null
+          )}
+        >
           {count}
         </h1>
         <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>
