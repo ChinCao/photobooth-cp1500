@@ -1,19 +1,26 @@
-import {getRequestContext} from "@cloudflare/next-on-pages";
+import r2 from "@/lib/r2";
+import {PutObjectCommand} from "@aws-sdk/client-s3";
 import type {NextRequest} from "next/server";
 
-export const runtime = "edge";
-
-export async function PUT(request: NextRequest) {
-  const fileName = request.nextUrl.searchParams.get("filename") as string;
-
-  const formData = await request.formData();
-  const file = formData.get("file");
+export async function POST(request: NextRequest) {
   try {
-    const res = await getRequestContext().env.IMAGES.put(fileName, file);
-    console.log(res);
-    return Response.json({status: "success"});
-  } catch (err) {
-    console.log(err);
-    return Response.json({status: "error"});
+    const formData = await request.formData();
+    const file = formData.get("file") as string;
+    const [, base64Data] = file.split(",");
+    const buffer = Buffer.from(base64Data, "base64");
+    const filename = formData.get("filename") as string;
+
+    const putObjectCommand = new PutObjectCommand({
+      Bucket: "vcp-photobooth",
+      Key: filename,
+      Body: buffer,
+    });
+    const response = await r2.send(putObjectCommand);
+    return Response.json({response});
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return Response.json({error: error.message});
+    }
+    return Response.json({error: "An unknown error occurred"});
   }
 }

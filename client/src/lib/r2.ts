@@ -4,7 +4,7 @@ const ACCOUNT_ID = process.env.ACCOUNT_ID as string;
 const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID as string;
 const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY as string;
 
-const S3 = new S3Client({
+const R2 = new S3Client({
   region: "auto",
   endpoint: `https://${ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
@@ -13,4 +13,4 @@ const S3 = new S3Client({
   },
 });
 
-export default S3;
+export default R2;

@@ -37,7 +37,6 @@ const PrintPage = () => {
         }));
         router.push("/capture/select/filter");
       } catch (error) {
-        // Handle error - maybe show a notification to user
         console.error("Failed to upload images:", error);
       }
     },
@@ -58,13 +57,13 @@ const PrintPage = () => {
   const uploadToR2 = async (images: Array<{id: string; data: string}>) => {
     try {
       const uploadPromises = images.map(async (image) => {
-        const blob = await fetch(image.data).then((r) => r.blob());
         const fileName = `${crypto.randomUUID()}.jpg`;
         const formData = new FormData();
-        formData.append("file", blob);
+        formData.append("file", image.data);
+        formData.append("filename", fileName);
 
-        const response = await fetch(`/api/r2/upload?filename=${fileName}`, {
-          method: "PUT",
+        const response = await fetch(`/api/r2/upload`, {
+          method: "POST",
           body: formData,
         });
 
