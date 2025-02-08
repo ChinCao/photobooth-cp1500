@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     const contentType = formData.get("contentType") as string;
     const filename = formData.get("filename") as string;
 
-    // Convert Blob directly to Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -23,12 +22,15 @@ export async function POST(request: NextRequest) {
 
     const result = await r2.send(putObjectCommand);
 
+    const publicUrl = `https://pub-2abc3784ea3543ba9804f812db4aa180.r2.dev/${filename}`;
+
     return Response.json({
       success: true,
       response: result,
       size: buffer.length,
       filename,
       contentType,
+      url: publicUrl,
     });
   } catch (error: unknown) {
     if (error instanceof Error) {

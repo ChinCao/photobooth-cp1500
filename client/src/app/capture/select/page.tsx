@@ -30,7 +30,6 @@ const PrintPage = () => {
   const handleContextSelect = useCallback(
     async (images: Array<{id: string; data: string}>) => {
       try {
-        await uploadToR2(images);
         setPhoto!((prevStyle) => ({
           ...prevStyle,
           selectedImages: images,
@@ -53,39 +52,6 @@ const PrintPage = () => {
       setIsTimeOver(true);
     }
   }, [timeLeft]);
-
-  const uploadToR2 = async (images: Array<{id: string; data: string}>) => {
-    try {
-      const uploadPromises = images.map(async (image) => {
-        const imageData = image.data;
-        const contentType = imageData.split(";")[0].split(":")[1];
-        const fileName = `${crypto.randomUUID()}.${contentType.split("/")[1]}`;
-
-        const base64Data = imageData.split(",")[1];
-        const blobData = new Blob([Buffer.from(base64Data, "base64")], {type: contentType});
-
-        const formData = new FormData();
-        formData.append("file", blobData, fileName);
-        formData.append("contentType", contentType);
-        formData.append("filename", fileName);
-
-        const response = await fetch(`/api/r2/upload`, {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Upload failed: ${errorData.error || "Unknown error"}`);
-        }
-      });
-
-      return await Promise.all(uploadPromises);
-    } catch (error) {
-      console.error("Upload error:", error);
-      throw error;
-    }
-  };
 
   useEffect(() => {
     if (!isTimeOver) return;
