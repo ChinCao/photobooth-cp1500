@@ -1,5 +1,4 @@
 import type {NextConfig} from "next";
-import {setupDevPlatform} from "@cloudflare/next-on-pages/next-dev";
 
 const nextConfig: NextConfig = {
   webpack: (config) => {
@@ -10,7 +9,9 @@ const nextConfig: NextConfig = {
     esmExternals: "loose",
     reactCompiler: true,
   },
+  api: {
+    responseLimit: false,
+  },
 };
 
 export default nextConfig;
-setupDevPlatform();

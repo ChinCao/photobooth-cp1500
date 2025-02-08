@@ -5,22 +5,43 @@ import type {NextRequest} from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get("file") as string;
-    const [, base64Data] = file.split(",");
-    const buffer = Buffer.from(base64Data, "base64");
+    const file = formData.get("file") as Blob;
+    const contentType = formData.get("contentType") as string;
     const filename = formData.get("filename") as string;
+
+    // Convert Blob directly to Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     const putObjectCommand = new PutObjectCommand({
       Bucket: "vcp-photobooth",
       Key: filename,
       Body: buffer,
+      ContentType: contentType,
+      ContentLength: buffer.length,
     });
-    const response = await r2.send(putObjectCommand);
-    return Response.json({response});
+
+    const result = await r2.send(putObjectCommand);
+
+    return Response.json({
+      success: true,
+      response: result,
+      size: buffer.length,
+      filename,
+      contentType,
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return Response.json({error: error.message});
+      console.error("Upload error details:", error);
+      return Response.json({
+        success: false,
+        error: error.message,
+        stack: error.stack,
+      });
     }
-    return Response.json({error: "An unknown error occurred"});
+    return Response.json({
+      success: false,
+      error: "An unknown error occurred",
+    });
   }
 }

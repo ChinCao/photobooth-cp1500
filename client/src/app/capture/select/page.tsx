@@ -23,17 +23,17 @@ const PrintPage = () => {
   const [frameImg] = useImage(photo!.theme.frame.src);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
-  const [timeLeft, setTimeLeft] = useState(3);
+  const [timeLeft, setTimeLeft] = useState(Infinity);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
 
   const handleContextSelect = useCallback(
     async (images: Array<{id: string; data: string}>) => {
       try {
-        const uploadedImages = await uploadToR2(images);
+        await uploadToR2(images);
         setPhoto!((prevStyle) => ({
           ...prevStyle,
-          selectedImages: uploadedImages,
+          selectedImages: images,
         }));
         router.push("/capture/select/filter");
       } catch (error) {
@@ -57,9 +57,16 @@ const PrintPage = () => {
   const uploadToR2 = async (images: Array<{id: string; data: string}>) => {
     try {
       const uploadPromises = images.map(async (image) => {
-        const fileName = `${crypto.randomUUID()}.jpg`;
+        const imageData = image.data;
+        const contentType = imageData.split(";")[0].split(":")[1];
+        const fileName = `${crypto.randomUUID()}.${contentType.split("/")[1]}`;
+
+        const base64Data = imageData.split(",")[1];
+        const blobData = new Blob([Buffer.from(base64Data, "base64")], {type: contentType});
+
         const formData = new FormData();
-        formData.append("file", image.data);
+        formData.append("file", blobData, fileName);
+        formData.append("contentType", contentType);
         formData.append("filename", fileName);
 
         const response = await fetch(`/api/r2/upload`, {
@@ -68,13 +75,9 @@ const PrintPage = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Upload failed");
+          const errorData = await response.json();
+          throw new Error(`Upload failed: ${errorData.error || "Unknown error"}`);
         }
-
-        return {
-          ...image,
-          r2Url: fileName,
-        };
       });
 
       return await Promise.all(uploadPromises);
