@@ -1,4 +1,3 @@
-import {DAYS_OF_WEEK_IN_ORDER} from "@/data/constant;";
 import {relations} from "drizzle-orm";
 import {pgTable, uuid, text, integer, boolean, timestamp, index, pgEnum} from "drizzle-orm/pg-core";
 

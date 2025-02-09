@@ -32,7 +32,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col`}
         >
           <NextTopLoader
-            color="#e77f1e"
+            color="black"
             zIndex={100000}
           />
           {children}

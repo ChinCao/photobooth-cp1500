@@ -4,7 +4,7 @@ import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
 import {useRouter} from "next/navigation";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Layer, Rect, Stage} from "react-konva";
 import useImage from "use-image";
 import {Image as KonvaImage} from "react-konva";
@@ -13,6 +13,7 @@ import Image from "next/image";
 import SelectedImage from "@/components/SelectedImage";
 import Link from "next/link";
 import {FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
+import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -21,11 +22,47 @@ const PrintPage = () => {
     if (photo!.images!.length == 0) return router.push("/");
   }, [photo, router]);
   const [frameImg] = useImage(photo!.theme.frame.src);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
   const [timeLeft, setTimeLeft] = useState(Infinity);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const swapyRef = useRef<Swapy | null>(null);
+  const placeHolderDivs = useMemo(
+    () =>
+      Array.from({length: photo!.theme.frame.imageSlot}, (_, _index) => {
+        return {
+          id: _index,
+        };
+      }),
+    []
+  );
+
+  const [slotItemMap, setSlotItemMap] = useState<SlotItemMapArray>(utils.initSlotItemMap(placeHolderDivs, "id"));
+  const slottedItems = useMemo(() => utils.toSlottedItems(placeHolderDivs, "id", slotItemMap), [placeHolderDivs, slotItemMap]);
+  useEffect(() => {
+    utils.dynamicSwapy(swapyRef.current, placeHolderDivs, "id", slotItemMap, setSlotItemMap);
+  }, [placeHolderDivs]);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      swapyRef.current = createSwapy(containerRef.current!, {
+        manualSwap: true,
+        animation: "dynamic",
+        autoScrollOnDrag: true,
+        swapMode: "hover",
+        enabled: true,
+        dragAxis: "both",
+        dragOnHold: false,
+      });
+      swapyRef.current.onSwap((event) => {
+        setSlotItemMap(event.newSlotItemMap.asArray);
+      });
+    }
+    return () => {
+      swapyRef.current?.destroy();
+    };
+  }, []);
 
   const handleContextSelect = useCallback(
     async (images: Array<{id: string; data: string}>) => {
@@ -92,25 +129,42 @@ const PrintPage = () => {
           <h1 className="text-5xl font-bold mb-4">
             Chọn hình <span className="text-rose-500">{timeLeft}s</span>
           </h1>
-          {frameImg && photo && (
-            <div className="relative">
-              {Array.from({length: photo.theme.frame.imageSlot}, (_, _index) => (
+
+          <div className="relative">
+            <div
+              className="flex  absolute flex-col "
+              style={{
+                top: photo!.theme.frame.slotPositions[0].y + OFFSET_Y,
+                left: photo!.theme.frame.slotPositions[0].x + OFFSET_X,
+                gap: photo!.theme.frame.slotPositions[0].y,
+              }}
+              ref={containerRef}
+            >
+              {slottedItems.map(({slotId, itemId}) => (
                 <div
-                  key={_index}
-                  className="absolute bg-transparent hover:cursor-pointer z-10"
-                  style={{
-                    width: photo.theme.frame.slotDimensions.width,
-                    height: photo.theme.frame.slotDimensions.height,
-                    top: photo.theme.frame.slotPositions[_index].y + OFFSET_Y,
-                    left: photo.theme.frame.slotPositions[_index].x + OFFSET_X,
-                  }}
+                  className="z-50"
+                  key={slotId}
+                  data-swapy-slot={slotId}
                   onClick={() => {
-                    if (selectedImage[_index]) {
-                      handleSelect(selectedImage[_index]);
+                    if (selectedImage[Number(slotId)]) {
+                      handleSelect(selectedImage[Number(slotId)]);
                     }
                   }}
-                ></div>
+                >
+                  <div
+                    style={{
+                      zIndex: 100,
+                      width: photo!.theme.frame.slotDimensions.width,
+                      height: photo!.theme.frame.slotDimensions.height,
+                    }}
+                    className="bg-transparent hover:cursor-pointer"
+                    data-swapy-item={itemId}
+                    key={itemId}
+                  ></div>
+                </div>
               ))}
+            </div>
+            {frameImg && photo && (
               <Stage
                 width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
                 height={IMAGE_HEIGHT}
@@ -126,19 +180,17 @@ const PrintPage = () => {
                   x={OFFSET_X}
                   y={OFFSET_Y}
                 >
-                  {Array.from({length: photo.theme.frame.imageSlot}, (_, index) => {
-                    return (
-                      <SelectedImage
-                        key={index}
-                        url={selectedImage[index]?.data}
-                        y={photo.theme.frame.slotPositions[index].y}
-                        x={photo.theme.frame.slotPositions[index].x}
-                        filter={null}
-                        height={photo.theme.frame.slotDimensions.height}
-                        width={photo.theme.frame.slotDimensions.width}
-                      />
-                    );
-                  })}
+                  {slottedItems.map(({slotId, itemId}) => (
+                    <SelectedImage
+                      key={itemId}
+                      url={selectedImage[Number(itemId)]?.data}
+                      y={photo.theme.frame.slotPositions[Number(slotId)].y}
+                      x={photo.theme.frame.slotPositions[Number(slotId)].x}
+                      filter={null}
+                      height={photo.theme.frame.slotDimensions.height}
+                      width={photo.theme.frame.slotDimensions.width}
+                    />
+                  ))}
                 </Layer>
                 <Layer
                   x={OFFSET_X}
@@ -151,15 +203,13 @@ const PrintPage = () => {
                   />
                 </Layer>
               </Stage>
-            </div>
-          )}
+            )}
+          </div>
+
           <p className="text-rose-500 font-bold mt-4">*Có thể đổi thứ tự hình sau</p>
           <p className="text-rose-500 font-bold mt-4">*Ấn vào hình bạn không thích để xóa</p>
         </div>
-        <div
-          className="flex flex-wrap w-[55%] gap-4 items-center justify-center self-center"
-          ref={containerRef}
-        >
+        <div className="flex flex-wrap w-[55%] gap-4 items-center justify-center self-center">
           {photo && (
             <>
               {photo.images.map((item, index) => (

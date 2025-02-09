@@ -9,8 +9,10 @@ const nextConfig: NextConfig = {
     esmExternals: "loose",
     reactCompiler: true,
   },
-  api: {
-    responseLimit: false,
+  serverRuntimeConfig: {
+    api: {
+      responseLimit: false,
+    },
   },
 };
 

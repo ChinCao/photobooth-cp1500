@@ -4,8 +4,6 @@ import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {useRouter} from "next/navigation";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
-import {LuArrowUpDown} from "react-icons/lu";
 import useImage from "use-image";
 import {Image as KonvaImage, Rect} from "react-konva";
 import {Layer, Stage} from "react-konva";
@@ -23,39 +21,14 @@ const FilterPage = () => {
   useEffect(() => {
     if (photo!.selectedImages.length == 0) return router.push("/");
   }, [photo, router]);
-  const swapyRef = useRef<Swapy | null>(null);
-  const [slotItemMap, setSlotItemMap] = useState<SlotItemMapArray>(utils.initSlotItemMap(photo!.selectedImages, "id"));
-  const slottedItems = useMemo(() => utils.toSlottedItems(photo!.selectedImages, "id", slotItemMap), [photo, slotItemMap]);
-  const containerRef = useRef<HTMLDivElement>(null);
+
   const [frameImg] = useImage(photo!.theme.frame.src);
   const [filter, setFilter] = useState<string | null>();
   const socket = useMemo(() => io("http://localhost:6969"), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => utils.dynamicSwapy(swapyRef.current, photo!.selectedImages, "id", slotItemMap, setSlotItemMap), [photo]);
   const stageRef = useRef<StageElement | null>(null);
 
   const [timeLeft, setTimeLeft] = useState(250000);
   const [printed, setPrinted] = useState(false);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      swapyRef.current = createSwapy(containerRef.current!, {
-        manualSwap: true,
-        animation: "dynamic",
-        autoScrollOnDrag: true,
-        swapMode: "hover",
-        enabled: true,
-        dragAxis: "both",
-        dragOnHold: false,
-      });
-      swapyRef.current.onSwap((event) => {
-        setSlotItemMap(event.newSlotItemMap.asArray);
-      });
-    }
-    return () => {
-      swapyRef.current?.destroy();
-    };
-  }, []);
 
   socket.on("connect", () => {
     console.log("Connected to server.");
@@ -88,40 +61,7 @@ const FilterPage = () => {
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center flex-col justify-evenly p-8 relative">
-      <div className="flex items-start justify-evenly mb-8 w-full">
-        <div className="flex gap-4 items-center justify-center">
-          <LuArrowUpDown size={50} />
-          <div className="flex flex-col items-center justify-center gap-4">
-            <h1 className="text-4xl font-bold uppercase">Chọn vị trí</h1>
-            <div
-              className="flex flex-col gap-8"
-              ref={containerRef}
-            >
-              {slottedItems.map(
-                ({slotId, itemId, item}) =>
-                  item && (
-                    <div
-                      key={slotId}
-                      data-swapy-slot={slotId}
-                      className="bg-gray-200 rounded hover:cursor-pointer"
-                    >
-                      <div
-                        data-swapy-item={itemId}
-                        key={itemId}
-                        className="hover:border-black border-4 border-transparent "
-                      >
-                        <img
-                          src={item.data}
-                          alt="image"
-                          className={cn("pointer-events-none", photo!.theme.frame.type == "singular" ? "w-[300px]" : "w-[180px]")}
-                        />
-                      </div>
-                    </div>
-                  )
-              )}
-            </div>
-          </div>
-        </div>
+      <div className="flex items-start justify-center gap-12 mb-8 w-full">
         <div className="self-center">
           {photo && frameImg && (
             <Stage
@@ -142,12 +82,12 @@ const FilterPage = () => {
                   x={OFFSET_X}
                   y={OFFSET_Y}
                 >
-                  {slottedItems.map(({slotId, item}, index) => {
+                  {photo.selectedImages.map(({id, data}, index) => {
                     return (
-                      item && (
+                      data && (
                         <SelectedImage
-                          key={slotId}
-                          url={item.data}
+                          key={id}
+                          url={data}
                           y={photo.theme.frame.slotPositions[index].y}
                           x={photo.theme.frame.slotPositions[index].x + (FRAME_WIDTH / 2) * _index}
                           height={photo.theme.frame.slotDimensions.height}
@@ -179,7 +119,7 @@ const FilterPage = () => {
         </div>
         <div className="flex items-center justify-center flex-col gap-5">
           <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
-          <ScrollArea className=" h-[470px] w-[350px] ">
+          <ScrollArea className=" h-[470px] w-[700px] ">
             <div className="flex-wrap flex gap-4 items-center justify-center">
               {FILTERS.map((item, index) => (
                 <div
