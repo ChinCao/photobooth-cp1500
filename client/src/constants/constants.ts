@@ -460,7 +460,7 @@ export interface PhotoOptions<T extends ValidTheme> {
   }>;
 }
 
-export const NUM_OF_IMAGE = 4;
+export const NUM_OF_IMAGE = 6;
 
 export const FILTERS: {
   name: string;
