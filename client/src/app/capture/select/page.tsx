@@ -25,7 +25,7 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string} | null>>(
     Array.from({length: photo!.theme.frame.imageSlot}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(4);
+  const [timeLeft, setTimeLeft] = useState(25);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo!.theme.frame.imageSlot - 1);
@@ -39,7 +39,7 @@ const PrintPage = () => {
           id: _index,
         };
       }),
-    []
+    [photo]
   );
 
   const [slotItemMap, setSlotItemMap] = useState<SlotItemMapArray>(utils.initSlotItemMap(placeHolderDivs, "id"));
@@ -85,7 +85,7 @@ const PrintPage = () => {
         console.error("Failed to upload images:", error);
       }
     },
-    [setPhoto]
+    [router, setPhoto]
   );
 
   useEffect(() => {
@@ -135,21 +135,20 @@ const PrintPage = () => {
         }
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [lastRemovedImage, photo]
+    [lastRemovedImage, photo, selectedImage]
   );
+
+  const filteredSelectedImages = useMemo(() => selectedImage.filter((img) => img !== null), [selectedImage]);
 
   useEffect(() => {
     if (!isTimeOver) return;
 
-    const itemLeft = photoRef.current!.theme.frame.imageSlot - selectedImage.filter((img) => img !== null).length;
+    const itemLeft = photoRef.current!.theme.frame.imageSlot - filteredSelectedImages.length;
     if (itemLeft > 0) {
-      const unselectedImage = photoRef.current!.images.filter((item) => !selectedImage.filter((img) => img !== null).includes(item));
+      const unselectedImage = photoRef.current!.images.filter((item) => !filteredSelectedImages.includes(item));
 
-      // Shuffle array once
       const shuffledImages = [...unselectedImage].sort(() => Math.random() - 0.5);
 
-      // Only update the selectedImage state
       setSelectedImage((prevImages) => {
         const newImages = [...prevImages];
         let currentIndex = 0;
@@ -163,14 +162,13 @@ const PrintPage = () => {
         return newImages;
       });
     }
-  }, [isTimeOver]);
+  }, [isTimeOver, filteredSelectedImages]);
 
-  // Separate useEffect to handle navigation after state updates
   useEffect(() => {
     if (isTimeOver) {
-      handleContextSelect(selectedImage.filter((img) => img !== null));
+      handleContextSelect(filteredSelectedImages);
     }
-  }, [isTimeOver, selectedImage, handleContextSelect]);
+  }, [isTimeOver, filteredSelectedImages, handleContextSelect]);
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
@@ -291,9 +289,9 @@ const PrintPage = () => {
           href="/capture/select/filter"
           className={cn(
             "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
-            photo!.theme.frame.imageSlot - selectedImage.filter((img) => img !== null).length != 0 ? "pointer-events-none opacity-80" : null
+            photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 ? "pointer-events-none opacity-80" : null
           )}
-          onClick={() => handleContextSelect(selectedImage.filter((img) => img !== null))}
+          onClick={() => handleContextSelect(filteredSelectedImages)}
         >
           Chọn filter <FaArrowRight />
         </Link>
