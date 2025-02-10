@@ -21,11 +21,15 @@ const PrintPage = () => {
   useEffect(() => {
     if (photo!.images!.length == 0) return router.push("/");
   }, [photo, router]);
+  useEffect(() => {
+    if (photo!.images!.length == photo!.theme.frame.imageSlot) return router.push("/capture/select/filter");
+  }, [photo, router]);
   const [frameImg] = useImage(photo!.theme.frame.src);
+
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string} | null>>(
     Array.from({length: photo!.theme.frame.imageSlot}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(25);
+  const [timeLeft, setTimeLeft] = useState(3);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo!.theme.frame.imageSlot - 1);
@@ -64,7 +68,10 @@ const PrintPage = () => {
         setSlotItemMap(event.newSlotItemMap.asArray);
         setSelectedImage((prevImages) => {
           const slotChange = findChangedIndices(event.oldSlotItemMap.asArray, event.newSlotItemMap.asArray);
-          return updateMap(prevImages, slotChange);
+          if (slotChange) {
+            return updateMap(prevImages, slotChange);
+          }
+          return prevImages;
         });
       });
     }
@@ -172,7 +179,7 @@ const PrintPage = () => {
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
-      <div className="flex items-start justify-center w-full gap-4">
+      <div className={cn("flex items-start justify-center w-full gap-4", isTimeOver ? "pointer-events-none" : null)}>
         <div className="flex flex-col items-center justify-center">
           <h1 className="text-5xl font-bold mb-4">
             Chọn hình <span className="text-rose-500">{timeLeft}s</span>
@@ -289,7 +296,7 @@ const PrintPage = () => {
           href="/capture/select/filter"
           className={cn(
             "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
-            photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 ? "pointer-events-none opacity-80" : null
+            photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver ? "pointer-events-none opacity-80" : null
           )}
           onClick={() => handleContextSelect(filteredSelectedImages)}
         >

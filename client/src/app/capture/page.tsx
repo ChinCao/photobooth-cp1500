@@ -18,15 +18,17 @@ const CapturePage = () => {
   const maxCycles = NUM_OF_IMAGE;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
-
   const [image, setImage] = useState<Array<{id: string; data: string}>>([]);
   const [, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string | undefined>();
   const [cameraSize, setCameraSize] = useState<{width: number; height: number} | undefined>(undefined);
   const router = useRouter();
   const [playCameraShutterSound] = useSound("/shutter.mp3", {volume: 1});
-
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
+
+  useEffect(() => {
+    if (photo!.images!.length == maxCycles) return router.push("/capture/select");
+  }, [photo, router, maxCycles]);
 
   useEffect(() => {
     const getVideoDevices = async () => {
