@@ -62,9 +62,9 @@ const FilterPage = () => {
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center flex-col justify-evenly p-8 relative">
-      <div className="flex items-start justify-center gap-12 mb-8 w-full">
-        <div className="self-center">
-          {photo && frameImg && (
+      <div className="self-center">
+        {photo && frameImg && (
+          <div className="flex items-start justify-center gap-12 mb-8 w-full">
             <Stage
               ref={stageRef}
               width={IMAGE_WIDTH}
@@ -116,38 +116,38 @@ const FilterPage = () => {
                 </Layer>
               ))}
             </Stage>
-          )}
-        </div>
-        <div className="flex items-center justify-center flex-col gap-5">
-          <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
-          <ScrollArea className=" h-[470px] w-[700px] ">
-            <div className="flex-wrap flex gap-4 items-center justify-center">
-              {FILTERS.map((item, index) => (
-                <div
-                  className={cn(
-                    "flex flex-col gap-2 items-center justify-center border-2 cursor-pointer rounded hover:border-black",
-                    filter == item.value ? "border-rose-500 hover:border-rose-500" : null
-                  )}
-                  key={index}
-                  onClick={() => setFilter(item.value)}
-                >
-                  <img
-                    src={photo?.selectedImages[0]?.data}
-                    alt="filtered image"
-                    className={cn(item.filter, "w-24")}
-                  />
-                  <p>{item.name}</p>
+            <div className="flex items-center justify-center flex-col gap-5">
+              <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
+              <ScrollArea className=" h-[470px] w-[700px] ">
+                <div className="flex-wrap flex gap-4 items-center justify-center">
+                  {FILTERS.map((item, index) => (
+                    <div
+                      className={cn(
+                        "flex flex-col gap-2 items-center justify-center border-2 cursor-pointer rounded hover:border-black",
+                        filter == item.value ? "border-rose-500 hover:border-rose-500" : null
+                      )}
+                      key={index}
+                      onClick={() => setFilter(item.value)}
+                    >
+                      <img
+                        src={photo?.selectedImages[0]?.data}
+                        alt="filtered image"
+                        className={cn(item.filter, "w-24")}
+                      />
+                      <p>{item.name}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </ScrollArea>
+              <Button
+                className="w-full mt-2"
+                onClick={() => setFilter(null)}
+              >
+                Reset filter
+              </Button>
             </div>
-          </ScrollArea>
-          <Button
-            className="w-full mt-2"
-            onClick={() => setFilter(null)}
-          >
-            Reset filter
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
       <Button
         className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full"
