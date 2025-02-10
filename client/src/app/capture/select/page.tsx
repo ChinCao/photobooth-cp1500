@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
-import {cn} from "@/lib/utils";
+import {cn, findChangedIndices, updateMap} from "@/lib/utils";
 import {useRouter} from "next/navigation";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Layer, Rect, Stage} from "react-konva";
@@ -22,10 +23,13 @@ const PrintPage = () => {
     if (photo!.images!.length == 0) return router.push("/");
   }, [photo, router]);
   const [frameImg] = useImage(photo!.theme.frame.src);
-  const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string}>>([]);
+  const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string} | null>>(
+    Array.from({length: photo!.theme.frame.imageSlot}, () => null)
+  );
   const [timeLeft, setTimeLeft] = useState(Infinity);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const swapyRef = useRef<Swapy | null>(null);
   const placeHolderDivs = useMemo(
@@ -57,6 +61,10 @@ const PrintPage = () => {
       });
       swapyRef.current.onSwap((event) => {
         setSlotItemMap(event.newSlotItemMap.asArray);
+        setSelectedImage((prevImages) => {
+          const slotChange = findChangedIndices(event.oldSlotItemMap.asArray, event.newSlotItemMap.asArray);
+          return updateMap(prevImages, slotChange);
+        });
       });
     }
     return () => {
@@ -108,16 +116,31 @@ const PrintPage = () => {
     router.push("/capture/select/filter");
   }, [isTimeOver, handleContextSelect, router, selectedImage]);
 
-  const handleSelect = (image: {id: string; data: string}) => {
-    if (timeLeft > 0 && photo) {
-      const isSelected = selectedImage.some((img) => img.id === image.id);
+  const handleSelect = (image: {id: string; data: string} | null) => {
+    if (timeLeft > 0 && photo && image !== null) {
+      const isSelected = selectedImage.some((img) => img?.id === image?.id);
       const maxImages = photo.theme.frame.imageSlot;
-      if (isSelected) {
-        setSelectedImage((prevImages) => prevImages.filter((img) => img.id !== image.id));
-      } else if (selectedImage.length < maxImages) {
-        setSelectedImage((prevImages) => [...prevImages, image]);
-      } else {
-        setSelectedImage((prevImages) => [...prevImages.slice(0, -1), image]);
+      if (!isSelected) {
+        setSelectedImage((prevImages) => {
+          const firstNullIndex = prevImages.findIndex((img) => img === null);
+
+          if (firstNullIndex !== -1) {
+            const newImages = [...prevImages];
+            newImages[firstNullIndex] = image;
+            return newImages;
+          }
+          return [...prevImages, image];
+        });
+      } else if (isSelected) {
+        setSelectedImage((prevImages) => {
+          const firstNullIndex = prevImages.findIndex((img) => img === null);
+          if (firstNullIndex !== -1) {
+            const newImages = [...prevImages];
+            newImages[firstNullIndex] = image;
+            return newImages;
+          }
+          return [...prevImages, image];
+        });
       }
     }
   };
@@ -164,6 +187,7 @@ const PrintPage = () => {
                 </div>
               ))}
             </div>
+
             {frameImg && photo && (
               <Stage
                 width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
@@ -180,10 +204,10 @@ const PrintPage = () => {
                   x={OFFSET_X}
                   y={OFFSET_Y}
                 >
-                  {slottedItems.map(({slotId, itemId}) => (
+                  {slottedItems.map(({slotId}) => (
                     <SelectedImage
-                      key={itemId}
-                      url={selectedImage[Number(itemId)]?.data}
+                      key={slotId}
+                      url={selectedImage[Number(slotId)]?.data}
                       y={photo.theme.frame.slotPositions[Number(slotId)].y}
                       x={photo.theme.frame.slotPositions[Number(slotId)].x}
                       filter={null}
@@ -206,7 +230,7 @@ const PrintPage = () => {
             )}
           </div>
 
-          <p className="text-rose-500 font-bold mt-4">*Có thể đổi thứ tự hình sau</p>
+          <p className="text-rose-500 font-bold mt-4">*Kéo hình để đổi thứ tự hình</p>
           <p className="text-rose-500 font-bold mt-4">*Ấn vào hình bạn không thích để xóa</p>
         </div>
         <div className="flex flex-wrap w-[55%] gap-4 items-center justify-center self-center">
@@ -217,7 +241,7 @@ const PrintPage = () => {
                   key={index}
                   className={cn(
                     "bg-gray-200 rounded border-4 border-transparent hover:border-black hover:cursor-pointer",
-                    selectedImage.some((img) => img.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
+                    selectedImage.some((img) => img?.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
                   )}
                   onClick={() => handleSelect(item)}
                 >
@@ -242,7 +266,7 @@ const PrintPage = () => {
             "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
             photo!.theme.frame.imageSlot - selectedImage.length != 0 ? "pointer-events-none opacity-80" : null
           )}
-          onClick={() => handleContextSelect(selectedImage)}
+          onClick={() => handleContextSelect(selectedImage.filter((img) => img !== null))}
         >
           Chọn filter <FaArrowRight />
         </Link>
