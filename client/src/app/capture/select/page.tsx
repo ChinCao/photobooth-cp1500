@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
@@ -26,9 +25,10 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string} | null>>(
     Array.from({length: photo!.theme.frame.imageSlot}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(Infinity);
+  const [timeLeft, setTimeLeft] = useState(4);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
+  const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo!.theme.frame.imageSlot - 1);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const swapyRef = useRef<Swapy | null>(null);
@@ -46,6 +46,7 @@ const PrintPage = () => {
   const slottedItems = useMemo(() => utils.toSlottedItems(placeHolderDivs, "id", slotItemMap), [placeHolderDivs, slotItemMap]);
   useEffect(() => {
     utils.dynamicSwapy(swapyRef.current, placeHolderDivs, "id", slotItemMap, setSlotItemMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeHolderDivs]);
 
   useEffect(() => {
@@ -84,7 +85,7 @@ const PrintPage = () => {
         console.error("Failed to upload images:", error);
       }
     },
-    [setPhoto, router]
+    [setPhoto]
   );
 
   useEffect(() => {
@@ -98,52 +99,78 @@ const PrintPage = () => {
     }
   }, [timeLeft]);
 
+  const handleSelect = useCallback(
+    (image: {id: string; data: string} | null) => {
+      if (photo && image !== null) {
+        const isSelected = selectedImage.some((img) => img?.id === image.id);
+        const maxImages = photo.theme.frame.imageSlot;
+        const currentSelectedImages = selectedImage.filter((img) => img !== null);
+        if (!isSelected && maxImages - currentSelectedImages.length > 0) {
+          setSelectedImage((prevImages) => {
+            const firstNullIndex = prevImages.findIndex((img) => img === null);
+
+            if (firstNullIndex !== -1) {
+              const newImages = [...prevImages];
+              newImages[firstNullIndex] = image;
+              return newImages;
+            }
+            return [...prevImages, image];
+          });
+        } else if (isSelected && maxImages - currentSelectedImages.length >= 0) {
+          setSelectedImage((prevImages) => {
+            const newImage = [...prevImages];
+            const index = prevImages.findIndex((img) => img?.id === image.id);
+            if (index !== -1) {
+              newImage[index] = null;
+              setLastRemovedImage(index);
+            }
+            return newImage;
+          });
+        } else if (maxImages - currentSelectedImages.length == 0) {
+          setSelectedImage((prevImages) => {
+            const newImage = [...prevImages];
+            newImage[lastRemovedImage!] = image;
+            return newImage;
+          });
+        }
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lastRemovedImage, photo]
+  );
+
   useEffect(() => {
     if (!isTimeOver) return;
 
-    const itemLeft = photoRef.current!.theme.frame.imageSlot - selectedImage.length;
+    const itemLeft = photoRef.current!.theme.frame.imageSlot - selectedImage.filter((img) => img !== null).length;
     if (itemLeft > 0) {
-      const unselectedImage = photoRef.current!.images.filter((item) => !selectedImage.includes(item));
-      for (let i = unselectedImage.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [unselectedImage[i], unselectedImage[j]] = [unselectedImage[j], unselectedImage[i]];
-      }
-      handleContextSelect([...selectedImage, ...unselectedImage.slice(0, itemLeft)]);
-      setSelectedImage((prevImages) => [...prevImages, ...unselectedImage.slice(0, itemLeft)]);
-    } else {
-      handleContextSelect(selectedImage);
-    }
-    router.push("/capture/select/filter");
-  }, [isTimeOver, handleContextSelect, router, selectedImage]);
+      const unselectedImage = photoRef.current!.images.filter((item) => !selectedImage.filter((img) => img !== null).includes(item));
 
-  const handleSelect = (image: {id: string; data: string} | null) => {
-    if (timeLeft > 0 && photo && image !== null) {
-      const isSelected = selectedImage.some((img) => img?.id === image?.id);
-      const maxImages = photo.theme.frame.imageSlot;
-      if (!isSelected) {
-        setSelectedImage((prevImages) => {
-          const firstNullIndex = prevImages.findIndex((img) => img === null);
+      // Shuffle array once
+      const shuffledImages = [...unselectedImage].sort(() => Math.random() - 0.5);
 
-          if (firstNullIndex !== -1) {
-            const newImages = [...prevImages];
-            newImages[firstNullIndex] = image;
-            return newImages;
+      // Only update the selectedImage state
+      setSelectedImage((prevImages) => {
+        const newImages = [...prevImages];
+        let currentIndex = 0;
+
+        for (let i = 0; i < newImages.length && currentIndex < itemLeft; i++) {
+          if (newImages[i] === null) {
+            newImages[i] = shuffledImages[currentIndex];
+            currentIndex++;
           }
-          return [...prevImages, image];
-        });
-      } else if (isSelected) {
-        setSelectedImage((prevImages) => {
-          const firstNullIndex = prevImages.findIndex((img) => img === null);
-          if (firstNullIndex !== -1) {
-            const newImages = [...prevImages];
-            newImages[firstNullIndex] = image;
-            return newImages;
-          }
-          return [...prevImages, image];
-        });
-      }
+        }
+        return newImages;
+      });
     }
-  };
+  }, [isTimeOver]);
+
+  // Separate useEffect to handle navigation after state updates
+  useEffect(() => {
+    if (isTimeOver) {
+      handleContextSelect(selectedImage.filter((img) => img !== null));
+    }
+  }, [isTimeOver, selectedImage, handleContextSelect]);
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
@@ -264,7 +291,7 @@ const PrintPage = () => {
           href="/capture/select/filter"
           className={cn(
             "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
-            photo!.theme.frame.imageSlot - selectedImage.length != 0 ? "pointer-events-none opacity-80" : null
+            photo!.theme.frame.imageSlot - selectedImage.filter((img) => img !== null).length != 0 ? "pointer-events-none opacity-80" : null
           )}
           onClick={() => handleContextSelect(selectedImage.filter((img) => img !== null))}
         >
