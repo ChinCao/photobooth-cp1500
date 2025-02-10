@@ -11,15 +11,29 @@ const ThemePage = () => {
   const {setPhoto} = usePhoto();
 
   const handleThemeChange = (name: ValidTheme) => {
-    setPhoto!((prevStyle: PhotoOptions<typeof name>) => ({
-      ...prevStyle,
-      theme: {
-        ...prevStyle.theme,
-        name: name,
-        frame: FrameDefaults[name],
-      },
-      quantity: 1 * (FrameDefaults[name].type == "singular" ? 1 : 2),
-    }));
+    setPhoto!((prevStyle: PhotoOptions<typeof name> | undefined) => {
+      if (prevStyle) {
+        return {
+          ...prevStyle,
+          theme: {
+            ...prevStyle.theme,
+            name: name,
+            frame: FrameDefaults[name],
+          },
+          quantity: 1 * (FrameDefaults[name].type == "singular" ? 1 : 2),
+        };
+      } else {
+        return {
+          theme: {
+            name: name,
+            frame: FrameDefaults[name],
+          },
+          quantity: 1 * (FrameDefaults[name].type == "singular" ? 1 : 2),
+          images: [],
+          selectedImages: [],
+        };
+      }
+    });
   };
   return (
     <>

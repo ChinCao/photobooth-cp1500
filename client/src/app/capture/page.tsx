@@ -27,6 +27,7 @@ const CapturePage = () => {
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
 
   useEffect(() => {
+    if (!photo) return router.push("/");
     if (photo!.images!.length == maxCycles) return router.push("/capture/select");
   }, [photo, router, maxCycles]);
 
@@ -164,10 +165,14 @@ const CapturePage = () => {
             setCount(duration);
           }
           if (cycles == maxCycles && count == 0) {
-            setPhoto!((prevStyle) => ({
-              ...prevStyle,
-              images: image,
-            }));
+            setPhoto!((prevStyle) => {
+              if (prevStyle) {
+                return {
+                  ...prevStyle,
+                  images: image,
+                };
+              }
+            });
             setIsCountingDown(false);
             router.push("/capture/select");
           }

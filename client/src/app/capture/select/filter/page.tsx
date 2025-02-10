@@ -9,7 +9,7 @@ import {Image as KonvaImage, Rect} from "react-konva";
 import {Layer, Stage} from "react-konva";
 import SelectedImage from "@/components/SelectedImage";
 import {Button} from "@/components/ui/button";
-import {DEFAULT_STYLE, FILTERS, FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
+import {FILTERS, FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
@@ -19,10 +19,11 @@ const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
   useEffect(() => {
+    if (!photo) return router.push("/");
     if (photo!.selectedImages.length == 0) return router.push("/");
   }, [photo, router]);
 
-  const [frameImg] = useImage(photo!.theme.frame.src);
+  const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
   const [filter, setFilter] = useState<string | null>();
   const socket = useMemo(() => io("http://localhost:6969"), []);
   const stageRef = useRef<StageElement | null>(null);
@@ -43,7 +44,7 @@ const FilterPage = () => {
         dataURL: dataURL,
         theme: photo.theme.name,
       });
-      setPhoto!(DEFAULT_STYLE);
+      setPhoto!(undefined);
       router.push("/");
     }
   }, [photo, router, setPhoto, socket]);
