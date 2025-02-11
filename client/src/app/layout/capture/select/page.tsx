@@ -28,7 +28,7 @@ const PrintPage = () => {
 
   useEffect(() => {
     if (!photo) return router.push("/");
-    if (photo!.selectedImages.length == photo!.theme.frame.imageSlot) return router.push("/capture/select/filter");
+    if (photo!.selectedImages.length == photo!.theme.frame.imageSlot) return router.push("/layout/capture/select/filter");
 
     const uploadImage = async () => {
       const r2Response = await uploadImageToR2(photo!.images[photo!.images.length - 1].data);
@@ -50,7 +50,7 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(Infinity);
+  const [timeLeft, setTimeLeft] = useState(6);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
@@ -112,7 +112,7 @@ const PrintPage = () => {
             };
           }
         });
-        router.push("/capture/select/filter");
+        router.push("/layout/capture/select/filter");
       } catch (error) {
         console.error("Failed to upload images:", error);
       }
@@ -206,9 +206,11 @@ const PrintPage = () => {
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
       <div className={cn("flex items-start justify-center w-full gap-4", isTimeOver ? "pointer-events-none" : null)}>
         <div className="flex flex-col items-center justify-center">
-          <h1 className="text-5xl font-bold mb-4">
-            Chọn hình <span className="text-rose-500">{timeLeft}s</span>
-          </h1>
+          {photo && (
+            <h1 className="text-5xl font-bold mb-4">
+              Chọn hình <span className="text-rose-500">{timeLeft}s</span>
+            </h1>
+          )}
 
           <div className="relative">
             <div
@@ -287,8 +289,12 @@ const PrintPage = () => {
             )}
           </div>
 
-          <p className="text-rose-500 font-bold mt-4">*Kéo hình để đổi thứ tự hình</p>
-          <p className="text-rose-500 font-bold mt-4">*Ấn vào hình bạn không thích để xóa</p>
+          {photo && (
+            <>
+              <p className="text-rose-500 font-bold mt-4">*Kéo hình để đổi thứ tự hình</p>
+              <p className="text-rose-500 font-bold mt-4">*Ấn vào hình bạn không thích để xóa</p>
+            </>
+          )}
         </div>
         <div className="flex flex-wrap w-[55%] gap-4 items-center justify-center self-center">
           {photo && (
@@ -316,31 +322,32 @@ const PrintPage = () => {
           )}
         </div>
       </div>
-      {photo?.images.map((item) => <div key={item.id}>{item.href}</div>)}
-      <Button asChild>
-        <Link
-          href="/capture/select/filter"
-          className={cn(
-            "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
-            photo
-              ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded
-                ? "pointer-events-none opacity-80"
+      {photo && (
+        <Button asChild>
+          <Link
+            href="/layout/capture/select/filter"
+            className={cn(
+              "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
+              photo
+                ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded
+                  ? "pointer-events-none opacity-80"
+                  : null
                 : null
-              : null
-          )}
-          onClick={() => handleContextSelect(filteredSelectedImages)}
-        >
-          Chọn filter
-          {!lastImageUploaded ? (
-            <LoadingSpinner size={15} />
-          ) : (
-            <MdOutlineCloudDone
-              size={15}
-              color="white"
-            />
-          )}
-        </Link>
-      </Button>
+            )}
+            onClick={() => handleContextSelect(filteredSelectedImages)}
+          >
+            Chọn filter
+            {!lastImageUploaded ? (
+              <LoadingSpinner size={15} />
+            ) : (
+              <MdOutlineCloudDone
+                size={15}
+                color="white"
+              />
+            )}
+          </Link>
+        </Button>
+      )}
     </Card>
   );
 };

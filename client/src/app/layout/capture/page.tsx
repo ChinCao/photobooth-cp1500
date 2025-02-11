@@ -30,7 +30,7 @@ const CapturePage = () => {
 
   useEffect(() => {
     if (!photo) return router.push("/");
-    if (photo!.images!.length == maxCycles) return router.push("/capture/select");
+    if (photo!.images!.length == maxCycles) return router.push("/layout/capture/select");
   }, [photo, router, maxCycles]);
 
   useEffect(() => {
@@ -180,7 +180,7 @@ const CapturePage = () => {
               }
             });
             setIsCountingDown(false);
-            router.push("/capture/select");
+            router.push("/layout/capture/select");
           }
         }
       }, 1000);
@@ -205,45 +205,47 @@ const CapturePage = () => {
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
-      <div className="relative">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="w-full h-full object-contain -scale-x-100"
-        />
-        {isCameraReady ? (
-          <>
-            <h1
-              className={cn(
-                "absolute top-1/2 left-1/2 text-8xl text-white text-center",
-                !isCameraReady || cycles > maxCycles || count == 0 ? "hidden" : null
-              )}
-            >
-              {count}
-            </h1>
-            <h1 className="font-bold text-5xl text-center mt-6">
-              {cycles}/{maxCycles}
-            </h1>
-            <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>
-          </>
-        ) : (
-          <div className="flex items-center justify-center gap-16 flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
-            <div className="relative">
-              <LoadingSpinner
-                size={200}
-                color="black"
-              />
-              <ImCamera
-                className="text-4xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                size={80}
-              />
+      {photo && (
+        <div className="relative">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="w-full h-full object-contain -scale-x-100"
+          />
+          {isCameraReady ? (
+            <>
+              <h1
+                className={cn(
+                  "absolute top-1/2 left-1/2 text-8xl text-white text-center",
+                  !isCameraReady || cycles > maxCycles || count == 0 ? "hidden" : null
+                )}
+              >
+                {count}
+              </h1>
+              <h1 className="font-bold text-5xl text-center mt-6">
+                {cycles}/{maxCycles}
+              </h1>
+              <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center gap-16 flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
+              <div className="relative">
+                <LoadingSpinner
+                  size={200}
+                  color="black"
+                />
+                <ImCamera
+                  className="text-4xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                  size={80}
+                />
+              </div>
+              <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">Wating for camera ...</h1>
             </div>
-            <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">Wating for camera ...</h1>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </Card>
   );
 };
