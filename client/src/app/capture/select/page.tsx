@@ -8,13 +8,14 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Layer, Rect, Stage} from "react-konva";
 import useImage from "use-image";
 import {Image as KonvaImage} from "react-konva";
-import {FaArrowRight} from "react-icons/fa6";
 import Image from "next/image";
 import SelectedImage from "@/components/SelectedImage";
 import Link from "next/link";
 import {FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
 import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
 import {uploadImageToR2} from "@/lib/r2";
+import {MdOutlineCloudDone} from "react-icons/md";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -172,7 +173,7 @@ const PrintPage = () => {
   const filteredSelectedImages = useMemo(() => selectedImage.filter((img) => img !== null), [selectedImage]);
 
   useEffect(() => {
-    if (!isTimeOver || !lastImageUploaded || !photoRef.current) return;
+    if (!isTimeOver || !photoRef.current) return;
 
     const itemLeft = photoRef.current!.theme.frame.imageSlot - filteredSelectedImages.length;
     if (itemLeft > 0) {
@@ -196,10 +197,10 @@ const PrintPage = () => {
   }, [isTimeOver, filteredSelectedImages, photo, lastImageUploaded]);
 
   useEffect(() => {
-    if (isTimeOver) {
+    if (isTimeOver && lastImageUploaded) {
       handleContextSelect(filteredSelectedImages);
     }
-  }, [isTimeOver, filteredSelectedImages, handleContextSelect]);
+  }, [isTimeOver, filteredSelectedImages, handleContextSelect, lastImageUploaded]);
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
@@ -329,7 +330,15 @@ const PrintPage = () => {
           )}
           onClick={() => handleContextSelect(filteredSelectedImages)}
         >
-          Chọn filter <FaArrowRight />
+          Chọn filter
+          {!lastImageUploaded ? (
+            <LoadingSpinner size={15} />
+          ) : (
+            <MdOutlineCloudDone
+              size={15}
+              color="white"
+            />
+          )}
         </Link>
       </Button>
     </Card>
