@@ -65,58 +65,60 @@ const FilterPage = () => {
       <div className="self-center">
         {photo && frameImg && (
           <div className="flex items-start justify-center gap-12 mb-8 w-full">
-            <Stage
-              ref={stageRef}
-              width={IMAGE_WIDTH}
-              height={IMAGE_HEIGHT}
-            >
-              <Layer>
-                <Rect
-                  width={IMAGE_WIDTH}
-                  height={IMAGE_HEIGHT}
-                  fill="white"
-                />
-              </Layer>
-              {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, _index) => (
-                <Layer
-                  key={_index}
-                  x={OFFSET_X}
-                  y={OFFSET_Y}
-                >
-                  {photo.selectedImages.map(({id, data}, index) => {
-                    return (
-                      data && (
-                        <SelectedImage
-                          key={id}
-                          url={data}
-                          y={photo.theme.frame.slotPositions[index].y}
-                          x={photo.theme.frame.slotPositions[index].x + (FRAME_WIDTH / 2) * _index}
-                          height={photo.theme.frame.slotDimensions.height}
-                          width={photo.theme.frame.slotDimensions.width}
-                          filter={filter}
-                        />
-                      )
-                    );
-                  })}
-                </Layer>
-              ))}
-
-              {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
-                <Layer
-                  key={index}
-                  x={OFFSET_X}
-                  y={OFFSET_Y}
-                >
-                  <KonvaImage
-                    image={frameImg}
-                    x={(FRAME_WIDTH / 2) * index}
-                    height={FRAME_HEIGHT}
-                    width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+            <div className="self-center">
+              <Stage
+                ref={stageRef}
+                width={IMAGE_WIDTH}
+                height={IMAGE_HEIGHT}
+              >
+                <Layer>
+                  <Rect
+                    width={IMAGE_WIDTH}
+                    height={IMAGE_HEIGHT}
+                    fill="white"
                   />
                 </Layer>
-              ))}
-            </Stage>
-            <div className="flex items-center justify-center flex-col gap-5">
+                {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, _index) => (
+                  <Layer
+                    key={_index}
+                    x={OFFSET_X}
+                    y={OFFSET_Y}
+                  >
+                    {photo.selectedImages.map(({id, data}, index) => {
+                      return (
+                        data && (
+                          <SelectedImage
+                            key={id}
+                            url={data}
+                            y={photo.theme.frame.slotPositions[index].y}
+                            x={photo.theme.frame.slotPositions[index].x + (FRAME_WIDTH / 2) * _index}
+                            height={photo.theme.frame.slotDimensions.height}
+                            width={photo.theme.frame.slotDimensions.width}
+                            filter={filter}
+                          />
+                        )
+                      );
+                    })}
+                  </Layer>
+                ))}
+
+                {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
+                  <Layer
+                    key={index}
+                    x={OFFSET_X}
+                    y={OFFSET_Y}
+                  >
+                    <KonvaImage
+                      image={frameImg}
+                      x={(FRAME_WIDTH / 2) * index}
+                      height={FRAME_HEIGHT}
+                      width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                    />
+                  </Layer>
+                ))}
+              </Stage>
+            </div>
+            <div className="flex items-center justify-center flex-col gap-5 ">
               <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
               <ScrollArea className=" h-[470px] w-[700px] ">
                 <div className="flex-wrap flex gap-4 items-center justify-center">

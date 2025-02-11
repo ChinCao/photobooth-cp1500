@@ -35,7 +35,10 @@ export function findChangedIndices(array1: TestItem[], array2: TestItem[]): Posi
   return null;
 }
 
-export function updateMap(sourceMap: Array<{id: string; data: string} | null>, change: PositionChange): Array<{id: string; data: string} | null> {
+export function updateMap(
+  sourceMap: Array<{id: string; data: string; href: string} | null>,
+  change: PositionChange
+): Array<{id: string; data: string; href: string} | null> {
   const newMap = [...sourceMap];
   const temp = newMap[change.from];
   newMap[change.from] = newMap[change.to];

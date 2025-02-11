@@ -25,7 +25,7 @@ const PrintPage = () => {
   }, [photo, router]);
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
 
-  const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string} | null>>(
+  const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
   const [timeLeft, setTimeLeft] = useState(20);
@@ -80,7 +80,7 @@ const PrintPage = () => {
   }, []);
 
   const handleContextSelect = useCallback(
-    async (images: Array<{id: string; data: string}>) => {
+    async (images: Array<{id: string; data: string; href: string}>) => {
       try {
         setPhoto!((prevStyle) => {
           if (prevStyle) {
@@ -110,7 +110,7 @@ const PrintPage = () => {
   }, [timeLeft]);
 
   const handleSelect = useCallback(
-    (image: {id: string; data: string} | null) => {
+    (image: {id: string; data: string; href: string} | null) => {
       if (photo && image !== null) {
         const isSelected = selectedImage.some((img) => img?.id === image.id);
         const maxImages = photo.theme.frame.imageSlot;

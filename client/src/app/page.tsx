@@ -1,6 +1,6 @@
 "use client";
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
-import {FrameDefaults, PhotoOptions, ThemeSelectButton, ValidTheme} from "@/constants/constants";
+import {FrameDefaults, ThemeSelectButton, ValidTheme} from "@/constants/constants";
 import {usePhoto} from "@/context/StyleContext";
 import Image from "next/image";
 import React from "react";
@@ -11,28 +11,16 @@ const ThemePage = () => {
   const {setPhoto} = usePhoto();
 
   const handleThemeChange = (name: ValidTheme) => {
-    setPhoto!((prevStyle: PhotoOptions<typeof name> | undefined) => {
-      if (prevStyle) {
-        return {
-          ...prevStyle,
-          theme: {
-            ...prevStyle.theme,
-            name: name,
-            frame: FrameDefaults[name],
-          },
-          quantity: 1 * (FrameDefaults[name].type == "singular" ? 1 : 2),
-        };
-      } else {
-        return {
-          theme: {
-            name: name,
-            frame: FrameDefaults[name],
-          },
-          quantity: 1 * (FrameDefaults[name].type == "singular" ? 1 : 2),
-          images: [],
-          selectedImages: [],
-        };
-      }
+    setPhoto!(() => {
+      return {
+        theme: {
+          name: name,
+          frame: FrameDefaults[name],
+        },
+        quantity: 1 * (FrameDefaults[name].type == "singular" ? 1 : 2),
+        images: [],
+        selectedImages: [],
+      };
     });
   };
   return (

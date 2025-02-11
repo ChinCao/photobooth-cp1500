@@ -8,9 +8,10 @@ import useSound from "use-sound";
 import {NUM_OF_IMAGE} from "@/constants/constants";
 import {ImCamera} from "react-icons/im";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import {uploadImageToR2} from "@/lib/r2";
 
 const CapturePage = () => {
-  const duration = 3;
+  const duration = 7;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -25,6 +26,7 @@ const CapturePage = () => {
   const router = useRouter();
   const [playCameraShutterSound] = useSound("/shutter.mp3", {volume: 1});
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<Array<{id: string; href: string}>>([]);
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -131,7 +133,7 @@ const CapturePage = () => {
     getVideo();
   }, [selectedDevice, cameraConstraints]);
 
-  const handleCapture = useCallback(() => {
+  const handleCapture = useCallback(async () => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
@@ -143,15 +145,18 @@ const CapturePage = () => {
         context.translate(-canvas.width, 0);
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         const dataURL = canvas.toDataURL("image/png");
-
         setImage((prevItems) => [...prevItems, {id: cycles.toString(), data: dataURL}]);
+        const r2Response = await uploadImageToR2(dataURL);
+        const imageUrl = r2Response.url;
+        setUploadedImages((prevItems) => [...prevItems, {id: cycles.toString(), href: imageUrl}]);
+        console.log("Image URL:", imageUrl);
       }
     }
   }, [cameraSize, cycles, photo]);
 
   useEffect(() => {
     if (cycles < maxCycles + 1) {
-      const timer = setInterval(() => {
+      const timer = setInterval(async () => {
         if (isCountingDown) {
           if (count > 0 && cycles <= maxCycles) {
             setCount((prevCount) => prevCount - 1);
@@ -164,12 +169,12 @@ const CapturePage = () => {
             setCycles((prevCycle) => prevCycle + 1);
             setCount(duration);
           }
-          if (cycles == maxCycles && count == 0) {
+          if (cycles == maxCycles && count == 0 && uploadedImages.length == maxCycles) {
             setPhoto!((prevStyle) => {
               if (prevStyle) {
                 return {
                   ...prevStyle,
-                  images: image,
+                  images: image.map((item) => ({...item, href: uploadedImages.find((image) => image.id == item.id)?.href || item.data})),
                 };
               }
             });
@@ -181,7 +186,7 @@ const CapturePage = () => {
 
       return () => clearInterval(timer);
     }
-  }, [count, cycles, duration, handleCapture, image, isCountingDown, maxCycles, playCameraShutterSound, router, setPhoto]);
+  }, [count, cycles, duration, handleCapture, image, isCountingDown, maxCycles, playCameraShutterSound, router, setPhoto, uploadedImages]);
 
   useEffect(() => {
     const videoElement = videoRef.current;

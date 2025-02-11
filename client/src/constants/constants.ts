@@ -453,10 +453,12 @@ export interface PhotoOptions<T extends ValidTheme> {
   images: Array<{
     id: string;
     data: string;
+    href: string;
   }>;
   selectedImages: Array<{
     id: string;
     data: string;
+    href: string;
   }>;
 }
 
