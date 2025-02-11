@@ -14,21 +14,42 @@ import SelectedImage from "@/components/SelectedImage";
 import Link from "next/link";
 import {FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
 import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
+import {uploadImageToR2} from "@/lib/r2";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
+  const lastImageUploaded = useMemo(() => {
+    if (photo) {
+      return photo!.images[photo!.images.length - 1].href != "";
+    }
+  }, [photo]);
 
   useEffect(() => {
     if (!photo) return router.push("/");
     if (photo!.selectedImages.length == photo!.theme.frame.imageSlot) return router.push("/capture/select/filter");
-  }, [photo, router]);
+
+    const uploadImage = async () => {
+      const r2Response = await uploadImageToR2(photo!.images[photo!.images.length - 1].data);
+      setPhoto!((prevStyle) => {
+        if (prevStyle) {
+          return {
+            ...prevStyle,
+            images: prevStyle.images.map((item) => (item.id == photo!.images[photo!.images.length - 1].id ? {...item, href: r2Response.url} : item)),
+          };
+        }
+      });
+    };
+    if (!lastImageUploaded) {
+      uploadImage();
+    }
+  }, [photo, router, setPhoto, lastImageUploaded]);
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
 
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(20);
+  const [timeLeft, setTimeLeft] = useState(Infinity);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
@@ -151,7 +172,7 @@ const PrintPage = () => {
   const filteredSelectedImages = useMemo(() => selectedImage.filter((img) => img !== null), [selectedImage]);
 
   useEffect(() => {
-    if (!isTimeOver) return;
+    if (!isTimeOver || !lastImageUploaded || !photoRef.current) return;
 
     const itemLeft = photoRef.current!.theme.frame.imageSlot - filteredSelectedImages.length;
     if (itemLeft > 0) {
@@ -172,7 +193,7 @@ const PrintPage = () => {
         return newImages;
       });
     }
-  }, [isTimeOver, filteredSelectedImages]);
+  }, [isTimeOver, filteredSelectedImages, photo, lastImageUploaded]);
 
   useEffect(() => {
     if (isTimeOver) {
@@ -294,12 +315,17 @@ const PrintPage = () => {
           )}
         </div>
       </div>
+      {photo?.images.map((item) => <div key={item.id}>{item.href}</div>)}
       <Button asChild>
         <Link
           href="/capture/select/filter"
           className={cn(
             "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
-            photo ? (photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver ? "pointer-events-none opacity-80" : null) : null
+            photo
+              ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded
+                ? "pointer-events-none opacity-80"
+                : null
+              : null
           )}
           onClick={() => handleContextSelect(filteredSelectedImages)}
         >

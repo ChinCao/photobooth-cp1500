@@ -11,7 +11,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import {uploadImageToR2} from "@/lib/r2";
 
 const CapturePage = () => {
-  const duration = 7;
+  const duration = 3;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -146,13 +146,14 @@ const CapturePage = () => {
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         const dataURL = canvas.toDataURL("image/png");
         setImage((prevItems) => [...prevItems, {id: cycles.toString(), data: dataURL}]);
+        if (cycles == maxCycles) return;
         const r2Response = await uploadImageToR2(dataURL);
         const imageUrl = r2Response.url;
         setUploadedImages((prevItems) => [...prevItems, {id: cycles.toString(), href: imageUrl}]);
         console.log("Image URL:", imageUrl);
       }
     }
-  }, [cameraSize, cycles, photo]);
+  }, [cameraSize, cycles, maxCycles, photo]);
 
   useEffect(() => {
     if (cycles < maxCycles + 1) {
@@ -169,12 +170,12 @@ const CapturePage = () => {
             setCycles((prevCycle) => prevCycle + 1);
             setCount(duration);
           }
-          if (cycles == maxCycles && count == 0 && uploadedImages.length == maxCycles) {
+          if (cycles == maxCycles && count == 0 && uploadedImages.length == maxCycles - 1) {
             setPhoto!((prevStyle) => {
               if (prevStyle) {
                 return {
                   ...prevStyle,
-                  images: image.map((item) => ({...item, href: uploadedImages.find((image) => image.id == item.id)?.href || item.data})),
+                  images: image.map((item) => ({...item, href: uploadedImages.find((image) => image.id == item.id)?.href || ""})),
                 };
               }
             });
