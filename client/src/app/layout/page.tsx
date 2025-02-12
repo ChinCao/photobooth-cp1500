@@ -19,6 +19,7 @@ const LayoutPage = () => {
   const router = useRouter();
   useEffect(() => {
     if (!photo) return router.push("/");
+    if (photo!.images.length > 0) return router.push("/layout/capture/");
   }, [photo, router]);
   const maxQuantity = 5;
   const [api, setApi] = useState<CarouselApi>();

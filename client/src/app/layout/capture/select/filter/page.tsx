@@ -28,7 +28,7 @@ const FilterPage = () => {
   const socket = useMemo(() => io("http://localhost:6969"), []);
   const stageRef = useRef<StageElement | null>(null);
 
-  const [timeLeft, setTimeLeft] = useState(250000);
+  const [timeLeft, setTimeLeft] = useState(Infinity);
   const [printed, setPrinted] = useState(false);
 
   socket.on("connect", () => {
@@ -119,9 +119,9 @@ const FilterPage = () => {
                   ))}
                 </Stage>
               </div>
-              <div className="flex items-center justify-center flex-col gap-5 ">
+              <div className="flex items-center justify-center flex-col gap-5">
                 <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
-                <ScrollArea className=" h-[470px] w-[700px] ">
+                <ScrollArea className=" h-[60vh] w-[700px] ">
                   <div className="flex-wrap flex gap-4 items-center justify-center">
                     {FILTERS.map((item, index) => (
                       <div

@@ -16,6 +16,7 @@ import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
 import {uploadImageToR2} from "@/lib/r2";
 import {MdOutlineCloudDone} from "react-icons/md";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import SelectInstruction from "@/components/SelectInstruction";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -207,14 +208,8 @@ const PrintPage = () => {
 
   return (
     <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
-      <div className={cn("flex items-start justify-center w-full gap-4", isTimeOver ? "pointer-events-none" : null)}>
+      <div className={cn("flex items-center justify-center w-full gap-4", isTimeOver ? "pointer-events-none" : null)}>
         <div className="flex flex-col items-center justify-center">
-          {photo && (
-            <h1 className="text-5xl font-bold mb-4">
-              Chọn hình <span className="text-rose-500">{timeLeft}s</span>
-            </h1>
-          )}
-
           <div className="relative">
             <div
               className="flex  absolute flex-col "
@@ -290,39 +285,42 @@ const PrintPage = () => {
                 </Layer>
               </Stage>
             )}
-          </div>
 
-          {photo && (
-            <>
-              <p className="text-rose-500 font-bold mt-4">*Kéo hình để đổi thứ tự hình</p>
-              <p className="text-rose-500 font-bold mt-4">*Ấn vào hình bạn không thích để xóa</p>
-            </>
-          )}
+            <SelectInstruction />
+          </div>
         </div>
-        <div className="flex flex-wrap w-[55%] gap-4 items-center justify-center self-center">
+        <div className="flex flex-wrap w-[55%] gap-4 items-start justify-center ">
           {photo && (
-            <>
-              {photo.images.map((item, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "bg-gray-200 rounded border-4 border-transparent hover:border-black hover:cursor-pointer",
-                    selectedImage.some((img) => img?.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
-                  )}
-                  onClick={() => handleSelect(item)}
-                >
-                  <Image
-                    height={300}
-                    width={300}
-                    src={item.data}
-                    alt="image"
-                    priority
-                    className="w-[300px] pointer-events-none"
-                  />
-                </div>
-              ))}
-            </>
+            <h1 className="text-5xl font-bold mb-4">
+              Chọn hình <span className="text-rose-500">{timeLeft}s</span>
+            </h1>
           )}
+
+          <div className="flex gap-4 items-center justify-center flex-wrap ">
+            {photo && (
+              <>
+                {photo.images.map((item, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "bg-gray-200 rounded border-4 border-transparent hover:border-black hover:cursor-pointer",
+                      selectedImage.some((img) => img?.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
+                    )}
+                    onClick={() => handleSelect(item)}
+                  >
+                    <Image
+                      height={300}
+                      width={300}
+                      src={item.data}
+                      alt="image"
+                      priority
+                      className="w-[300px] pointer-events-none"
+                    />
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </div>
       </div>
       {photo && (

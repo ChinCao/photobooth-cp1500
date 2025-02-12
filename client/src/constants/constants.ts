@@ -18,7 +18,7 @@ export const ThemeSelectButton: {
   },
 ];
 
-export const MULTIPLIER = 1.2;
+export const MULTIPLIER = 1.3;
 
 export const FRAME_WIDTH = 355 * MULTIPLIER;
 export const FRAME_HEIGHT = 524 * MULTIPLIER;
@@ -464,7 +464,7 @@ export interface PhotoOptions<T extends ValidTheme> {
   }>;
 }
 
-export const NUM_OF_IMAGE = 4;
+export const NUM_OF_IMAGE = 6;
 
 export const FILTERS: {
   name: string;
