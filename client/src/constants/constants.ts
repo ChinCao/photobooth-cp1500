@@ -18,29 +18,31 @@ export const ThemeSelectButton: {
   },
 ];
 
-export const FRAME_WIDTH = 355;
-export const FRAME_HEIGHT = 524;
+export const MULTIPLIER = 1.2;
 
-export const IMAGE_WIDTH = 378;
-export const IMAGE_HEIGHT = 560;
+export const FRAME_WIDTH = 355 * MULTIPLIER;
+export const FRAME_HEIGHT = 524 * MULTIPLIER;
+
+export const IMAGE_WIDTH = 378 * MULTIPLIER;
+export const IMAGE_HEIGHT = 560 * MULTIPLIER;
 
 export const OFFSET_X = (IMAGE_WIDTH - FRAME_WIDTH) / 2;
-export const OFFSET_Y = 47 / 3;
+export const OFFSET_Y = (47 / 3) * MULTIPLIER;
 
-const USAGYUUN_X_POS = 12;
-const USAGYUUN_Y_INIT_POS = 13;
-const USAGYUUN_IMAGE_HEIGHT = 106;
-const USAGYUUN_IMAGE_WIDTH = 152;
+const USAGYUUN_X_POS = 12 * MULTIPLIER;
+const USAGYUUN_Y_INIT_POS = 13 * MULTIPLIER;
+const USAGYUUN_IMAGE_HEIGHT = 106 * MULTIPLIER;
+const USAGYUUN_IMAGE_WIDTH = 152 * MULTIPLIER;
 const USAGYUUN_Y_SLOT_SEPERATION = (index: number) => {
-  return 122 * (index + 1) - USAGYUUN_Y_INIT_POS * index;
+  return (122 * (index + 1) - (USAGYUUN_Y_INIT_POS / MULTIPLIER) * index) * MULTIPLIER;
 };
 
-const PROM_Y_INIT_POS = 20;
-const PROM_IMAGE_HEIGHT = 210;
-const PROM_IMAGE_WIDTH = 292;
-const PROM_X_POS = 31;
+const PROM_Y_INIT_POS = 20 * MULTIPLIER;
+const PROM_IMAGE_HEIGHT = 210 * MULTIPLIER;
+const PROM_IMAGE_WIDTH = 292 * MULTIPLIER;
+const PROM_X_POS = 31 * MULTIPLIER;
 const PROM_Y_SLOT_SEPERATION = (index: number) => {
-  return 280 * (index + 1) - PROM_Y_INIT_POS * index;
+  return (280 * (index + 1) - (PROM_Y_INIT_POS / MULTIPLIER) * index) * MULTIPLIER;
 };
 
 export const FrameOptions: {
@@ -462,7 +464,7 @@ export interface PhotoOptions<T extends ValidTheme> {
   }>;
 }
 
-export const NUM_OF_IMAGE = 6;
+export const NUM_OF_IMAGE = 4;
 
 export const FILTERS: {
   name: string;

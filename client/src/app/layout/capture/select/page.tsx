@@ -50,11 +50,14 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(6);
+  const [timeLeft, setTimeLeft] = useState(Infinity);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
-
+  const isSingle = useMemo(() => {
+    if (!photo) return 1;
+    return photo.theme.frame.type == "singular" ? 1 : 2;
+  }, [photo]);
   const containerRef = useRef<HTMLDivElement>(null);
   const swapyRef = useRef<Swapy | null>(null);
   const placeHolderDivs = useMemo(
@@ -249,19 +252,19 @@ const PrintPage = () => {
 
             {frameImg && photo && (
               <Stage
-                width={IMAGE_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                width={IMAGE_WIDTH / isSingle}
                 height={IMAGE_HEIGHT}
               >
                 <Layer>
                   <Rect
-                    width={IMAGE_WIDTH}
+                    width={IMAGE_WIDTH / isSingle}
                     height={IMAGE_HEIGHT}
                     fill="white"
                   />
                 </Layer>
                 <Layer
-                  x={OFFSET_X}
-                  y={OFFSET_Y}
+                  x={OFFSET_X / isSingle}
+                  y={OFFSET_Y / isSingle}
                 >
                   {slottedItems.map(({slotId}) => (
                     <SelectedImage
@@ -276,13 +279,13 @@ const PrintPage = () => {
                   ))}
                 </Layer>
                 <Layer
-                  x={OFFSET_X}
-                  y={OFFSET_Y}
+                  x={OFFSET_X / isSingle}
+                  y={OFFSET_Y / isSingle}
                 >
                   <KonvaImage
                     image={frameImg}
                     height={FRAME_HEIGHT}
-                    width={FRAME_WIDTH / (photo.theme.frame.type == "singular" ? 1 : 2)}
+                    width={FRAME_WIDTH / isSingle}
                   />
                 </Layer>
               </Stage>
