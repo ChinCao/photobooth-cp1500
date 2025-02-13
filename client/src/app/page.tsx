@@ -20,6 +20,7 @@ const ThemePage = () => {
         quantity: 1 * (FrameDefaults[name].type == "singular" ? 1 : 2),
         images: [],
         selectedImages: [],
+        video: new Blob(),
       };
     });
   };

@@ -15,14 +15,52 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
 import {io} from "socket.io-client";
 import NavBar from "@/components/NavBar/NavBar";
+import {MdOutlineCloudDone} from "react-icons/md";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadComplete, setUploadComplete] = useState(false);
+
   useEffect(() => {
     if (!photo) return router.push("/");
     if (photo!.selectedImages.length == 0) return router.push("/");
-  }, [photo, router]);
+    if (photo.video && !isUploading && !uploadComplete) {
+      const uploadVideo = async () => {
+        try {
+          setIsUploading(true);
+          const formData = new FormData();
+          const filename = `video-${Date.now()}.webm`;
+          formData.append("file", photo.video, filename);
+          formData.append("contentType", "video/webm");
+          formData.append("filename", filename);
+
+          const uploadResponse = await fetch("/api/r2/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const result = await uploadResponse.json();
+
+          if (result.success) {
+            console.log("Video uploaded successfully:", result.url);
+            setUploadComplete(true);
+          } else {
+            console.error("Failed to upload video:", result.error);
+          }
+        } catch (error) {
+          console.error("Error uploading video:", error);
+        } finally {
+          setIsUploading(false);
+        }
+      };
+
+      uploadVideo();
+    } else {
+      setUploadComplete(true); // No video to upload
+    }
+  }, [isUploading, photo, router, uploadComplete]);
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
   const [filter, setFilter] = useState<string | null>();
@@ -72,7 +110,7 @@ const FilterPage = () => {
       <Card
         className={cn(
           "bg-background w-[85%] h-[90vh] mb-8 flex items-center flex-col justify-center p-8 relative",
-          !timeLeft ? "pointer-events-none" : null
+          !timeLeft || isUploading ? "pointer-events-none" : null
         )}
       >
         <div className="self-center">
@@ -175,10 +213,24 @@ const FilterPage = () => {
               </div>
               <Button
                 className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full"
-                disabled={printed}
+                disabled={printed || isUploading || !uploadComplete}
                 onClick={printImage}
               >
-                In
+                {isUploading ? (
+                  <>
+                    In <LoadingSpinner size={15} />
+                  </>
+                ) : uploadComplete ? (
+                  <>
+                    In{" "}
+                    <MdOutlineCloudDone
+                      size={15}
+                      color="white"
+                    />
+                  </>
+                ) : (
+                  "In"
+                )}
               </Button>
             </>
           )}
