@@ -7,6 +7,7 @@
 /client/wrangler.toml
 /server/node_modules
 /server/images
+/server/logs
 /.pnp
 .pnp.*
 .yarn/*
