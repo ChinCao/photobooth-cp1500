@@ -92,7 +92,7 @@ const LayoutPage = () => {
   return (
     <>
       <NavBar />
-      <Card className="bg-background w-[75%] min-h-[75vh] mb-8 flex items-center justify-between p-8 flex-col gap-9">
+      <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
         {photo && (
           <div className="flex items-stretch justify-center gap-10">
             <div className="flex items-start flex-col justify-center gap-4 w-max">

@@ -26,7 +26,7 @@ const ThemePage = () => {
   return (
     <>
       <NavBar />
-      <Card className="bg-background w-[75%] min-h-[75vh] mb-8 flex items-center justify-start p-8 flex-col gap-9">
+      <Card className="bg-background w-[85%] min-h-[90vh] mb-8 flex items-center justify-start p-8 flex-col gap-9">
         <CardTitle className="text-4xl uppercase">Chọn theme</CardTitle>
         <CardContent className="flex items-center justify-center gap-8 flex-wrap w-[90%]">
           {ThemeSelectButton.map((item, index) => (

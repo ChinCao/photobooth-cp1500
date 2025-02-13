@@ -17,6 +17,7 @@ import {uploadImageToR2} from "@/lib/r2";
 import {MdOutlineCloudDone} from "react-icons/md";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import SelectInstruction from "@/components/SelectInstruction";
+import NavBar from "@/components/NavBar/NavBar";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -82,7 +83,7 @@ const PrintPage = () => {
     if (containerRef.current) {
       swapyRef.current = createSwapy(containerRef.current!, {
         manualSwap: true,
-        animation: "dynamic",
+        animation: "none",
         autoScrollOnDrag: true,
         swapMode: "hover",
         enabled: true,
@@ -207,149 +208,152 @@ const PrintPage = () => {
   }, [isTimeOver, filteredSelectedImages, handleContextSelect, lastImageUploaded]);
 
   return (
-    <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
-      <div className={cn("flex items-center justify-center w-full gap-4", isTimeOver ? "pointer-events-none" : null)}>
-        <div className="flex flex-col items-center justify-center">
-          <div className="relative">
-            <div
-              className="flex  absolute flex-col "
-              style={{
-                top: photo ? photo!.theme.frame.slotPositions[0].y + OFFSET_Y : 0,
-                left: photo ? photo!.theme.frame.slotPositions[0].x + OFFSET_X : 0,
-                gap: photo ? photo!.theme.frame.slotPositions[0].y : 0,
-              }}
-              ref={containerRef}
-            >
-              {slottedItems.map(({slotId, itemId}) => (
-                <div
-                  className="z-50"
-                  key={slotId}
-                  data-swapy-slot={slotId}
-                  onClick={() => {
-                    if (selectedImage[Number(slotId)]) {
-                      handleSelect(selectedImage[Number(slotId)]);
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      zIndex: 100,
-                      width: photo!.theme.frame.slotDimensions.width,
-                      height: photo!.theme.frame.slotDimensions.height,
-                    }}
-                    className="bg-transparent hover:cursor-pointer"
-                    data-swapy-item={itemId}
-                    key={itemId}
-                  ></div>
-                </div>
-              ))}
-            </div>
-
-            {frameImg && photo && (
-              <Stage
-                width={IMAGE_WIDTH / isSingle}
-                height={IMAGE_HEIGHT}
+    <>
+      <NavBar />
+      <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
+        <div className={cn("flex items-center justify-evenly w-full", isTimeOver ? "pointer-events-none" : null)}>
+          <div className="flex flex-col items-center justify-center">
+            <div className="relative">
+              <div
+                className="flex  absolute flex-col "
+                style={{
+                  top: photo ? photo!.theme.frame.slotPositions[0].y + OFFSET_Y : 0,
+                  left: photo ? photo!.theme.frame.slotPositions[0].x + OFFSET_X : 0,
+                  gap: photo ? photo!.theme.frame.slotPositions[0].y : 0,
+                }}
+                ref={containerRef}
               >
-                <Layer>
-                  <Rect
-                    width={IMAGE_WIDTH / isSingle}
-                    height={IMAGE_HEIGHT}
-                    fill="white"
-                  />
-                </Layer>
-                <Layer
-                  x={OFFSET_X / isSingle}
-                  y={OFFSET_Y / isSingle}
-                >
-                  {slottedItems.map(({slotId}) => (
-                    <SelectedImage
-                      key={slotId}
-                      url={selectedImage[Number(slotId)]?.data}
-                      y={photo.theme.frame.slotPositions[Number(slotId)].y}
-                      x={photo.theme.frame.slotPositions[Number(slotId)].x}
-                      filter={null}
-                      height={photo.theme.frame.slotDimensions.height}
-                      width={photo.theme.frame.slotDimensions.width}
-                    />
-                  ))}
-                </Layer>
-                <Layer
-                  x={OFFSET_X / isSingle}
-                  y={OFFSET_Y / isSingle}
-                >
-                  <KonvaImage
-                    image={frameImg}
-                    height={FRAME_HEIGHT}
-                    width={FRAME_WIDTH / isSingle}
-                  />
-                </Layer>
-              </Stage>
-            )}
-
-            <SelectInstruction />
-          </div>
-        </div>
-        <div className="flex flex-wrap w-[55%] gap-4 items-start justify-center ">
-          {photo && (
-            <h1 className="text-5xl font-bold mb-4">
-              Chọn hình <span className="text-rose-500">{timeLeft}s</span>
-            </h1>
-          )}
-
-          <div className="flex gap-4 items-center justify-center flex-wrap ">
-            {photo && (
-              <>
-                {photo.images.map((item, index) => (
+                {slottedItems.map(({slotId, itemId}) => (
                   <div
-                    key={index}
-                    className={cn(
-                      "bg-gray-200 rounded border-4 border-transparent hover:border-black hover:cursor-pointer",
-                      selectedImage.some((img) => img?.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
-                    )}
-                    onClick={() => handleSelect(item)}
+                    className="z-50"
+                    key={slotId}
+                    data-swapy-slot={slotId}
+                    onClick={() => {
+                      if (selectedImage[Number(slotId)]) {
+                        handleSelect(selectedImage[Number(slotId)]);
+                      }
+                    }}
                   >
-                    <Image
-                      height={300}
-                      width={300}
-                      src={item.data}
-                      alt="image"
-                      priority
-                      className="w-[300px] pointer-events-none"
-                    />
+                    <div
+                      style={{
+                        zIndex: 100,
+                        width: photo!.theme.frame.slotDimensions.width,
+                        height: photo!.theme.frame.slotDimensions.height,
+                      }}
+                      className="bg-transparent hover:cursor-pointer"
+                      data-swapy-item={itemId}
+                      key={itemId}
+                    ></div>
                   </div>
                 ))}
-              </>
+              </div>
+
+              {frameImg && photo && (
+                <Stage
+                  width={IMAGE_WIDTH / isSingle}
+                  height={IMAGE_HEIGHT}
+                >
+                  <Layer>
+                    <Rect
+                      width={IMAGE_WIDTH / isSingle}
+                      height={IMAGE_HEIGHT}
+                      fill="white"
+                    />
+                  </Layer>
+                  <Layer
+                    x={OFFSET_X / isSingle}
+                    y={OFFSET_Y / isSingle}
+                  >
+                    {slottedItems.map(({slotId}) => (
+                      <SelectedImage
+                        key={slotId}
+                        url={selectedImage[Number(slotId)]?.data}
+                        y={photo.theme.frame.slotPositions[Number(slotId)].y}
+                        x={photo.theme.frame.slotPositions[Number(slotId)].x}
+                        filter={null}
+                        height={photo.theme.frame.slotDimensions.height}
+                        width={photo.theme.frame.slotDimensions.width}
+                      />
+                    ))}
+                  </Layer>
+                  <Layer
+                    x={OFFSET_X / isSingle}
+                    y={OFFSET_Y / isSingle}
+                  >
+                    <KonvaImage
+                      image={frameImg}
+                      height={FRAME_HEIGHT}
+                      width={FRAME_WIDTH / isSingle}
+                    />
+                  </Layer>
+                </Stage>
+              )}
+
+              <SelectInstruction />
+            </div>
+          </div>
+          <div className="flex flex-wrap w-[55%] gap-4 items-start justify-center ">
+            {photo && (
+              <h1 className="text-5xl font-bold mb-4">
+                Chọn hình <span className="text-rose-500">{timeLeft}s</span>
+              </h1>
             )}
+
+            <div className="flex gap-4 items-center justify-center flex-wrap ">
+              {photo && (
+                <>
+                  {photo.images.map((item, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "bg-gray-200 rounded border-4 border-transparent hover:border-black hover:cursor-pointer",
+                        selectedImage.some((img) => img?.id === item.id) ? "border-rose-500 hover:border-rose-500" : null
+                      )}
+                      onClick={() => handleSelect(item)}
+                    >
+                      <Image
+                        height={280}
+                        width={280}
+                        src={item.data}
+                        alt="image"
+                        priority
+                        className="w-[280px] pointer-events-none"
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      {photo && (
-        <Button asChild>
-          <Link
-            href="/layout/capture/select/filter"
-            className={cn(
-              "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
-              photo
-                ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded
-                  ? "pointer-events-none opacity-80"
+        {photo && (
+          <Button asChild>
+            <Link
+              href="/layout/capture/select/filter"
+              className={cn(
+                "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
+                photo
+                  ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded
+                    ? "pointer-events-none opacity-80"
+                    : null
                   : null
-                : null
-            )}
-            onClick={() => handleContextSelect(filteredSelectedImages)}
-          >
-            Chọn filter
-            {!lastImageUploaded ? (
-              <LoadingSpinner size={15} />
-            ) : (
-              <MdOutlineCloudDone
-                size={15}
-                color="white"
-              />
-            )}
-          </Link>
-        </Button>
-      )}
-    </Card>
+              )}
+              onClick={() => handleContextSelect(filteredSelectedImages)}
+            >
+              Chọn filter
+              {!lastImageUploaded ? (
+                <LoadingSpinner size={15} />
+              ) : (
+                <MdOutlineCloudDone
+                  size={15}
+                  color="white"
+                />
+              )}
+            </Link>
+          </Button>
+        )}
+      </Card>
+    </>
   );
 };
 

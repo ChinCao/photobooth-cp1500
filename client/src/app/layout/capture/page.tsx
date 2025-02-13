@@ -57,7 +57,7 @@ const CapturePage = () => {
 
   useEffect(() => {
     const calculateConstraints = async () => {
-      if (!selectedDevice || !photo?.theme.frame.slotDimensions) return;
+      if (!selectedDevice || !photo?.theme.frame.slotDimensions || !window) return;
 
       try {
         const initialStream = await navigator.mediaDevices.getUserMedia({
@@ -69,10 +69,23 @@ const CapturePage = () => {
 
         const aspectRatio = photo.theme.frame.slotDimensions.width / photo.theme.frame.slotDimensions.height;
         const multiplier =
-          Math.min(
-            Math.floor(capabilities.width!.max! / photo.theme.frame.slotDimensions.width),
-            Math.floor(capabilities.height!.max! / photo.theme.frame.slotDimensions.height)
-          ) / aspectRatio;
+          (Math.min(
+            Math.floor(window.innerWidth / photo.theme.frame.slotDimensions.width),
+            Math.floor(window.innerHeight / photo.theme.frame.slotDimensions.height)
+          ) /
+            aspectRatio) *
+          Math.max(
+            Math.floor(
+              capabilities.width!.max! > window.innerWidth
+                ? capabilities.width!.max! / window.innerWidth
+                : window.innerWidth / capabilities.width!.max!
+            ),
+            Math.floor(
+              capabilities.height!.max! > window.innerHeight
+                ? capabilities.height!.max! / window.innerHeight
+                : window.innerHeight / capabilities.height!.max!
+            )
+          );
 
         setCameraConstraints({
           deviceId: {exact: selectedDevice},
@@ -204,7 +217,7 @@ const CapturePage = () => {
   }, []);
 
   return (
-    <Card className="bg-background w-[90%] min-h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
+    <Card className="bg-background w-[90%] h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
       {photo && (
         <div className="relative">
           <video
