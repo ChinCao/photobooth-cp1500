@@ -11,7 +11,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import {uploadImageToR2} from "@/lib/r2";
 
 const CapturePage = () => {
-  const duration = 3;
+  const duration = 2;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -52,8 +52,10 @@ const CapturePage = () => {
       }
     };
 
-    getVideoDevices();
-  }, []);
+    if (photo) {
+      getVideoDevices();
+    }
+  }, [photo]);
 
   useEffect(() => {
     const calculateConstraints = async () => {
@@ -67,24 +69,18 @@ const CapturePage = () => {
         const capabilities = track.getCapabilities();
         track.stop();
 
-        const aspectRatio = photo.theme.frame.slotDimensions.width / photo.theme.frame.slotDimensions.height;
+        const aspectRatio = window.innerWidth / window.innerHeight;
+
         const multiplier =
-          (Math.min(
-            Math.floor(window.innerWidth / photo.theme.frame.slotDimensions.width),
-            Math.floor(window.innerHeight / photo.theme.frame.slotDimensions.height)
-          ) /
+          (Math.min(window.innerWidth / photo.theme.frame.slotDimensions.width, window.innerHeight / photo.theme.frame.slotDimensions.height) /
             aspectRatio) *
-          Math.max(
-            Math.floor(
-              capabilities.width!.max! > window.innerWidth
-                ? capabilities.width!.max! / window.innerWidth
-                : window.innerWidth / capabilities.width!.max!
-            ),
-            Math.floor(
-              capabilities.height!.max! > window.innerHeight
-                ? capabilities.height!.max! / window.innerHeight
-                : window.innerHeight / capabilities.height!.max!
-            )
+          Math.min(
+            capabilities.width!.max! > window.innerWidth
+              ? capabilities.width!.max! / window.innerWidth
+              : window.innerWidth / capabilities.width!.max!,
+            capabilities.height!.max! > window.innerHeight
+              ? capabilities.height!.max! / window.innerHeight
+              : window.innerHeight / capabilities.height!.max!
           );
 
         setCameraConstraints({
@@ -217,32 +213,38 @@ const CapturePage = () => {
   }, []);
 
   return (
-    <Card className="bg-background w-[90%] h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
+    <Card className="bg-background w-[90%] h-[90vh] mb-8 flex items-center justify-start p-8 flex-col gap-9 relative">
       {photo && (
-        <div className="relative">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-contain -scale-x-100"
-          />
-          {isCameraReady ? (
-            <>
-              <h1
-                className={cn(
-                  "absolute top-1/2 left-1/2 text-8xl text-white text-center",
-                  !isCameraReady || cycles > maxCycles || count == 0 ? "hidden" : null
-                )}
-              >
-                {count}
-              </h1>
-              <h1 className="font-bold text-5xl text-center mt-6">
-                {cycles}/{maxCycles}
-              </h1>
-              <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count == 0 ? "flash-efect" : null)}></div>
-            </>
-          ) : (
+        <>
+          <div className="w-[80%] relative">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-contain -scale-x-100"
+            />
+            {isCameraReady && (
+              <>
+                <h1
+                  className={cn(
+                    "absolute top-1/2 left-[calc(50%-15px)] text-8xl text-white text-center",
+                    !isCameraReady || cycles > maxCycles || count === 0 ? "hidden" : null
+                  )}
+                >
+                  {count}
+                </h1>
+
+                <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count === 0 ? "flash-efect" : null)}></div>
+              </>
+            )}
+          </div>
+          {isCameraReady && (
+            <h1 className="font-bold text-4xl text-center mt-3 absolute left-[calc(50%-15px)] bottom-[2%]">
+              {cycles}/{maxCycles}
+            </h1>
+          )}
+          {!isCameraReady && (
             <div className="flex items-center justify-center gap-16 flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
               <div className="relative">
                 <LoadingSpinner
@@ -254,10 +256,10 @@ const CapturePage = () => {
                   size={80}
                 />
               </div>
-              <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">Wating for camera ...</h1>
+              <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">Waiting for camera ...</h1>
             </div>
           )}
-        </div>
+        </>
       )}
     </Card>
   );
