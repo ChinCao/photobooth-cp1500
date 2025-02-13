@@ -29,7 +29,7 @@ const FilterPage = () => {
   const socket = useMemo(() => io("http://localhost:6969"), []);
   const stageRef = useRef<StageElement | null>(null);
 
-  const [timeLeft, setTimeLeft] = useState(Infinity);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [printed, setPrinted] = useState(false);
 
   socket.on("connect", () => {
@@ -61,10 +61,20 @@ const FilterPage = () => {
     }
   }, [printImage, router, setPhoto, timeLeft]);
 
+  const selectRandomFilter = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * FILTERS.length);
+    setFilter(FILTERS[randomIndex].value);
+  }, []);
+
   return (
     <>
       <NavBar />
-      <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center flex-col justify-center p-8 relative">
+      <Card
+        className={cn(
+          "bg-background w-[85%] h-[90vh] mb-8 flex items-center flex-col justify-center p-8 relative",
+          !timeLeft ? "pointer-events-none" : null
+        )}
+      >
         <div className="self-center">
           {photo && frameImg && (
             <>
@@ -123,7 +133,9 @@ const FilterPage = () => {
                   </Stage>
                 </div>
                 <div className="flex items-center justify-center flex-col gap-5">
-                  <h1 className="text-4xl font-bold mb-4 uppercase">Chọn filter</h1>
+                  <h1 className="text-4xl font-bold mb-4 uppercase">
+                    Chọn filter <span className="text-rose-500">{timeLeft}s</span>
+                  </h1>
                   <ScrollArea className=" h-[60vh] w-[100%] ">
                     <div className="flex-wrap flex gap-4 items-center justify-center">
                       {FILTERS.map((item, index) => (
@@ -145,12 +157,20 @@ const FilterPage = () => {
                       ))}
                     </div>
                   </ScrollArea>
-                  <Button
-                    className="w-full mt-2"
-                    onClick={() => setFilter(null)}
-                  >
-                    Reset filter
-                  </Button>
+                  <div className="flex gap-2 w-full">
+                    <Button
+                      className="w-full mt-2"
+                      onClick={selectRandomFilter}
+                    >
+                      Random filter
+                    </Button>
+                    <Button
+                      className="w-full mt-2"
+                      onClick={() => setFilter(null)}
+                    >
+                      Reset filter
+                    </Button>
+                  </div>
                 </div>
               </div>
               <Button
@@ -158,7 +178,7 @@ const FilterPage = () => {
                 disabled={printed}
                 onClick={printImage}
               >
-                In {timeLeft}s
+                In
               </Button>
             </>
           )}
