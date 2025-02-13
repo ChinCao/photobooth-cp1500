@@ -462,7 +462,10 @@ export interface PhotoOptions<T extends ValidTheme> {
     data: string;
     href: string;
   }>;
-  video: Blob;
+  video: {
+    data: Blob;
+    uploaded: boolean;
+  };
 }
 
 export const NUM_OF_IMAGE = 6;

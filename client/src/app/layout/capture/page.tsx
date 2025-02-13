@@ -28,7 +28,6 @@ const CapturePage = () => {
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
   const [uploadedImages, setUploadedImages] = useState<Array<{id: string; href: string}>>([]);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -101,7 +100,7 @@ const CapturePage = () => {
   const handleCapture = useCallback(async () => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
+      const context = canvas.getContext("2d", {colorSpace: "srgb"});
 
       if (context) {
         canvas.width = cameraSize!.width || photo!.theme.frame.slotDimensions.width;
@@ -109,7 +108,7 @@ const CapturePage = () => {
         context.scale(-1, 1);
         context.translate(-canvas.width, 0);
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        const dataURL = canvas.toDataURL("image/jpg");
+        const dataURL = canvas.toDataURL("image/jpeg", 1.0);
         setImage((prevItems) => [...prevItems, {id: cycles.toString(), data: dataURL}]);
         if (cycles == maxCycles) return;
         const r2Response = await uploadImageToR2(dataURL);
@@ -125,28 +124,21 @@ const CapturePage = () => {
 
     const stream = videoRef.current.srcObject as MediaStream;
 
-    // Create a canvas to flip the video
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const videoTrack = stream.getVideoTracks()[0];
     const {width, height} = videoTrack.getSettings();
 
-    canvas.width = width || 1280;
-    canvas.height = height || 720;
+    canvas.width = width!;
+    canvas.height = height!;
 
-    // Create a new stream from the flipped canvas
     const flippedStream = canvas.captureStream();
-    const audioTrack = stream.getAudioTracks()[0];
-    if (audioTrack) {
-      flippedStream.addTrack(audioTrack);
-    }
 
-    // Draw flipped video frames to canvas
     const drawVideo = () => {
       if (videoRef.current && ctx) {
         ctx.save();
-        ctx.scale(-1, 1); // Flip horizontally
-        ctx.translate(-canvas.width, 0); // Adjust for the flip
+        ctx.scale(-1, 1);
+        ctx.translate(-canvas.width, 0);
         ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         ctx.restore();
       }
@@ -155,8 +147,8 @@ const CapturePage = () => {
     drawVideo();
 
     const recorder = new MediaRecorder(flippedStream, {
-      mimeType: "video/webm",
-      videoBitsPerSecond: 200000,
+      mimeType: "video/mp4",
+      videoBitsPerSecond: 2000000,
     });
 
     let chunks: Blob[] = [];
@@ -168,15 +160,16 @@ const CapturePage = () => {
     };
 
     recorder.onstop = () => {
-      const videoBlob = new Blob(chunks, {type: "video/webm"});
-      console.log("Video blob size:", videoBlob.size);
-
+      const videoBlob = new Blob(chunks, {type: "video/mp4"});
       if (videoBlob.size > 0) {
         setPhoto!((prevStyle) => {
           if (prevStyle) {
             return {
               ...prevStyle,
-              video: videoBlob,
+              video: {
+                data: videoBlob,
+                uploaded: false,
+              },
             };
           }
         });
@@ -186,7 +179,6 @@ const CapturePage = () => {
 
     setMediaRecorder(recorder);
     recorder.start();
-    setIsRecording(true);
   }, [setPhoto]);
 
   useEffect(() => {
@@ -252,6 +244,9 @@ const CapturePage = () => {
             setCount(duration);
           }
           if (cycles == maxCycles && count == 0 && uploadedImages.length == maxCycles - 1) {
+            if (mediaRecorder) {
+              mediaRecorder.stop();
+            }
             setPhoto!((prevStyle) => {
               if (prevStyle) {
                 return {
@@ -268,7 +263,20 @@ const CapturePage = () => {
 
       return () => clearInterval(timer);
     }
-  }, [count, cycles, duration, handleCapture, image, isCountingDown, maxCycles, playCameraShutterSound, router, setPhoto, uploadedImages]);
+  }, [
+    count,
+    cycles,
+    duration,
+    handleCapture,
+    image,
+    isCountingDown,
+    maxCycles,
+    mediaRecorder,
+    playCameraShutterSound,
+    router,
+    setPhoto,
+    uploadedImages,
+  ]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -288,7 +296,6 @@ const CapturePage = () => {
     return () => {
       if (mediaRecorder && mediaRecorder.state === "recording") {
         mediaRecorder.stop();
-        setIsRecording(false);
       }
     };
   }, [mediaRecorder]);

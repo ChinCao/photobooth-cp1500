@@ -23,18 +23,23 @@ const FilterPage = () => {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
+  const uploadAttemptedRef = useRef(false);
 
   useEffect(() => {
     if (!photo) return router.push("/");
     if (photo!.selectedImages.length == 0) return router.push("/");
-    if (photo.video && !isUploading && !uploadComplete) {
+  }, [photo, router, setPhoto]);
+
+  useEffect(() => {
+    if (photo && !photo.video.uploaded && !uploadAttemptedRef.current) {
       const uploadVideo = async () => {
         try {
+          uploadAttemptedRef.current = true;
           setIsUploading(true);
           const formData = new FormData();
-          const filename = `video-${Date.now()}.webm`;
-          formData.append("file", photo.video, filename);
-          formData.append("contentType", "video/webm");
+          const filename = `video-${Date.now()}.mp4`;
+          formData.append("file", photo.video.data, filename);
+          formData.append("contentType", "video/mp4");
           formData.append("filename", filename);
 
           const uploadResponse = await fetch("/api/r2/upload", {
@@ -44,8 +49,13 @@ const FilterPage = () => {
           const result = await uploadResponse.json();
 
           if (result.success) {
+            setPhoto!((prevStyle) => {
+              if (prevStyle) {
+                return {...prevStyle, video: {...prevStyle.video, uploaded: true}};
+              }
+              return prevStyle;
+            });
             console.log("Video uploaded successfully:", result.url);
-            setUploadComplete(true);
           } else {
             console.error("Failed to upload video:", result.error);
           }
@@ -53,14 +63,13 @@ const FilterPage = () => {
           console.error("Error uploading video:", error);
         } finally {
           setIsUploading(false);
+          setUploadComplete(true);
         }
       };
 
       uploadVideo();
-    } else {
-      setUploadComplete(true); // No video to upload
     }
-  }, [isUploading, photo, router, uploadComplete]);
+  }, [photo, setPhoto]);
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
   const [filter, setFilter] = useState<string | null>();
