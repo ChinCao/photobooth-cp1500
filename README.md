@@ -117,5 +117,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Developed by @ChinCao and sponsored by VECTR.
-- All rights reserved to @ChinCao.
+- Developed by [@ChinCao](https://github.com/ChinCao) and sponsored by VECTR.
+- All rights reserved to [@ChinCao](https://github.com/ChinCao).
