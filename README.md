@@ -1,4 +1,4 @@
-# Photo Booth Application
+# Photo Booth Application 📸
 
 A modern photo booth application built with Next.js and Socket.IO, featuring real-time photo capture, custom frames, and image filters.
 
@@ -18,7 +18,8 @@ A modern photo booth application built with Next.js and Socket.IO, featuring rea
 - Node.js 18+
 - npm/yarn/pnpm/bun
 - PostgreSQL database (for image metadata)
-- Canon SELPHY CP1500 printer ([Product Link](https://www.amazon.com/Canon-SELPHY-CP1500-Compact-Printer/dp/B0BF6T86WD?th=1))
+- Canon SELPHY CP1500 printer ([Product Link](https://www.amazon.com/Canon-SELPHY-CP1500-Compact-Printer/dp/B0BF6T86WD))
+- Canon SELPHY CP1500 ink & paper ([Product Link](https://www.amazon.com/KP-108IN-Cassette-Wireless-Compact-Printer/dp/B079B5LTGW))
 
 ## Printer Setup
 
@@ -35,6 +36,7 @@ The printer must be:
 1. Connected to the computer via USBC cable
 2. Only can be installed as a Windows printer, not macOS or Linux
 3. Named containing "CP1500" in its printer name for auto-detection
+4. Make sure Window's spooler service is properly configured and running
 
 ## Environment Setup
 
@@ -47,10 +49,10 @@ cp copy.env .env
 2. Configure the following environment variables:
 
 ```
-ACCOUNT_ID=your_account_id
-ACCESS_KEY_ID=your_access_key
-SECRET_ACCESS_KEY=your_secret_key
-DATABASE_URL=your_database_url
+ACCOUNT_ID=cloudfare_account_id
+ACCESS_KEY_ID=r2_access_key
+SECRET_ACCESS_KEY=r2_secret_key
+DATABASE_URL=neon_database_url
 ```
 
 ## Installation

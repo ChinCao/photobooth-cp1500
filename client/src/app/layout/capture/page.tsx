@@ -135,14 +135,17 @@ const CapturePage = () => {
     const stream = videoRef.current.srcObject as MediaStream;
 
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", {
+      colorSpace: "display-p3",
+      willReadFrequently: true,
+    });
     const videoTrack = stream.getVideoTracks()[0];
     const {width, height} = videoTrack.getSettings();
 
     canvas.width = width!;
     canvas.height = height!;
 
-    const flippedStream = canvas.captureStream();
+    const flippedStream = canvas.captureStream(120);
 
     const drawVideo = () => {
       if (videoRef.current && ctx) {
@@ -157,8 +160,8 @@ const CapturePage = () => {
     drawVideo();
 
     const recorder = new MediaRecorder(flippedStream, {
-      mimeType: "video/mp4",
-      videoBitsPerSecond: 2000000,
+      mimeType: "video/webm;codecs=vp8",
+      videoBitsPerSecond: 10000000,
     });
 
     let chunks: Blob[] = [];
@@ -170,7 +173,7 @@ const CapturePage = () => {
     };
 
     recorder.onstop = () => {
-      const videoBlob = new Blob(chunks, {type: "video/mp4"});
+      const videoBlob = new Blob(chunks, {type: "video/webm"});
       if (videoBlob.size > 0) {
         setPhoto!((prevStyle) => {
           if (prevStyle) {
@@ -188,7 +191,7 @@ const CapturePage = () => {
     };
 
     setMediaRecorder(recorder);
-    recorder.start();
+    recorder.start(100);
   }, [setPhoto]);
 
   useEffect(() => {

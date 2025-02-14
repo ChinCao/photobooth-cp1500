@@ -38,9 +38,9 @@ const FilterPage = () => {
           uploadAttemptedRef.current = true;
           setIsUploading(true);
           const formData = new FormData();
-          const filename = `video-${Date.now()}.mp4`;
+          const filename = `video-${Date.now()}.webm`;
           formData.append("file", photo.video.data, filename);
-          formData.append("contentType", "video/mp4");
+          formData.append("contentType", "video/webm");
           formData.append("filename", filename);
 
           const uploadResponse = await fetch("/api/r2/upload", {
