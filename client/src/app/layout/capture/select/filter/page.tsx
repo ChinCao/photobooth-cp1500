@@ -24,6 +24,7 @@ const FilterPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
   const uploadAttemptedRef = useRef(false);
+  const filterRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -72,7 +73,7 @@ const FilterPage = () => {
   }, [photo, setPhoto]);
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
-  const [filter, setFilter] = useState<string | null>();
+  const [filter, setFilter] = useState<string | null>(null);
   const socket = useMemo(() => io("http://localhost:6969"), []);
   const stageRef = useRef<StageElement | null>(null);
 
@@ -93,6 +94,7 @@ const FilterPage = () => {
         theme: photo.theme.name,
       });
       setPhoto!(undefined);
+
       router.push("/");
     }
   }, [photo, router, setPhoto, socket]);
@@ -104,13 +106,21 @@ const FilterPage = () => {
       }, 1000);
       return () => clearInterval(timerId);
     } else {
+      if (isUploading) return;
       printImage();
     }
-  }, [printImage, router, setPhoto, timeLeft]);
+  }, [isUploading, printImage, router, setPhoto, timeLeft]);
 
   const selectRandomFilter = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * FILTERS.length);
     setFilter(FILTERS[randomIndex].value);
+
+    setTimeout(() => {
+      filterRefs.current[randomIndex]?.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+    }, 100);
   }, []);
 
   return (
@@ -119,7 +129,7 @@ const FilterPage = () => {
       <Card
         className={cn(
           "bg-background w-[85%] h-[90vh] mb-8 flex items-center flex-col justify-center p-8 relative",
-          !timeLeft || isUploading ? "pointer-events-none" : null
+          !timeLeft ? "pointer-events-none" : null
         )}
       >
         <div className="self-center">
@@ -187,8 +197,11 @@ const FilterPage = () => {
                     <div className="flex-wrap flex gap-4 items-center justify-center">
                       {FILTERS.map((item, index) => (
                         <div
+                          ref={(el) => {
+                            filterRefs.current[index] = el;
+                          }}
                           className={cn(
-                            "basis-1/6 flex flex-col gap-2 items-center justify-center border-2 cursor-pointer rounded hover:border-black",
+                            "basis-1/6 flex flex-col gap-2 items-center justify-center border-[4px] cursor-pointer rounded hover:border-black",
                             filter == item.value ? "border-rose-500 hover:border-rose-500" : null
                           )}
                           key={index}
@@ -209,7 +222,7 @@ const FilterPage = () => {
                       className="w-full mt-2"
                       onClick={selectRandomFilter}
                     >
-                      Random filter
+                      Random filter - {FILTERS.find((item) => item.value == filter)?.name}
                     </Button>
                     <Button
                       className="w-full mt-2"

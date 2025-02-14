@@ -110,7 +110,7 @@ const CapturePage = () => {
   const handleCapture = useCallback(async () => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d", {colorSpace: "srgb"});
+      const context = canvas.getContext("2d", {colorSpace: "display-p3", willReadFrequently: true});
 
       if (context) {
         canvas.width = cameraSize!.width || photo!.theme.frame.slotDimensions.width;
