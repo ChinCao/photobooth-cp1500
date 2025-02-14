@@ -18,6 +18,23 @@ A modern photo booth application built with Next.js and Socket.IO, featuring rea
 - Node.js 18+
 - npm/yarn/pnpm/bun
 - PostgreSQL database (for image metadata)
+- Canon SELPHY CP1500 printer ([Product Link](https://www.amazon.com/Canon-SELPHY-CP1500-Compact-Printer/dp/B0BF6T86WD?th=1))
+
+## Printer Setup
+
+The application is designed to work with the Canon SELPHY CP1500 photo printer. This compact printer offers:
+
+- High-quality 300x300 DPI photo printing
+- Support for postcard size (148x100mm)
+- Borderless printing capability
+- Direct wireless printing
+- Dye-sublimation printing technology
+
+The printer must be:
+
+1. Connected to the computer via USBC cable
+2. Only can be installed as a Windows printer, not macOS or Linux
+3. Named containing "CP1500" in its printer name for auto-detection
 
 ## Environment Setup
 
