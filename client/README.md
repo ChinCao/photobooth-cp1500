@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Photo Booth Application
 
-## Getting Started
+A modern photo booth application built with Next.js and Socket.IO, featuring real-time photo capture, custom frames, and image filters.
 
-First, run the development server:
+## Features
+
+- 📸 Real-time photo capture with webcam support
+- 🖼️ Multiple theme options (PROM, Usagyuuun)
+- ✨ 30+ Instagram-style filters
+- 🎞️ Custom frame layouts (single and double formats)
+- 🔄 Real-time preview and editing
+- 🌐 Socket.IO integration for real-time communication
+- ☁️ AWS S3 integration for image storage
+- 🎨 Tailwind CSS with custom UI components
+
+## Prerequisites
+
+- Node.js 18+
+- npm/yarn/pnpm/bun
+- PostgreSQL database (for image metadata)
+
+## Environment Setup
+
+1. Copy the example environment file:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp copy.env .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Configure the following environment variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+ACCOUNT_ID=your_account_id
+ACCESS_KEY_ID=your_access_key
+SECRET_ACCESS_KEY=your_secret_key
+DATABASE_URL=your_database_url
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Installation
 
-## Learn More
+1. Install client dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd client
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install server dependencies:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cd server
+npm install
+```
 
-## Deploy on Vercel
+## Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Start the client development server:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+cd client
+npm run dev
+```
+
+The client will be available at `http://localhost:8080`
+
+2. Start the server:
+
+```bash
+cd server
+npm run dev
+```
+
+The Socket.IO server will run on port 6969
+
+## Database Management
+
+Generate database migrations:
+
+```bash
+npm run db:generate
+```
+
+Apply migrations:
+
+```bash
+npm run db:migrate
+```
+
+Launch Drizzle Studio:
+
+```bash
+npm run db:studio
+```
+
+## Project Structure
+
+- `/client` - Next.js frontend application
+- `/server` - Socket.IO backend print server
+- `/public` - Static assets including frames and images
+- `/src/components` - Reusable React components
+- `/src/lib` - Utility functions and shared logic
+- `/src/constants` - Application constants and configurations
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Socket.IO](https://socket.io/) - Real-time communication
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [shadcn/ui](https://ui.shadcn.com/) - UI components
+- [Drizzle ORM](https://orm.drizzle.team/) - Database ORM
+- [AWS S3](https://aws.amazon.com/s3/) - Image storage
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Developed by @ChinCao and sponsored by VECTR.
+- All rights reserved to @ChinCao.
