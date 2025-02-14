@@ -5,6 +5,11 @@ import {currentTime, updatePrinterRegistry, getCP1500Printer} from "./utils";
 import {exec} from "child_process";
 import winston from "winston";
 
+const logsDir = path.join(process.cwd(), "logs");
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, {recursive: true});
+}
+
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
@@ -46,8 +51,33 @@ io.on("connection", (socket) => {
     });
 
     if (!message.dataURL || !message.theme || message.quantity < 1) {
-      throw new Error("Invalid print request parameters");
+      logger.error("Invalid print request parameters", {
+        jobId: printJobId,
+        error: "INVALID_REQUEST_PARAMETERS",
+        message: "Invalid print request parameters",
+      });
+      return;
     }
+
+    const themePath = path.join(process.cwd(), "images", message.theme);
+    if (!fs.existsSync(themePath)) {
+      fs.mkdirSync(themePath, {recursive: true});
+      logger.info("Theme directory created", {jobId: printJobId, path: themePath});
+    }
+
+    const filePath = path.join(themePath, `${currentTime()}.jpeg`);
+    const [, base64Data] = message.dataURL.split(",");
+    if (!base64Data) {
+      logger.error("Invalid image data", {
+        jobId: printJobId,
+        error: "INVALID_IMAGE_DATA",
+        message: "Invalid image data",
+      });
+      return;
+    }
+
+    await fs.promises.writeFile(filePath, Buffer.from(base64Data, "base64"));
+    logger.info("Image file saved", {jobId: printJobId, path: filePath});
 
     const printerName = await getCP1500Printer();
     if (!printerName) {
@@ -57,7 +87,7 @@ io.on("connection", (socket) => {
         error: "PRINTER_NOT_FOUND",
         message: "Unable to locate printer. Please check if it's connected.",
       });
-      throw error;
+      return;
     }
 
     logger.info("Printer found", {jobId: printJobId, printer: printerName});
@@ -70,23 +100,8 @@ io.on("connection", (socket) => {
         error: "PRINTER_REGISTRY_ERROR",
         message: "Failed to update printer registry. Printer may be offline.",
       });
-      throw error;
+      return;
     }
-
-    const themePath = path.join(process.cwd(), "images", message.theme);
-    if (!fs.existsSync(themePath)) {
-      fs.mkdirSync(themePath, {recursive: true});
-      logger.info("Theme directory created", {jobId: printJobId, path: themePath});
-    }
-
-    const filePath = path.join(themePath, `${currentTime()}.jpeg`);
-    const [, base64Data] = message.dataURL.split(",");
-    if (!base64Data) {
-      throw new Error("Invalid image data");
-    }
-
-    await fs.promises.writeFile(filePath, Buffer.from(base64Data, "base64"));
-    logger.info("Image file saved", {jobId: printJobId, path: filePath});
 
     const scriptPath = path.join(process.cwd(), "powershell", "print-image.ps1");
     const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "${scriptPath}" -imagePath "${filePath}" -printer "${printerName}" -copies ${message.quantity}`;
