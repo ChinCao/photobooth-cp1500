@@ -464,7 +464,8 @@ export interface PhotoOptions<T extends ValidTheme> {
   }>;
   video: {
     data: Blob;
-    url: string | null;
+    r2_url: string | null;
+    local_url: string | null;
   };
 }
 

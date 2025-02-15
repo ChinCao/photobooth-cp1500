@@ -1,35 +1,13 @@
 import {Server} from "socket.io";
 import path from "path";
 import fs from "fs";
-import {currentTime, updatePrinterRegistry, getCP1500Printer} from "./utils";
+import {currentTime, updatePrinterRegistry, getCP1500Printer, logger} from "./utils";
 import {exec} from "child_process";
-import winston from "winston";
 
 const logsDir = path.join(process.cwd(), "logs");
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, {recursive: true});
 }
-
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
-    }),
-    new winston.transports.File({
-      filename: "logs/error.log",
-      level: "error",
-      maxsize: 5242880,
-      maxFiles: 5,
-    }),
-    new winston.transports.File({
-      filename: "logs/combined.log",
-      maxsize: 5242880,
-      maxFiles: 5,
-    }),
-  ],
-});
 
 const io = new Server(6969, {
   cors: {
@@ -132,6 +110,8 @@ io.on("connection", (socket) => {
       });
     });
   });
+
+  socket.on("process-video", async (message: {dataURL: string}, callback) => {});
 
   socket.on("disconnect", () => {
     logger.info("Client disconnected", {socketId: socket.id});

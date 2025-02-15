@@ -4,6 +4,7 @@ import "./globals.css";
 import {PhotoProvider} from "@/context/StyleContext";
 import NextTopLoader from "nextjs-toploader";
 import Image from "next/image";
+import {SocketProvider} from "@/context/SocketContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,29 +27,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <PhotoProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col`}
-        >
-          <NextTopLoader
-            color="black"
-            zIndex={100000}
-          />
-          {children}
-          <footer className="w-full fixed bottom-0">
-            <p className=" flex items-center justify-center min-w-screen bg-black text-orange-500 text-center text-md p-2 gap-3">
-              Ứng dụng này được phát triển và tài trợ bởi CLB VECTR
-              <Image
-                width={25}
-                height={25}
-                src="/vectr.png"
-                alt="Vectr logo"
-              />
-            </p>
-          </footer>
-        </body>
-      </html>
-    </PhotoProvider>
+    <SocketProvider>
+      <PhotoProvider>
+        <html lang="en">
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col`}
+          >
+            <NextTopLoader
+              color="black"
+              zIndex={100000}
+            />
+            {children}
+            <footer className="w-full fixed bottom-0">
+              <p className=" flex items-center justify-center min-w-screen bg-black text-orange-500 text-center text-md p-2 gap-3">
+                Ứng dụng này được phát triển và tài trợ bởi CLB VECTR
+                <Image
+                  width={25}
+                  height={25}
+                  src="/vectr.png"
+                  alt="Vectr logo"
+                />
+              </p>
+            </footer>
+          </body>
+        </html>
+      </PhotoProvider>
+    </SocketProvider>
   );
 }

@@ -9,11 +9,11 @@ import Image from "next/image";
 const ReviewPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
-  const [timeLeft, setTimeLeft] = useState(5000);
+  const [timeLeft, setTimeLeft] = useState(7);
 
   useEffect(() => {
     if (!photo) return router.push("/");
-    if (!photo!.video.url) return router.push("/");
+    if (!photo!.video.local_url) return router.push("/");
   }, [photo, router, setPhoto]);
 
   useEffect(() => {
@@ -35,13 +35,13 @@ const ReviewPage = () => {
           <div className="flex items-center justify-center gap-4">
             <video
               className="w-[70%] rounded-lg"
-              src={photo.video.url!}
+              src={photo.video.local_url!}
               autoPlay
               muted
               loop
               playsInline
               ref={(el) => {
-                if (el) el.playbackRate = 3;
+                if (el) el.playbackRate = 8;
               }}
             />
             <div className="flex flex-col gap-5 items-center justify-center">
@@ -50,6 +50,7 @@ const ReviewPage = () => {
               <Image
                 src="/dance.gif"
                 alt="logo"
+                unoptimized
                 width={190}
                 height={190}
               />

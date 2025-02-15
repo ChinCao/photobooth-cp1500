@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import {exec} from "child_process";
+import winston from "winston";
 
 export function currentTime() {
   const currentDate = new Date();
@@ -70,3 +71,24 @@ export function getCP1500Printer(): Promise<string> {
     });
   });
 }
+
+export const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+    }),
+    new winston.transports.File({
+      filename: "logs/error.log",
+      level: "error",
+      maxsize: 5242880,
+      maxFiles: 5,
+    }),
+    new winston.transports.File({
+      filename: "logs/combined.log",
+      maxsize: 5242880,
+      maxFiles: 5,
+    }),
+  ],
+});

@@ -28,6 +28,7 @@
     "embla-carousel-wheel-gestures": "^8.0.1",
     "konva": "^9.3.18",
     "lucide-react": "^0.475.0",
+    "motion": "^12.4.3",
     "next": "15.1.7",
     "next-navigation-guard": "^0.1.2",
     "nextjs-toploader": "^3.7.15",

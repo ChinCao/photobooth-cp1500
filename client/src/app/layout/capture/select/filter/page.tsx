@@ -13,10 +13,10 @@ import {FILTERS, FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X,
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
-import {io, Socket} from "socket.io-client";
 import NavBar from "@/components/NavBar/NavBar";
 import {MdOutlineCloudDone} from "react-icons/md";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import {useSocket} from "@/context/SocketContext";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -25,7 +25,6 @@ const FilterPage = () => {
   const [uploadComplete, setUploadComplete] = useState(false);
   const uploadAttemptedRef = useRef(false);
   const filterRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -33,7 +32,7 @@ const FilterPage = () => {
   }, [photo, router, setPhoto]);
 
   useEffect(() => {
-    if (photo && !photo.video.url && !uploadAttemptedRef.current) {
+    if (photo && !photo.video.r2_url && !uploadAttemptedRef.current) {
       const uploadVideo = async () => {
         uploadAttemptedRef.current = true;
         setIsUploading(true);
@@ -70,44 +69,11 @@ const FilterPage = () => {
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
   const [filter, setFilter] = useState<string | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
   const stageRef = useRef<StageElement | null>(null);
+  const {socket, isConnected} = useSocket();
 
   const [timeLeft, setTimeLeft] = useState(30);
   const [printed, setPrinted] = useState(false);
-
-  useEffect(() => {
-    const newSocket = io("http://localhost:6969", {
-      reconnection: true,
-      reconnectionAttempts: 5,
-      timeout: 10000,
-      autoConnect: false,
-    });
-
-    setSocket(newSocket);
-
-    newSocket.connect();
-
-    newSocket.on("connect", () => {
-      console.log("Connected to server.");
-      setIsConnected(true);
-    });
-
-    newSocket.on("disconnect", () => {
-      console.log("Disconnected from server.");
-      setIsConnected(false);
-    });
-
-    newSocket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
-      setIsConnected(false);
-    });
-
-    return () => {
-      newSocket.disconnect();
-      newSocket.removeAllListeners();
-    };
-  }, []);
 
   const printImage = useCallback(() => {
     if (stageRef.current && photo && socket) {
@@ -120,9 +86,9 @@ const FilterPage = () => {
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
 
       const videoPreload = new Promise((resolve) => {
-        if (photo.video.url) {
+        if (photo.video.r2_url) {
           const video = document.createElement("video");
-          video.src = photo.video.url;
+          video.src = photo.video.r2_url;
           video.preload = "auto";
           video.onloadeddata = () => resolve(true);
           video.onerror = () => resolve(false);
