@@ -33,40 +33,35 @@ const FilterPage = () => {
   }, [photo, router, setPhoto]);
 
   useEffect(() => {
-    if (photo && !photo.video.uploaded && !uploadAttemptedRef.current) {
+    if (photo && !photo.video.url && !uploadAttemptedRef.current) {
       const uploadVideo = async () => {
-        try {
-          uploadAttemptedRef.current = true;
-          setIsUploading(true);
-          const formData = new FormData();
-          const filename = `video-${Date.now()}.webm`;
-          formData.append("file", photo.video.data, filename);
-          formData.append("contentType", "video/webm");
-          formData.append("filename", filename);
+        uploadAttemptedRef.current = true;
+        setIsUploading(true);
+        const formData = new FormData();
+        const filename = `video-${Date.now()}.webm`;
+        formData.append("file", photo.video.data, filename);
+        formData.append("contentType", "video/webm");
+        formData.append("filename", filename);
 
-          const uploadResponse = await fetch("/api/r2/upload", {
-            method: "POST",
-            body: formData,
+        const uploadResponse = await fetch("/api/r2/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await uploadResponse.json();
+
+        if (result.success) {
+          setPhoto!((prevStyle) => {
+            if (prevStyle) {
+              return {...prevStyle, video: {...prevStyle.video, url: result.url}};
+            }
+            return prevStyle;
           });
-          const result = await uploadResponse.json();
-
-          if (result.success) {
-            setPhoto!((prevStyle) => {
-              if (prevStyle) {
-                return {...prevStyle, video: {...prevStyle.video, uploaded: true}};
-              }
-              return prevStyle;
-            });
-            console.log("Video uploaded successfully:", result.url);
-          } else {
-            console.error("Failed to upload video:", result.error);
-          }
-        } catch (error) {
-          console.error("Error uploading video:", error);
-        } finally {
-          setIsUploading(false);
-          setUploadComplete(true);
+          console.log("Video uploaded successfully:", result.url);
+        } else {
+          console.error("Failed to upload video:", result.error);
         }
+        setIsUploading(false);
+        setUploadComplete(true);
       };
 
       uploadVideo();
@@ -124,6 +119,18 @@ const FilterPage = () => {
       setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
 
+      const videoPreload = new Promise((resolve) => {
+        if (photo.video.url) {
+          const video = document.createElement("video");
+          video.src = photo.video.url;
+          video.preload = "auto";
+          video.onloadeddata = () => resolve(true);
+          video.onerror = () => resolve(false);
+        } else {
+          resolve(false);
+        }
+      });
+
       socket.emit(
         "print",
         {
@@ -131,17 +138,18 @@ const FilterPage = () => {
           dataURL: dataURL,
           theme: photo.theme.name,
         },
-        (response: {success: boolean; message?: string}) => {
+        async (response: {success: boolean; message?: string}) => {
           console.log("Print event emitted:", response);
           if (!response.success) {
             console.error("Print failed:", response.message);
           }
-          setPhoto!(undefined);
-          router.push("/");
+          // Wait for video to preload before navigation
+          await videoPreload;
+          router.push("/layout/capture/select/filter/review");
         }
       );
     }
-  }, [photo, router, setPhoto, socket, isConnected]);
+  }, [photo, router, socket, isConnected]);
 
   useEffect(() => {
     if (timeLeft > 0) {

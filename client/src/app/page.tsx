@@ -22,7 +22,7 @@ const ThemePage = () => {
         selectedImages: [],
         video: {
           data: new Blob(),
-          uploaded: false,
+          url: null,
         },
       };
     });

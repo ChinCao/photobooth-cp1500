@@ -140,3 +140,5 @@ Copyright (C) 2024 [@ChinCao](https://github.com/ChinCao). All rights reserved.
 
 - Developed by [@ChinCao](https://github.com/ChinCao) and sponsored by VECTR.
 - All rights reserved to [@ChinCao](https://github.com/ChinCao).
+- Does not support mobile devices.
+- Enter full screen mode for better experience.

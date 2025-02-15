@@ -170,8 +170,8 @@ const CapturePage = () => {
             return {
               ...prevStyle,
               video: {
+                ...prevStyle.video,
                 data: videoBlob,
-                uploaded: false,
               },
             };
           }
