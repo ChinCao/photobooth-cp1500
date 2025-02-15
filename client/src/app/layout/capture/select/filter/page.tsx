@@ -3,7 +3,7 @@
 import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {useRouter} from "next/navigation";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import useImage from "use-image";
 import {Image as KonvaImage, Rect} from "react-konva";
 import {Layer, Stage} from "react-konva";
@@ -13,7 +13,7 @@ import {FILTERS, FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X,
 import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
-import {io} from "socket.io-client";
+import {io, Socket} from "socket.io-client";
 import NavBar from "@/components/NavBar/NavBar";
 import {MdOutlineCloudDone} from "react-icons/md";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -25,6 +25,7 @@ const FilterPage = () => {
   const [uploadComplete, setUploadComplete] = useState(false);
   const uploadAttemptedRef = useRef(false);
   const filterRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -74,30 +75,73 @@ const FilterPage = () => {
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
   const [filter, setFilter] = useState<string | null>(null);
-  const socket = useMemo(() => io("http://localhost:6969"), []);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const stageRef = useRef<StageElement | null>(null);
 
   const [timeLeft, setTimeLeft] = useState(30);
   const [printed, setPrinted] = useState(false);
 
-  socket.on("connect", () => {
-    console.log("Connected to server.");
-  });
+  useEffect(() => {
+    const newSocket = io("http://localhost:6969", {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      timeout: 10000,
+      autoConnect: false,
+    });
+
+    setSocket(newSocket);
+
+    newSocket.connect();
+
+    newSocket.on("connect", () => {
+      console.log("Connected to server.");
+      setIsConnected(true);
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Disconnected from server.");
+      setIsConnected(false);
+    });
+
+    newSocket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+      setIsConnected(false);
+    });
+
+    return () => {
+      newSocket.disconnect();
+      newSocket.removeAllListeners();
+    };
+  }, []);
 
   const printImage = useCallback(() => {
-    if (stageRef.current && photo) {
+    if (stageRef.current && photo && socket) {
+      if (!isConnected) {
+        console.error("Socket not connected. Cannot print.");
+        return;
+      }
+
       setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
-      socket.emit("print", {
-        quantity: photo.theme.frame.type == "singular" ? photo.quantity : photo.quantity / 2,
-        dataURL: dataURL,
-        theme: photo.theme.name,
-      });
-      setPhoto!(undefined);
 
-      router.push("/");
+      socket.emit(
+        "print",
+        {
+          quantity: photo.theme.frame.type == "singular" ? photo.quantity : photo.quantity / 2,
+          dataURL: dataURL,
+          theme: photo.theme.name,
+        },
+        (response: {success: boolean; message?: string}) => {
+          console.log("Print event emitted:", response);
+          if (!response.success) {
+            console.error("Print failed:", response.message);
+          }
+          setPhoto!(undefined);
+          router.push("/");
+        }
+      );
     }
-  }, [photo, router, setPhoto, socket]);
+  }, [photo, router, setPhoto, socket, isConnected]);
 
   useEffect(() => {
     if (timeLeft > 0) {

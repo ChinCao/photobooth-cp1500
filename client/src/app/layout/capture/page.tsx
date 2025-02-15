@@ -2,14 +2,13 @@
 import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
-import {useState, useEffect, useRef, useCallback, useMemo} from "react";
+import {useState, useEffect, useRef, useCallback} from "react";
 import {useRouter} from "next/navigation";
 import useSound from "use-sound";
 import {NUM_OF_IMAGE} from "@/constants/constants";
 import {ImCamera} from "react-icons/im";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {uploadImageToR2} from "@/lib/r2";
-import io from "socket.io-client";
 
 const CapturePage = () => {
   const duration = 2;
@@ -29,15 +28,6 @@ const CapturePage = () => {
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
   const [uploadedImages, setUploadedImages] = useState<Array<{id: string; href: string}>>([]);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const socket = useMemo(
-    () =>
-      io("http://localhost:6969", {
-        reconnection: true,
-        reconnectionAttempts: 5,
-        timeout: 10000,
-      }),
-    []
-  );
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -256,7 +246,7 @@ const CapturePage = () => {
             setCycles((prevCycle) => prevCycle + 1);
             setCount(duration);
           }
-          if (cycles == maxCycles && count == 0 && uploadedImages.length == maxCycles - 1) {
+          if (cycles == maxCycles && count <= 0 && uploadedImages.length == maxCycles - 1) {
             if (mediaRecorder) {
               mediaRecorder.stop();
             }
@@ -312,20 +302,6 @@ const CapturePage = () => {
       }
     };
   }, [mediaRecorder]);
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to server.");
-    });
-
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [socket]);
 
   return (
     <Card className="bg-background w-[90%] h-[90vh] mb-8 flex items-center justify-start p-8 flex-col gap-9 relative">

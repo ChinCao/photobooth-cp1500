@@ -39,8 +39,8 @@ const io = new Server(6969, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("print", async (message: {quantity: number; dataURL: string; theme: string}) => {
-    logger.info("Client connected", {socketId: socket.id});
+  logger.info("Client connected", {socketId: socket.id});
+  socket.on("print", async (message: {quantity: number; dataURL: string; theme: string}, callback) => {
     const printJobId = `print-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     logger.info("Print job received", {
@@ -56,8 +56,11 @@ io.on("connection", (socket) => {
         error: "INVALID_REQUEST_PARAMETERS",
         message: "Invalid print request parameters",
       });
+      callback({success: false, message: "Invalid print request parameters"});
       return;
     }
+
+    callback({success: true, message: "Print job submitted"});
 
     const themePath = path.join(process.cwd(), "images", message.theme);
     if (!fs.existsSync(themePath)) {
