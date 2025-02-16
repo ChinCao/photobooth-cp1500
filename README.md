@@ -85,6 +85,12 @@ cd server
 npm install
 ```
 
+3. Install root project dependencies (optional):
+
+```bash
+npm install
+```
+
 ## Development
 
 1. Start the client development server:
@@ -103,7 +109,14 @@ cd server
 npm run dev
 ```
 
+OR IF YOU WANT TO START THE CLIENT AND SERVER SIMULTANEOUSLY:
+
+```bash
+npm run dev
+```
+
 The Socket.IO server will run on port 6969
+The client will be available at `http://localhost:8080`
 
 ## Database Management
 
