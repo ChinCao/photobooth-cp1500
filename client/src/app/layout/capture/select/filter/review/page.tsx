@@ -1,5 +1,4 @@
 "use client";
-import NavBar from "@/components/NavBar/NavBar";
 import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {useRouter} from "next/navigation";
@@ -28,37 +27,34 @@ const ReviewPage = () => {
   }, [router, setPhoto, timeLeft]);
 
   return (
-    <>
-      <NavBar />
-      <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
-        {photo && (
-          <div className="flex items-center justify-center gap-4">
-            <video
-              className="w-[70%] rounded-lg"
-              src={photo.video.r2_url!}
-              autoPlay
-              muted
-              loop
-              playsInline
-              ref={(el) => {
-                if (el) el.playbackRate = 8;
-              }}
+    <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
+      {photo && (
+        <div className="flex items-center justify-center gap-4">
+          <video
+            className="w-[70%] rounded-lg"
+            src={photo.video.r2_url!}
+            autoPlay
+            muted
+            loop
+            playsInline
+            ref={(el) => {
+              if (el) el.playbackRate = 8;
+            }}
+          />
+          <div className="flex flex-col gap-5 items-center justify-center">
+            <h1 className="text-4xl font-bold text-center">{t("Please go outside to take the photo")}</h1>
+            <p className="text-4xl font-bold text-center text-red-500">💫 {timeLeft}s</p>
+            <Image
+              src="/dance.gif"
+              alt="logo"
+              unoptimized
+              width={190}
+              height={190}
             />
-            <div className="flex flex-col gap-5 items-center justify-center">
-              <h1 className="text-4xl font-bold text-center">{t("Please go outside to take the photo")}</h1>
-              <p className="text-4xl font-bold text-center text-red-500">💫 {timeLeft}s</p>
-              <Image
-                src="/dance.gif"
-                alt="logo"
-                unoptimized
-                width={190}
-                height={190}
-              />
-            </div>
           </div>
-        )}
-      </Card>
-    </>
+        </div>
+      )}
+    </Card>
   );
 };
 

@@ -15,7 +15,7 @@ const staticFileExtensions = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".ico", "
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  if (path.startsWith("/api") || staticFileExtensions.some((ext) => path.toLowerCase().endsWith(ext))) {
+  if (path.startsWith("/api") || path.includes("/socket.io/") || staticFileExtensions.some((ext) => path.toLowerCase().endsWith(ext))) {
     return NextResponse.next();
   }
 

@@ -8,8 +8,9 @@ import {cn} from "@/lib/utils";
 const NavBar = () => {
   const path = usePathname();
   const isActive = path == "/" || path == "/layout";
+  const hideNavBar = path === "/layout/capture";
   return (
-    <header className="bg-transparent pt-4 px-5 fixed w-full top-0">
+    <header className={cn("bg-transparent pt-4 px-5 fixed w-full top-0", hideNavBar ? "hidden" : null)}>
       <nav className=" flex w-full justify-between">
         <div className="w-max cursor-pointer shadow-lg rounded-xl border bg-card text-card-foreground">
           <Link
