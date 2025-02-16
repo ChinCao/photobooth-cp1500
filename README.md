@@ -18,8 +18,21 @@ A modern photo booth application built with Next.js and Socket.IO, featuring rea
 - Node.js 18+
 - npm/yarn/pnpm/bun
 - Neon PostgreSQL database
+- FFmpeg (for video processing)
 - Canon SELPHY CP1500 printer ([Product Link](https://www.amazon.com/Canon-SELPHY-CP1500-Compact-Printer/dp/B0BF6T86WD))
 - Canon SELPHY CP1500 ink & paper ([Product Link](https://www.amazon.com/KP-108IN-Cassette-Wireless-Compact-Printer/dp/B079B5LTGW))
+
+## Video Processing
+
+The application uses FFmpeg for video processing with the following optimizations:
+
+- Speeds up recorded videos by 2x
+- Compresses videos for faster loading
+- Converts WebM to MP4 format
+- Applies H.264 encoding for broad compatibility
+- Maintains quality while reducing file size
+
+FFmpeg must be installed and accessible in the system PATH for video processing to work.
 
 ## Printer Setup
 
