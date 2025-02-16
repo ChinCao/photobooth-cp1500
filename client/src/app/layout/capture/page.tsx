@@ -9,6 +9,7 @@ import {NUM_OF_IMAGE} from "@/constants/constants";
 import {ImCamera} from "react-icons/im";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {uploadImageToR2} from "@/lib/r2";
+import {useTranslation} from "react-i18next";
 
 const CapturePage = () => {
   const duration = 2;
@@ -28,6 +29,7 @@ const CapturePage = () => {
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
   const [uploadedImages, setUploadedImages] = useState<Array<{id: string; href: string}>>([]);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const {t} = useTranslation();
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -347,7 +349,7 @@ const CapturePage = () => {
                   size={80}
                 />
               </div>
-              <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">Waiting for camera ...</h1>
+              <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">{t("Waiting for camera...")}</h1>
             </div>
           )}
         </>

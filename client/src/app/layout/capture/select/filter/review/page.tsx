@@ -5,12 +5,12 @@ import {usePhoto} from "@/context/StyleContext";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import Image from "next/image";
-
+import {useTranslation} from "react-i18next";
 const ReviewPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(7);
-
+  const {t} = useTranslation();
   useEffect(() => {
     if (!photo) return router.push("/");
     if (!photo!.video.r2_url) return router.push("/");
@@ -45,7 +45,7 @@ const ReviewPage = () => {
               }}
             />
             <div className="flex flex-col gap-5 items-center justify-center">
-              <h1 className="text-4xl font-bold text-center">Hãy đi ra ngoài lấy ảnh nhé! </h1>
+              <h1 className="text-4xl font-bold text-center">{t("Please go outside to take the photo")}</h1>
               <p className="text-4xl font-bold text-center text-red-500">💫 {timeLeft}s</p>
               <Image
                 src="/dance.gif"

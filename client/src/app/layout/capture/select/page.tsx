@@ -19,12 +19,14 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import SelectInstruction from "@/components/SelectInstruction";
 import NavBar from "@/components/NavBar/NavBar";
 import {useSocket} from "@/context/SocketContext";
+import {useTranslation} from "react-i18next";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
   const {socket, isConnected} = useSocket();
   const [videoProcessed, setVideoProcessed] = useState(false);
+  const {t} = useTranslation();
   const lastImageUploaded = useMemo(() => {
     if (photo) {
       return photo!.images[photo!.images.length - 1].href != "";
@@ -322,7 +324,7 @@ const PrintPage = () => {
           <div className="flex flex-wrap w-[55%] gap-4 items-start justify-center ">
             {photo && (
               <h1 className="text-5xl font-bold mb-4">
-                Chọn hình <span className="text-rose-500">{timeLeft}s</span>
+                {t("Choose pictures")} <span className="text-rose-500">{timeLeft}s</span>
               </h1>
             )}
 
@@ -367,7 +369,7 @@ const PrintPage = () => {
               )}
               onClick={() => handleContextSelect(filteredSelectedImages)}
             >
-              Chọn filter
+              {t("Choose a filter")}
               {!lastImageUploaded || !videoProcessed ? (
                 <LoadingSpinner size={15} />
               ) : (

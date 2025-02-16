@@ -16,12 +16,13 @@ import {Stage as StageElement} from "konva/lib/Stage";
 import NavBar from "@/components/NavBar/NavBar";
 import {useSocket} from "@/context/SocketContext";
 import {PiPrinter} from "react-icons/pi";
+import {useTranslation} from "react-i18next";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
   const filterRefs = useRef<(HTMLDivElement | null)[]>([]);
-
+  const {t} = useTranslation();
   useEffect(() => {
     if (!photo) return router.push("/");
     if (photo!.selectedImages.length == 0) return router.push("/");
@@ -166,7 +167,7 @@ const FilterPage = () => {
                 </div>
                 <div className="flex items-center justify-center flex-col gap-5">
                   <h1 className="text-4xl font-bold mb-4 uppercase">
-                    Chọn filter <span className="text-rose-500">{timeLeft}s</span>
+                    {t("Choose a filter")} <span className="text-rose-500">{timeLeft}s</span>
                   </h1>
                   <ScrollArea className=" h-[60vh] w-[100%] ">
                     <div className="flex-wrap flex gap-4 items-center justify-center">
@@ -197,13 +198,13 @@ const FilterPage = () => {
                       className="w-full mt-2"
                       onClick={selectRandomFilter}
                     >
-                      Random filter - {FILTERS.find((item) => item.value == filter)?.name}
+                      {t("Random filter")} - {FILTERS.find((item) => item.value == filter)?.name}
                     </Button>
                     <Button
                       className="w-full mt-2"
                       onClick={() => setFilter(null)}
                     >
-                      Reset filter
+                      {t("Reset filter")}
                     </Button>
                   </div>
                 </div>
@@ -214,7 +215,7 @@ const FilterPage = () => {
                 onClick={printImage}
               >
                 <>
-                  In
+                  {t("Print")}
                   <PiPrinter size={15} />
                 </>
               </Button>

@@ -13,10 +13,12 @@ import {useCallback, useEffect, useState} from "react";
 import {FaArrowLeft, FaArrowRight} from "react-icons/fa6";
 import {IoIosArrowBack, IoIosArrowForward, IoIosCheckmark} from "react-icons/io";
 import {useRouter} from "next/navigation";
+import {useTranslation} from "react-i18next";
 
 const LayoutPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
+  const {t} = useTranslation();
   useEffect(() => {
     if (!photo) return router.push("/");
     if (photo!.images.length > 0) return router.push("/layout/capture/");
@@ -96,7 +98,7 @@ const LayoutPage = () => {
         {photo && (
           <div className="flex items-stretch justify-center gap-10">
             <div className="flex items-start flex-col justify-center gap-4 w-max">
-              <h1 className="text-4xl font-bold uppercase">Chọn frame</h1>
+              <h1 className="text-4xl font-bold uppercase">{t("Choose a frame")}</h1>
               <div
                 className={cn(
                   "rounded border-2 border-gray-500 flex items-center justify-center py-8 px-2 bg-gray-100",
@@ -189,7 +191,7 @@ const LayoutPage = () => {
             <div className="flex gap-10 items-center flex-col justify-between">
               <div className="flex flex-col items-center justify-center gap-8">
                 <div className="flex flex-col items-center justify-center gap-4">
-                  <h1 className="text-4xl font-bold uppercase text-nowrap">Chọn số lượng in</h1>
+                  <h1 className="text-4xl font-bold uppercase text-nowrap">{t("Choose number of copies")}</h1>
                   <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
                     {Array.from({length: maxQuantity}, (_, index) => {
                       const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
@@ -241,13 +243,13 @@ const LayoutPage = () => {
                   className="flex  text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full"
                 >
                   <FaArrowLeft />
-                  Chọn lại theme
+                  {t("Choose another theme")}
                 </Link>
                 <Link
                   href="/layout/capture"
                   className="flex text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full bg-green-700"
                 >
-                  Chụp
+                  {t("Capture")}
                   <FaArrowRight />
                 </Link>
               </div>
