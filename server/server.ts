@@ -4,7 +4,10 @@ import fs from "fs";
 import {currentTime, updatePrinterRegistry, getCP1500Printer, logger} from "./utils";
 import {exec} from "child_process";
 import {Blob} from "buffer";
-import {pipeline} from "stream/promises";
+import {S3Client, PutObjectCommand} from "@aws-sdk/client-s3";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const logsDir = path.join(process.cwd(), "logs");
 if (!fs.existsSync(logsDir)) {
@@ -18,8 +21,23 @@ const io = new Server(6969, {
   maxHttpBufferSize: Infinity,
 });
 
+const CLOUDFARE_ACCOUNT_ID = process.env.CLOUDFARE_ACCOUNT_ID as string;
+const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID as string;
+const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY as string;
+
+const R2 = new S3Client({
+  region: "auto",
+  endpoint: `https://${CLOUDFARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: R2_ACCESS_KEY_ID,
+    secretAccessKey: R2_SECRET_ACCESS_KEY,
+  },
+});
+
 io.on("connection", (socket) => {
-  logger.info("Client connected", {socketId: socket.id});
+  logger.info("Client connected", {
+    socketId: socket.id,
+  });
   socket.on("print", async (message: {quantity: number; dataURL: string; theme: string}, callback) => {
     const printJobId = `print-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -122,8 +140,11 @@ io.on("connection", (socket) => {
     });
 
     try {
-      const rawVideosDir = path.join(process.cwd(), "videos/raw");
-      const processedVideosDir = path.join(process.cwd(), "videos/processed");
+      const rawVideosDir = path.join(process.cwd(), "raw-videos");
+      const rawFilePath = path.join(rawVideosDir, `${currentTime()}.webm`);
+      const videoPath = `/processed-videos/${currentTime()}.mp4`;
+      const processedVideosDir = path.join(process.cwd(), "../client/public/processed-videos");
+      const processedFilePath = path.join(process.cwd(), "../client/public/", videoPath);
       if (!fs.existsSync(rawVideosDir)) {
         fs.mkdirSync(rawVideosDir, {recursive: true});
       }
@@ -131,14 +152,10 @@ io.on("connection", (socket) => {
         fs.mkdirSync(processedVideosDir, {recursive: true});
       }
 
-      const filename = `${currentTime()}.webm`;
-      const rawFilePath = path.join(rawVideosDir, filename);
-      const processedFilePath = path.join(processedVideosDir, filename);
-
       const buffer = Buffer.from(message.dataURL as unknown as ArrayBuffer);
       await fs.promises.writeFile(rawFilePath, buffer);
 
-      logger.info("Video file saved", {
+      logger.info("Raw video file saved", {
         jobId: videoJobId,
         path: rawFilePath,
       });
@@ -148,7 +165,7 @@ io.on("connection", (socket) => {
 
       logger.debug("Executing video processing command", {jobId: videoJobId, command});
 
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve) => {
         exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
           if (error) {
             logger.error("Video processing failed", {
@@ -158,8 +175,7 @@ io.on("connection", (socket) => {
               stdout,
               stderr,
             });
-            reject(error);
-            return;
+            resolve(void 0);
           }
 
           if (stdout.includes("SUCCESS:")) {
@@ -169,21 +185,59 @@ io.on("connection", (socket) => {
             });
             resolve(void 0);
           } else {
-            logger.error("Video processing failed - no success message", {
+            logger.error("Video processing failed", {
               jobId: videoJobId,
               stdout,
               stderr,
             });
-            reject(new Error("Video processing failed - no success message"));
+            resolve(void 0);
           }
         });
       });
 
-      callback({
-        success: true,
-        local_url: processedFilePath,
-        r2_url: "",
-      });
+      if (!fs.existsSync(processedVideosDir)) {
+        fs.mkdirSync(processedVideosDir, {recursive: true});
+      }
+
+      const fileName = `${currentTime()}.mp4`;
+
+      try {
+        const fileBuffer = await fs.promises.readFile(processedFilePath);
+        const uploadCommand = new PutObjectCommand({
+          Bucket: "vcp-photobooth",
+          Key: fileName,
+          Body: fileBuffer,
+          ContentType: "video/mp4",
+          ContentLength: fileBuffer.length,
+        });
+
+        await R2.send(uploadCommand);
+
+        const publicUrl = `https://pub-2abc3784ea3543ba9804f812db4aa180.r2.dev/${fileName}`;
+
+        logger.info("Video uploaded to R2", {
+          jobId: videoJobId,
+          fileName,
+          url: publicUrl,
+        });
+
+        callback({
+          success: true,
+          local_url: videoPath,
+          r2_url: publicUrl,
+        });
+      } catch (error) {
+        logger.error("R2 upload failed", {
+          jobId: videoJobId,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+
+        callback({
+          success: true,
+          local_url: videoPath,
+          r2_url: "",
+        });
+      }
     } catch (error) {
       logger.error("Video processing failed", {
         jobId: videoJobId,

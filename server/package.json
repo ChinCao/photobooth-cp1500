@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@aws-sdk/client-s3": "^3.749.0",
+    "dotenv": "^16.4.7",
     "socket.io": "^4.8.1",
     "winston": "^3.17.0"
   },

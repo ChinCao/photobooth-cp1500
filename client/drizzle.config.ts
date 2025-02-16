@@ -7,6 +7,6 @@ export default defineConfig({
   strict: true,
   verbose: true,
   dbCredentials: {
-    url: process.env.DATABASE_URL as string,
+    url: process.env.NEON_DATABASE_URL as string,
   },
 });

@@ -42,6 +42,7 @@ const PrintPage = () => {
         },
         (response: {success: boolean; r2_url: string; local_url: string}) => {
           if (response.success) {
+            console.log("Video processed", response.local_url);
             setPhoto!((prevStyle) => {
               if (prevStyle) {
                 return {...prevStyle, video: {...prevStyle.video, r2_url: response.r2_url, local_url: response.local_url}};

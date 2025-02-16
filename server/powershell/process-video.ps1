@@ -1,7 +1,7 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$inputVideo,
-    [string]$outputVideo = ($inputVideo -replace '\.([^\.]+)$', '_2x.$1')
+    [string]$outputVideo = ($inputVideo -replace '\.webm$', '_2x.mp4')
 )
 
 # Check if input file exists
@@ -10,11 +10,14 @@ if (-not (Test-Path $inputVideo)) {
     exit 1
 }
 
-# Process video with balanced settings for quality and compatibility
-# -quality good for balanced encoding
-# -cpu-used 0 for best quality (range 0-5, where 0 is best quality)
-# -b:v 1500k for reasonable bitrate
-ffmpeg -i $inputVideo -vf "setpts=0.5*PTS" -c:v vp8 -quality good -cpu-used 0 -b:v 1500k $outputVideo 2>&1
+# Process video with maximum quality settings
+# -vf "scale=..." ensures even dimensions required by H.264
+# -c:v libx264 for H.264 video codec
+# -crf 17 for very high quality (range 0-51, lower is better, 0 is lossless)
+# -preset veryslow for best possible compression
+# -tune film for optimal quality
+# -movflags +faststart for web playback optimization
+ffmpeg -i $inputVideo -vf "scale=796:556,setpts=0.5*PTS" -c:v libx264 -crf 17 -preset veryslow -tune film -movflags +faststart -f mp4 ($outputVideo -replace '\.webm$', '.mp4') 2>&1
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "SUCCESS: Video processing complete. Output saved to: $outputVideo"
