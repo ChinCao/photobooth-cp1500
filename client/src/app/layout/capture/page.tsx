@@ -1,5 +1,4 @@
 "use client";
-import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
 import {useState, useEffect, useRef, useCallback} from "react";
@@ -306,7 +305,7 @@ const CapturePage = () => {
   }, [mediaRecorder]);
 
   return (
-    <Card className="bg-background w-[90%] h-[90vh] mb-8 flex items-center justify-start p-8 flex-col gap-9 relative">
+    <div className="relative w-full h-full flex items-center justify-center">
       {photo && (
         <>
           <div className="w-[80%] relative">
@@ -333,7 +332,7 @@ const CapturePage = () => {
             )}
           </div>
           {isCameraReady && (
-            <h1 className="font-bold text-4xl text-center mt-3 absolute left-[calc(50%-15px)] bottom-[2%]">
+            <h1 className="font-bold text-4xl text-center mt-3 absolute left-[calc(50%-15px)] bottom-[-2%]">
               {cycles}/{maxCycles}
             </h1>
           )}
@@ -354,7 +353,7 @@ const CapturePage = () => {
           )}
         </>
       )}
-    </Card>
+    </div>
   );
 };
 

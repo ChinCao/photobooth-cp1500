@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {useRouter} from "next/navigation";
 import {useCallback, useEffect, useRef, useState} from "react";
@@ -99,12 +98,7 @@ const FilterPage = () => {
   }, []);
 
   return (
-    <Card
-      className={cn(
-        "bg-background w-[85%] h-[90vh] mb-8 flex items-center flex-col justify-center p-8 relative",
-        !timeLeft ? "pointer-events-none" : null
-      )}
-    >
+    <div className={cn(!timeLeft ? "pointer-events-none" : null)}>
       <div className="self-center">
         {photo && frameImg && (
           <>
@@ -219,7 +213,7 @@ const FilterPage = () => {
           </>
         )}
       </div>
-    </Card>
+    </div>
   );
 };
 

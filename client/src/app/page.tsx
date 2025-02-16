@@ -1,5 +1,5 @@
 "use client";
-import {Card, CardContent, CardTitle} from "@/components/ui/card";
+import {CardContent, CardTitle} from "@/components/ui/card";
 import {FrameDefaults, ThemeSelectButton, ValidTheme} from "@/constants/constants";
 import {usePhoto} from "@/context/StyleContext";
 import Image from "next/image";
@@ -73,7 +73,7 @@ const ThemePage = () => {
   };
 
   return (
-    <Card className="bg-background w-[85%] min-h-[90vh] mb-8 flex items-center justify-start p-8 flex-col gap-9">
+    <>
       <Popover
         open={open}
         onOpenChange={setOpen}
@@ -148,7 +148,7 @@ const ThemePage = () => {
           ))}
         </CardContent>
       </div>
-    </Card>
+    </>
   );
 };
 

@@ -1,5 +1,4 @@
 "use client";
-import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
@@ -27,7 +26,7 @@ const ReviewPage = () => {
   }, [router, setPhoto, timeLeft]);
 
   return (
-    <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
+    <div className="w-full h-full flex items-center justify-center gap-6 flex-col">
       {photo && (
         <div className="flex items-center justify-center gap-4">
           <video
@@ -54,7 +53,7 @@ const ReviewPage = () => {
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 };
 

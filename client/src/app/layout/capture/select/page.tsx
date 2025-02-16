@@ -1,6 +1,5 @@
 "use client";
 import {Button} from "@/components/ui/button";
-import {Card} from "@/components/ui/card";
 import {usePhoto} from "@/context/StyleContext";
 import {cn, findChangedIndices, updateMap} from "@/lib/utils";
 import {useRouter} from "next/navigation";
@@ -236,7 +235,7 @@ const PrintPage = () => {
   }, [isTimeOver, filteredSelectedImages, handleContextSelect, lastImageUploaded, videoProcessed]);
 
   return (
-    <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center justify-center flex-col p-8 relative gap-6">
+    <div className="w-full h-full flex items-center justify-center gap-6 flex-col">
       <div className={cn("flex items-center justify-evenly w-full", isTimeOver ? "pointer-events-none" : null)}>
         <div className="flex flex-col items-center justify-center">
           <div className="relative">
@@ -378,7 +377,7 @@ const PrintPage = () => {
           </Link>
         </Button>
       )}
-    </Card>
+    </div>
   );
 };
 

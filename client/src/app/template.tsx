@@ -10,7 +10,7 @@ export default function Template({children}: {children: React.ReactNode}) {
       animate={{opacity: 1}}
       exit={{opacity: 0}}
       transition={{ease: "easeInOut", duration: 0.75}}
-      className="w-full h-full flex items-center justify-center flex-col"
+      className="w-full h-full "
     >
       {children}
     </motion.div>

@@ -1,6 +1,5 @@
 "use client";
 import {Button} from "@/components/ui/button";
-import {Card} from "@/components/ui/card";
 import {Carousel, CarouselContent, CarouselItem, type CarouselApi} from "@/components/ui/carousel";
 import {FrameOptions, ValidTheme} from "@/constants/constants";
 import {usePhoto} from "@/context/StyleContext";
@@ -91,9 +90,9 @@ const LayoutPage = () => {
   }, [api, apiPreview, handleFrameChange, photo]);
 
   return (
-    <Card className="bg-background w-[85%] h-[90vh] mb-8 flex items-center justify-center p-8 flex-col gap-9">
+    <div className="flex items-center justify-center h-full">
       {photo && (
-        <div className="flex items-stretch justify-center gap-10">
+        <div className="flex items-stretch justify-center gap-10 ">
           <div className="flex items-start flex-col justify-center gap-4 w-max">
             <h1 className="text-4xl font-bold uppercase">{t("Choose a frame")}</h1>
             <div
@@ -253,7 +252,7 @@ const LayoutPage = () => {
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 };
 
