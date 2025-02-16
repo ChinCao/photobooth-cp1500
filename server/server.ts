@@ -140,11 +140,10 @@ io.on("connection", (socket) => {
     });
 
     try {
-      const rawVideosDir = path.join(process.cwd(), "raw-videos");
+      const rawVideosDir = path.join(process.cwd(), "videos/raw");
       const rawFilePath = path.join(rawVideosDir, `${currentTime()}.webm`);
-      const videoPath = `/processed-videos/${currentTime()}.mp4`;
-      const processedVideosDir = path.join(process.cwd(), "../client/public/processed-videos");
-      const processedFilePath = path.join(process.cwd(), "../client/public/", videoPath);
+      const processedVideosDir = path.join(process.cwd(), "videos/processed");
+      const processedFilePath = path.join(processedVideosDir, `${currentTime()}.mp4`);
       if (!fs.existsSync(rawVideosDir)) {
         fs.mkdirSync(rawVideosDir, {recursive: true});
       }
@@ -223,7 +222,6 @@ io.on("connection", (socket) => {
 
         callback({
           success: true,
-          local_url: videoPath,
           r2_url: publicUrl,
         });
       } catch (error) {
@@ -234,7 +232,6 @@ io.on("connection", (socket) => {
 
         callback({
           success: true,
-          local_url: videoPath,
           r2_url: "",
         });
       }
@@ -246,7 +243,6 @@ io.on("connection", (socket) => {
 
       callback({
         success: false,
-        local_url: "",
         r2_url: "",
       });
     }

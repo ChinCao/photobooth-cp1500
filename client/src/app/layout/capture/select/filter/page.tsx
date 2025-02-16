@@ -44,7 +44,17 @@ const FilterPage = () => {
 
       setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
-
+      const videoPreload = new Promise((resolve) => {
+        if (photo.video.r2_url) {
+          const video = document.createElement("video");
+          video.src = photo.video.r2_url;
+          video.preload = "auto";
+          video.onloadeddata = () => resolve(true);
+          video.onerror = () => resolve(false);
+        } else {
+          resolve(false);
+        }
+      });
       socket.emit(
         "print",
         {
@@ -57,6 +67,8 @@ const FilterPage = () => {
           if (!response.success) {
             console.error("Print failed:", response.message);
           }
+          await videoPreload;
+
           router.push("/layout/capture/select/filter/review");
         }
       );

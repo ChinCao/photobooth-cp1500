@@ -40,12 +40,12 @@ const PrintPage = () => {
         {
           dataURL: photo.video.data,
         },
-        (response: {success: boolean; r2_url: string; local_url: string}) => {
+        (response: {success: boolean; r2_url: string}) => {
           if (response.success) {
-            console.log("Video processed", response.local_url);
+            console.log("Video processed", response.r2_url);
             setPhoto!((prevStyle) => {
               if (prevStyle) {
-                return {...prevStyle, video: {...prevStyle.video, r2_url: response.r2_url, local_url: response.local_url}};
+                return {...prevStyle, video: {...prevStyle.video, r2_url: response.r2_url}};
               }
             });
             setVideoProcessed(true);

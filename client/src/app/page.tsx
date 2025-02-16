@@ -23,7 +23,6 @@ const ThemePage = () => {
         video: {
           data: new Blob(),
           r2_url: null,
-          local_url: null,
         },
       };
     });

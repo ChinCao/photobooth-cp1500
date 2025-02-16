@@ -2,13 +2,12 @@
 
 # dependencies
 /client/node_modules
-/client/public/processed-videos
 /client/vcp-photobooth/node_modules
 /client/.wrangler
 /client/wrangler.toml
 /server/node_modules
 /server/images
-/server/raw-videos
+/server/videos
 /server/logs
 /.pnp
 .pnp.*

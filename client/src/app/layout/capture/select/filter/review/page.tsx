@@ -13,7 +13,7 @@ const ReviewPage = () => {
 
   useEffect(() => {
     if (!photo) return router.push("/");
-    if (!photo!.video.local_url) return router.push("/");
+    if (!photo!.video.r2_url) return router.push("/");
   }, [photo, router, setPhoto]);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const ReviewPage = () => {
           <div className="flex items-center justify-center gap-4">
             <video
               className="w-[70%] rounded-lg"
-              src={photo.video.local_url!}
+              src={photo.video.r2_url!}
               autoPlay
               muted
               loop
