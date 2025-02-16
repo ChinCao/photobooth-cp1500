@@ -7,7 +7,7 @@ const i18nConfig = {
   resources: {
     en: {
       translation: {
-        "Choose theme": "Choose theme",
+        "Choose a theme": "Choose a theme",
         "Select language...": "Select language...",
         "Choose a frame": "Choose a frame",
         "Choose number of copies": "Choose number of copies",
@@ -27,7 +27,7 @@ const i18nConfig = {
     },
     vi: {
       translation: {
-        "Choose theme": "Chọn theme",
+        "Choose a theme": "Chọn theme",
         "Select language...": "Chọn ngôn ngữ...",
         "Choose a frame": "Chọn frame",
         "Choose number of copies": "Chọn số lượng in",
@@ -47,7 +47,7 @@ const i18nConfig = {
     },
     fr: {
       translation: {
-        "Choose theme": "Choisir le thème",
+        "Choose a theme": "Choisir le thème",
         "Select language...": "Choisir la langue...",
         "Choose a frame": "Choisir le cadre",
         "Choose number of copies": "Choisir le nombre de copies",
@@ -67,7 +67,7 @@ const i18nConfig = {
     },
     cn: {
       translation: {
-        "Choose theme": "选择主题",
+        "Choose a theme": "选择主题",
         "Select language...": "选择语言...",
         "Choose a frame": "选择框架",
         "Choose number of copies": "选择打印数量",

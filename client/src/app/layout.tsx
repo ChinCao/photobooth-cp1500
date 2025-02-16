@@ -33,6 +33,8 @@ export default function RootLayout({
             <body
               className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col`}
             >
+              <title>Photobooth</title>
+
               <NextTopLoader
                 color="black"
                 zIndex={100000}

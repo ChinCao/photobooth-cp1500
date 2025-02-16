@@ -126,7 +126,7 @@ const ThemePage = () => {
           </PopoverContent>
         </Popover>
         <div className="flex flex-col items-center justify-center gap-8 w-full">
-          <CardTitle className="text-4xl uppercase">{t("Choose theme")}</CardTitle>
+          <CardTitle className="text-4xl uppercase">{t("Choose a theme")}</CardTitle>
           <CardContent className="flex items-center justify-center gap-8 flex-wrap w-[90%]">
             {ThemeSelectButton.map((item, index) => (
               <Link
