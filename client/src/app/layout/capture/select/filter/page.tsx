@@ -14,58 +14,18 @@ import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Stage as StageElement} from "konva/lib/Stage";
 import NavBar from "@/components/NavBar/NavBar";
-import {MdOutlineCloudDone} from "react-icons/md";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import {useSocket} from "@/context/SocketContext";
+import {PiPrinter} from "react-icons/pi";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadComplete, setUploadComplete] = useState(false);
-  const uploadAttemptedRef = useRef(false);
   const filterRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (!photo) return router.push("/");
     if (photo!.selectedImages.length == 0) return router.push("/");
   }, [photo, router, setPhoto]);
-
-  useEffect(() => {
-    if (photo && !photo.video.r2_url && !uploadAttemptedRef.current) {
-      const uploadVideo = async () => {
-        uploadAttemptedRef.current = true;
-        setIsUploading(true);
-        const formData = new FormData();
-        const filename = `video-${Date.now()}.webm`;
-        formData.append("file", photo.video.data, filename);
-        formData.append("contentType", "video/webm");
-        formData.append("filename", filename);
-
-        const uploadResponse = await fetch("/api/r2/upload", {
-          method: "POST",
-          body: formData,
-        });
-        const result = await uploadResponse.json();
-
-        if (result.success) {
-          setPhoto!((prevStyle) => {
-            if (prevStyle) {
-              return {...prevStyle, video: {...prevStyle.video, url: result.url}};
-            }
-            return prevStyle;
-          });
-          console.log("Video uploaded successfully:", result.url);
-        } else {
-          console.error("Failed to upload video:", result.error);
-        }
-        setIsUploading(false);
-        setUploadComplete(true);
-      };
-
-      uploadVideo();
-    }
-  }, [photo, setPhoto]);
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
   const [filter, setFilter] = useState<string | null>(null);
@@ -85,18 +45,6 @@ const FilterPage = () => {
       setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
 
-      const videoPreload = new Promise((resolve) => {
-        if (photo.video.r2_url) {
-          const video = document.createElement("video");
-          video.src = photo.video.r2_url;
-          video.preload = "auto";
-          video.onloadeddata = () => resolve(true);
-          video.onerror = () => resolve(false);
-        } else {
-          resolve(false);
-        }
-      });
-
       socket.emit(
         "print",
         {
@@ -109,8 +57,6 @@ const FilterPage = () => {
           if (!response.success) {
             console.error("Print failed:", response.message);
           }
-          // Wait for video to preload before navigation
-          await videoPreload;
           router.push("/layout/capture/select/filter/review");
         }
       );
@@ -124,10 +70,9 @@ const FilterPage = () => {
       }, 1000);
       return () => clearInterval(timerId);
     } else {
-      if (isUploading) return;
       printImage();
     }
-  }, [isUploading, printImage, router, setPhoto, timeLeft]);
+  }, [printImage, router, setPhoto, timeLeft]);
 
   const selectRandomFilter = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * FILTERS.length);
@@ -253,24 +198,13 @@ const FilterPage = () => {
               </div>
               <Button
                 className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full"
-                disabled={printed || isUploading || !uploadComplete}
+                disabled={printed}
                 onClick={printImage}
               >
-                {isUploading ? (
-                  <>
-                    In <LoadingSpinner size={15} />
-                  </>
-                ) : uploadComplete ? (
-                  <>
-                    In{" "}
-                    <MdOutlineCloudDone
-                      size={15}
-                      color="white"
-                    />
-                  </>
-                ) : (
-                  "In"
-                )}
+                <>
+                  In
+                  <PiPrinter size={15} />
+                </>
               </Button>
             </>
           )}

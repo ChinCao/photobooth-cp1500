@@ -3,6 +3,8 @@ import path from "path";
 import fs from "fs";
 import {currentTime, updatePrinterRegistry, getCP1500Printer, logger} from "./utils";
 import {exec} from "child_process";
+import {Blob} from "buffer";
+import {pipeline} from "stream/promises";
 
 const logsDir = path.join(process.cwd(), "logs");
 if (!fs.existsSync(logsDir)) {
@@ -111,7 +113,90 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("process-video", async (message: {dataURL: string}, callback) => {});
+  socket.on("process-video", async (message: {dataURL: Blob}, callback) => {
+    const videoJobId = `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    logger.info("Video processing job received", {
+      jobId: videoJobId,
+      socketId: socket.id,
+    });
+
+    try {
+      const rawVideosDir = path.join(process.cwd(), "videos/raw");
+      const processedVideosDir = path.join(process.cwd(), "videos/processed");
+      if (!fs.existsSync(rawVideosDir)) {
+        fs.mkdirSync(rawVideosDir, {recursive: true});
+      }
+      if (!fs.existsSync(processedVideosDir)) {
+        fs.mkdirSync(processedVideosDir, {recursive: true});
+      }
+
+      const filename = `${currentTime()}.webm`;
+      const rawFilePath = path.join(rawVideosDir, filename);
+      const processedFilePath = path.join(processedVideosDir, filename);
+
+      const buffer = Buffer.from(message.dataURL as unknown as ArrayBuffer);
+      await fs.promises.writeFile(rawFilePath, buffer);
+
+      logger.info("Video file saved", {
+        jobId: videoJobId,
+        path: rawFilePath,
+      });
+
+      const scriptPath = path.join(process.cwd(), "powershell", "process-video.ps1");
+      const command = `powershell -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "${scriptPath}" -inputVideo "${rawFilePath}" -outputVideo "${processedFilePath}"`;
+
+      logger.debug("Executing video processing command", {jobId: videoJobId, command});
+
+      await new Promise((resolve, reject) => {
+        exec(command, {shell: "powershell.exe"}, (error, stdout, stderr) => {
+          if (error) {
+            logger.error("Video processing failed", {
+              jobId: videoJobId,
+              error: error.message,
+              code: error.code,
+              stdout,
+              stderr,
+            });
+            reject(error);
+            return;
+          }
+
+          if (stdout.includes("SUCCESS:")) {
+            logger.info("Video processing completed", {
+              jobId: videoJobId,
+              output: processedFilePath,
+            });
+            resolve(void 0);
+          } else {
+            logger.error("Video processing failed - no success message", {
+              jobId: videoJobId,
+              stdout,
+              stderr,
+            });
+            reject(new Error("Video processing failed - no success message"));
+          }
+        });
+      });
+
+      callback({
+        success: true,
+        local_url: processedFilePath,
+        r2_url: "",
+      });
+    } catch (error) {
+      logger.error("Video processing failed", {
+        jobId: videoJobId,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+
+      callback({
+        success: false,
+        local_url: "",
+        r2_url: "",
+      });
+    }
+  });
 
   socket.on("disconnect", () => {
     logger.info("Client disconnected", {socketId: socket.id});

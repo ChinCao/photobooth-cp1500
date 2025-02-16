@@ -18,15 +18,41 @@ import {MdOutlineCloudDone} from "react-icons/md";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import SelectInstruction from "@/components/SelectInstruction";
 import NavBar from "@/components/NavBar/NavBar";
+import {useSocket} from "@/context/SocketContext";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
+  const {socket, isConnected} = useSocket();
+  const [videoProcessed, setVideoProcessed] = useState(false);
   const lastImageUploaded = useMemo(() => {
     if (photo) {
       return photo!.images[photo!.images.length - 1].href != "";
     }
   }, [photo]);
+  const videoRequestSent = useRef(false);
+
+  useEffect(() => {
+    if (socket && isConnected && photo && !videoRequestSent.current) {
+      videoRequestSent.current = true;
+      socket.emit(
+        "process-video",
+        {
+          dataURL: photo.video.data,
+        },
+        (response: {success: boolean; r2_url: string; local_url: string}) => {
+          if (response.success) {
+            setPhoto!((prevStyle) => {
+              if (prevStyle) {
+                return {...prevStyle, video: {...prevStyle.video, r2_url: response.r2_url, local_url: response.local_url}};
+              }
+            });
+            setVideoProcessed(true);
+          }
+        }
+      );
+    }
+  }, [isConnected, photo, setPhoto, socket]);
 
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -202,10 +228,10 @@ const PrintPage = () => {
   }, [isTimeOver, filteredSelectedImages, photo, lastImageUploaded]);
 
   useEffect(() => {
-    if (isTimeOver && lastImageUploaded) {
+    if (isTimeOver && lastImageUploaded && videoProcessed) {
       handleContextSelect(filteredSelectedImages);
     }
-  }, [isTimeOver, filteredSelectedImages, handleContextSelect, lastImageUploaded]);
+  }, [isTimeOver, filteredSelectedImages, handleContextSelect, lastImageUploaded, videoProcessed]);
 
   return (
     <>
@@ -333,7 +359,7 @@ const PrintPage = () => {
               className={cn(
                 "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
                 photo
-                  ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded
+                  ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded || !videoProcessed
                     ? "pointer-events-none opacity-80"
                     : null
                   : null
@@ -341,7 +367,7 @@ const PrintPage = () => {
               onClick={() => handleContextSelect(filteredSelectedImages)}
             >
               Chọn filter
-              {!lastImageUploaded ? (
+              {!lastImageUploaded || !videoProcessed ? (
                 <LoadingSpinner size={15} />
               ) : (
                 <MdOutlineCloudDone
