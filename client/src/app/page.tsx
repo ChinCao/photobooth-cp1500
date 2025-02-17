@@ -73,7 +73,7 @@ const ThemePage = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center gap-8 w-full">
       <Popover
         open={open}
         onOpenChange={setOpen}
@@ -148,7 +148,7 @@ const ThemePage = () => {
           ))}
         </CardContent>
       </div>
-    </>
+    </div>
   );
 };
 
