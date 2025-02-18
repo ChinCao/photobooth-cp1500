@@ -23,6 +23,8 @@ const i18nConfig = {
         "Reset filter": "Reset filter",
         "Please go outside to take the photo": "Please go outside to take the photo",
         "Random filter": "Random filter",
+        "Click on image to unselect": "Click on image to unselect",
+        "Drag to switch images position": "Drag to switch images position",
       },
     },
     vi: {
@@ -43,6 +45,8 @@ const i18nConfig = {
         "Reset filter": "Filter mặc định",
         "Please go outside to take the photo": "Hãy đi ra ngoài lấy ảnh nhé!",
         "Random filter": "Filter ngẫu nhiên",
+        "Click on image to unselect": "Bấm vào hình không thích để xóa",
+        "Drag to switch images position": "Kéo để đổi vị trí hình ảnh",
       },
     },
     fr: {
@@ -63,6 +67,8 @@ const i18nConfig = {
         "Reset filter": "Réinitialiser le filtre",
         "Please go outside to take the photo": "Allez dehors pour prendre la photo",
         "Random filter": "Filtre aléatoire",
+        "Click on image to unselect": "Cliquer sur l'image pour désélectionner",
+        "Drag to switch images position": "Glisser pour changer la position des images",
       },
     },
     cn: {
@@ -83,6 +89,8 @@ const i18nConfig = {
         "Reset filter": "重置滤镜",
         "Please go outside to take the photo": "请出去拍照",
         "Random filter": "随机滤镜",
+        "Click on image to unselect": "点击图片取消选择",
+        "Drag to switch images position": "拖动以切换图片位置",
       },
     },
   },
