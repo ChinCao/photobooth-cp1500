@@ -1,61 +1,78 @@
-/* eslint-disable @next/next/no-img-element */
 import {AnimatePresence, motion} from "framer-motion";
 import {createPortal} from "react-dom";
 
 const blackBox = {
   initial: {
     height: "100vh",
-    bottom: 0,
+    opacity: 1,
   },
   animate: {
+    opacity: 1,
     height: 0,
     transition: {
-      when: "afterChildren",
-      duration: 1.5,
-      ease: [0.87, 0, 0.13, 1],
+      height: {
+        delay: 3,
+        duration: 1.5,
+        ease: [0.87, 0, 0.13, 1],
+        when: "afterChildren",
+      },
     },
   },
 };
 
-const textContainer = {
+const textSVGContainer = {
   initial: {
-    opacity: 1,
+    opacity: 0,
   },
   animate: {
-    opacity: 0,
+    opacity: 1,
     transition: {
-      duration: 0.25,
-      when: "afterChildren",
+      duration: 1.5,
     },
   },
 };
 const text = {
   initial: {
-    y: 40,
+    y: 30,
   },
   animate: {
     y: 80,
     transition: {
       duration: 1.5,
       ease: [0.87, 0, 0.13, 1],
+      delay: 1.5,
     },
   },
 };
 
 const imageContainer = {
   initial: {
-    y: 10,
+    y: 30,
+    opacity: 0,
   },
   animate: {
-    y: 30,
+    y: 62,
+    opacity: 1,
     transition: {
-      duration: 1.5,
-      when: "beforeChildren",
-      ease: [0.87, 0, 0.13, 1],
+      y: {duration: 1.5, ease: [0.87, 0, 0.13, 1], delay: 1.5},
+      opacity: {duration: 1, ease: [0.87, 0, 0.13, 1]},
     },
   },
 };
 
+const textContainer = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    y: 30,
+    opacity: 1.5,
+    transition: {
+      duration: 1,
+      ease: [0.87, 0, 0.13, 1],
+    },
+  },
+};
 const EndTransition = () => {
   if (typeof window === "undefined") return null;
 
@@ -107,13 +124,16 @@ const EndTransition = () => {
           />
         </motion.svg>
 
-        <motion.svg className="flex w-full">
+        <motion.svg
+          className="flex w-full"
+          variants={textContainer}
+        >
           <motion.pattern
             id="pattern"
             patternUnits="userSpaceOnUse"
             width={750}
             height={800}
-            variants={textContainer}
+            variants={textSVGContainer}
             className="text-white"
           >
             <rect className="w-full h-full fill-current" />
