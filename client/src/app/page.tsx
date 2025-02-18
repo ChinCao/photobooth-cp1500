@@ -74,7 +74,7 @@ const ThemePage = () => {
   };
 
   return (
-    <>
+    <div className="w-full h-full flex items-center justify-start flex-col">
       {!photo && <EndTransition />}
       <Popover
         open={open}
@@ -150,7 +150,7 @@ const ThemePage = () => {
           ))}
         </CardContent>
       </div>
-    </>
+    </div>
   );
 };
 
