@@ -11,6 +11,8 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {useTranslation} from "react-i18next";
+import EndTransition from "@/components/EndTransition";
+import {AnimatePresence, motion} from "motion/react";
 
 const language = [
   {
@@ -38,8 +40,10 @@ const language = [
 const ThemePage = () => {
   const {setPhoto} = usePhoto();
   const {t, i18n} = useTranslation();
+  const [isExiting, setIsExiting] = React.useState(true);
 
   const handleThemeChange = (name: ValidTheme) => {
+    setIsExiting(false);
     setPhoto!(() => {
       return {
         theme: {
@@ -73,82 +77,90 @@ const ThemePage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 w-full">
-      <Popover
-        open={open}
-        onOpenChange={setOpen}
+    <AnimatePresence mode="wait">
+      <motion.div
+        key="theme-page"
+        className="flex flex-col items-center justify-center gap-8 w-full"
+        initial={{opacity: 1}}
+        exit={{opacity: 0}}
       >
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-[200px] justify-between self-end"
-          >
-            <div className="flex items-center gap-2 justify-center">
-              {value ? language.find((language) => language.label === value)?.label : t("Select language...")}
-              <Image
-                src={language.find((language) => language.label === value)?.image_src ?? ""}
-                alt="language"
-                width={20}
-                height={20}
-              />
-            </div>
-            <ChevronsUpDown className="opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandList>
-              <CommandGroup>
-                {language.map((language) => (
-                  <CommandItem
-                    key={language.value}
-                    value={language.label}
-                    onSelect={handleLanguageSelect}
-                  >
-                    {language.label}
-                    <Image
-                      src={language.image_src}
-                      alt="language"
-                      width={20}
-                      height={20}
-                    />
-                    <Check className={cn("ml-auto", value === language.label ? "opacity-100" : "opacity-0")} />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-      <div className="flex flex-col items-center justify-center gap-8 w-full">
-        <CardTitle className="text-4xl uppercase">{t("Choose a theme")}</CardTitle>
-        <CardContent className="flex items-center justify-center gap-8 flex-wrap w-[90%]">
-          {ThemeSelectButton.map((item, index) => (
-            <Link
-              href="/layout"
-              onClick={() => handleThemeChange(item.theme)}
-              key={index}
+        <EndTransition isPresent={isExiting} />
+        <Popover
+          open={open}
+          onOpenChange={setOpen}
+        >
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-[200px] justify-between self-end"
             >
-              <div
-                className="cursor-pointer w-[200px] h-[200px] hover:scale-[1.02] active:scale-[0.99]"
-                title={item.title}
-              >
+              <div className="flex items-center gap-2 justify-center">
+                {value ? language.find((language) => language.label === value)?.label : t("Select language...")}
                 <Image
-                  height={220}
-                  width={220}
-                  alt={item.title}
-                  src={item.image_src}
-                  className="rounded"
-                  style={item.style}
+                  src={language.find((language) => language.label === value)?.image_src ?? ""}
+                  alt="language"
+                  width={20}
+                  height={20}
                 />
               </div>
-            </Link>
-          ))}
-        </CardContent>
-      </div>
-    </div>
+              <ChevronsUpDown className="opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandList>
+                <CommandGroup>
+                  {language.map((language) => (
+                    <CommandItem
+                      key={language.value}
+                      value={language.label}
+                      onSelect={handleLanguageSelect}
+                    >
+                      {language.label}
+                      <Image
+                        src={language.image_src}
+                        alt="language"
+                        width={20}
+                        height={20}
+                      />
+                      <Check className={cn("ml-auto", value === language.label ? "opacity-100" : "opacity-0")} />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        <div className="flex flex-col items-center justify-center gap-8 w-full">
+          <CardTitle className="text-4xl uppercase">{t("Choose a theme")}</CardTitle>
+          <CardContent className="flex items-center justify-center gap-8 flex-wrap w-[90%]">
+            {ThemeSelectButton.map((item, index) => (
+              <Link
+                href="/layout"
+                onClick={() => handleThemeChange(item.theme)}
+                key={index}
+              >
+                <div
+                  className="cursor-pointer w-[200px] h-[200px] hover:scale-[1.02] active:scale-[0.99]"
+                  title={item.title}
+                >
+                  <Image
+                    height={220}
+                    width={220}
+                    alt={item.title}
+                    src={item.image_src}
+                    className="rounded"
+                    style={item.style}
+                  />
+                </div>
+              </Link>
+            ))}
+          </CardContent>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
