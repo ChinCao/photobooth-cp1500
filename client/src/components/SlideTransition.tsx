@@ -12,7 +12,7 @@ const variants = {
     opacity: 0,
     transition: {
       x: {duration: 1, ease: "easeInOut", when: "beforeChildren"},
-      opacity: {duration: 0, ease: "easeInOut", delay: 4},
+      opacity: {duration: 0, ease: "easeInOut", delay: 2},
     },
   },
 };

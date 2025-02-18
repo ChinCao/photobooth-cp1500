@@ -19,13 +19,15 @@ const ReviewPage = () => {
       const timerId = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
+      if (timeLeft == 1) {
+        setPhoto!((prev) => ({...prev!, isTransition: true}));
+      }
       return () => clearInterval(timerId);
-    } else if (timeLeft == 2) {
-      setPhoto!(undefined);
     } else {
+      setPhoto!(undefined);
       router.push("/");
     }
-  }, [router, setPhoto, timeLeft]);
+  }, [, router, setPhoto, timeLeft]);
 
   return (
     <div className="w-full h-full flex items-center justify-center gap-6 flex-col">

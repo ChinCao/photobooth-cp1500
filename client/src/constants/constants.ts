@@ -466,6 +466,7 @@ export interface PhotoOptions<T extends ValidTheme> {
     data: Blob;
     r2_url: string | null;
   };
+  isTransition: boolean;
 }
 
 export const NUM_OF_IMAGE = 6;

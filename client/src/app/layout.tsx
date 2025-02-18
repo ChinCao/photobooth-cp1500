@@ -12,7 +12,7 @@ import PageTransitionEffect from "@/components/PageTransitionEffect";
 import {Card} from "@/components/ui/card";
 import {usePathname} from "next/navigation";
 import {cn} from "@/lib/utils";
-import PhotoOverlay from "@/components/PhotoOverlay";
+import CollabTransitionOverlay from "@/components/CollabTransitionOverlay";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +46,7 @@ export default function RootLayout({
                 color="black"
                 zIndex={100000}
               />
-              <PhotoOverlay />
+              <CollabTransitionOverlay />
               <Card
                 className={cn(
                   "bg-background w-[85%] h-[90vh] mb-8 flex items-center p-8 flex-col gap-9",

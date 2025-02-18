@@ -11,7 +11,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {useTranslation} from "react-i18next";
-import EndTransition from "@/components/EndTransition";
+import CollabTransition from "@/components/CollabTransition";
 
 const language = [
   {
@@ -54,6 +54,7 @@ const ThemePage = () => {
           data: new Blob(),
           r2_url: null,
         },
+        isTransition: false,
       };
     });
   };
@@ -75,7 +76,7 @@ const ThemePage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-start flex-col">
-      {!photo && <EndTransition />}
+      {!photo && <CollabTransition />}
       <Popover
         open={open}
         onOpenChange={setOpen}

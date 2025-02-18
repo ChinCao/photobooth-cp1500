@@ -73,7 +73,7 @@ const textContainer = {
     },
   },
 };
-const EndTransition = () => {
+const CollabTransition = () => {
   if (typeof window === "undefined") return null;
 
   return createPortal(
@@ -112,7 +112,7 @@ const EndTransition = () => {
             transform="translate(-80, -80)"
           />
           <image
-            href="/vectr-bw.png"
+            href="/vectr.png"
             x="720"
             y="90"
             width="125"
@@ -159,4 +159,4 @@ const EndTransition = () => {
   );
 };
 
-export default EndTransition;
+export default CollabTransition;
