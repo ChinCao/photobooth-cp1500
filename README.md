@@ -12,6 +12,7 @@ A modern photo booth application built with Next.js and Socket.IO, featuring rea
 - 🌐 Socket.IO integration for real-time communication
 - ☁️ Cloudflare R2 integration for image storage
 - 🎨 Tailwind CSS with custom UI components
+- 🚀 Smooth animations powered by Framer Motion
 
 ## Prerequisites
 
@@ -62,7 +63,7 @@ cp copy.env .env
 
 2. Configure the following environment variables:
 
-```
+```bash
 CLOUDFARE_ACCOUNT_ID=cloudfare_CLOUDFARE_ACCOUNT_ID
 R2_ACCESS_KEY_ID=r2_access_key
 R2_SECRET_ACCESS_KEY=r2_secret_key
@@ -100,7 +101,7 @@ cd client
 npm run dev
 ```
 
-The client will be available at `http://localhost:8080`
+The client will be available at [http://localhost:8080](http://localhost:8080)
 
 2. Start the server:
 
@@ -115,8 +116,7 @@ OR IF YOU WANT TO START THE CLIENT AND SERVER SIMULTANEOUSLY:
 npm run dev
 ```
 
-The Socket.IO server will run on port 6969
-The client will be available at `http://localhost:8080`
+The Socket.IO server will run on port 6969 and the client will be available at [http://localhost:8080](http://localhost:8080)
 
 ## Database Management
 
@@ -138,6 +138,10 @@ Launch Drizzle Studio:
 npm run db:studio
 ```
 
+## Animations and Transitions
+
+This project utilizes [Framer Motion](https://motion.dev/) to create smooth and performant animations and page transitions. Framer Motion is used throughout the application to enhance the user experience with animated transitions, loading effects, and interactive UI elements.
+
 ## Project Structure
 
 - `/client` - Next.js frontend application
@@ -157,16 +161,17 @@ npm run db:studio
 - [Cloudflare R2](https://www.cloudflare.com/products/r2/) - Image storage
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Neon](https://neon.tech) - Serverless Postgres database
+- [Framer Motion](https://www.framer.com/motion/) - Animations and transitions
 
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
-Copyright (C) 2024 [@ChinCao](https://github.com/ChinCao). All rights reserved.
+© 2024 [@ChinCao](https://github.com/ChinCao). All rights reserved.
 
 ## Acknowledgments
 
 - Developed by [@ChinCao](https://github.com/ChinCao) and sponsored by VECTR.
 - All rights reserved to [@ChinCao](https://github.com/ChinCao).
 - Does not support mobile devices.
-- Enter full screen mode for better experience.
+- Enter full screen mode for a better experience.
