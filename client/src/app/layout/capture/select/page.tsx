@@ -79,7 +79,7 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(Infinity);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);

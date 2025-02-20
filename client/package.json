@@ -33,7 +33,6 @@
     "lucide-react": "^0.475.0",
     "motion": "^12.4.3",
     "next": "15.1.7",
-    "nextjs-toploader": "^3.7.15",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.4.0",

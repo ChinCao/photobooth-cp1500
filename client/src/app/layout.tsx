@@ -3,7 +3,6 @@
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {PhotoProvider} from "@/context/StyleContext";
-import NextTopLoader from "nextjs-toploader";
 import Image from "next/image";
 import {SocketProvider} from "@/context/SocketContext";
 import {I18nextProvider, useTranslation} from "react-i18next";
@@ -42,10 +41,6 @@ export default function RootLayout({
             >
               <title>Photobooth</title>
 
-              <NextTopLoader
-                color="black"
-                zIndex={100000}
-              />
               <CollabTransitionOverlay />
               <Card
                 className={cn(

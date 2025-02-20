@@ -95,11 +95,14 @@ io.on("connection", (socket) => {
 
     try {
       await updatePrinterRegistry(printerName);
+      logger.info("Printer registry updates successfully", {
+        jobId: printJobId,
+      });
     } catch (error) {
       logger.error("Printer registry error", {
         jobId: printJobId,
         error: "PRINTER_REGISTRY_ERROR",
-        message: "Failed to update printer registry. Printer may be offline.",
+        message: "Failed to update printer registry.",
       });
       return;
     }

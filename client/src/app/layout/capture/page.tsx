@@ -11,7 +11,7 @@ import {uploadImageToR2} from "@/lib/r2";
 import {useTranslation} from "react-i18next";
 
 const CapturePage = () => {
-  const duration = 2;
+  const duration = 5;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -64,26 +64,11 @@ const CapturePage = () => {
       if (!selectedDevice || !photo?.theme.frame.slotDimensions || !window) return;
 
       try {
-        const initialStream = await navigator.mediaDevices.getUserMedia({
-          video: {deviceId: {exact: selectedDevice}},
-        });
-        const track = initialStream.getVideoTracks()[0];
-        const capabilities = track.getCapabilities();
-        track.stop();
-
         const aspectRatio = window.innerWidth / window.innerHeight;
 
         const multiplier =
-          (Math.min(window.innerWidth / photo.theme.frame.slotDimensions.width, window.innerHeight / photo.theme.frame.slotDimensions.height) /
-            aspectRatio) *
-          Math.min(
-            capabilities.width!.max! > window.innerWidth
-              ? capabilities.width!.max! / window.innerWidth
-              : window.innerWidth / capabilities.width!.max!,
-            capabilities.height!.max! > window.innerHeight
-              ? capabilities.height!.max! / window.innerHeight
-              : window.innerHeight / capabilities.height!.max!
-          );
+          Math.min(window.innerWidth / photo.theme.frame.slotDimensions.width, window.innerHeight / photo.theme.frame.slotDimensions.height) /
+          aspectRatio;
 
         setCameraConstraints({
           deviceId: {exact: selectedDevice},
@@ -332,7 +317,7 @@ const CapturePage = () => {
             )}
           </div>
           {isCameraReady && (
-            <h1 className="font-bold text-4xl text-center mt-3 absolute left-[calc(50%-15px)] bottom-[-2%]">
+            <h1 className="font-bold text-4xl text-center mt-3 absolute left-[calc(50%-15px)] bottom-[-3%]">
               {cycles}/{maxCycles}
             </h1>
           )}
