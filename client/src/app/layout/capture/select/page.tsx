@@ -262,8 +262,8 @@ const PrintPage = () => {
                   <div
                     style={{
                       zIndex: 100,
-                      width: photo!.theme.frame.slotDimensions.width,
-                      height: photo!.theme.frame.slotDimensions.height,
+                      width: photo?.theme.frame.slotDimensions.width,
+                      height: photo?.theme.frame.slotDimensions.height,
                     }}
                     className="bg-transparent hover:cursor-pointer"
                     data-swapy-item={itemId}

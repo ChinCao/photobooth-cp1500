@@ -40,7 +40,7 @@ const FilterPage = () => {
         console.error("Socket not connected. Cannot print.");
         return;
       }
-
+      if (printed) return;
       setPrinted(true);
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
       const videoPreload = new Promise((resolve) => {
@@ -72,7 +72,7 @@ const FilterPage = () => {
         }
       );
     }
-  }, [photo, router, socket, isConnected]);
+  }, [photo, socket, isConnected, printed, router]);
 
   useEffect(() => {
     if (timeLeft > 0) {
