@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /client/node_modules
+/client/out
 /client/vcp-photobooth/node_modules
 /client/.wrangler
 /client/wrangler.toml

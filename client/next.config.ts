@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       responseLimit: false,
     },
   },
+  output: "export",
+  images: {unoptimized: true},
 };
 
 export default nextConfig;

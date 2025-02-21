@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start -p 8080",
     "lint": "next lint",
+    "tauri": "tauri",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@tauri-apps/cli": "^2.2.7",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
