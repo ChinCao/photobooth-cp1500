@@ -12,6 +12,7 @@ import {FaArrowLeft, FaArrowRight} from "react-icons/fa6";
 import {IoIosArrowBack, IoIosArrowForward, IoIosCheckmark} from "react-icons/io";
 import {useRouter} from "next/navigation";
 import {useTranslation} from "react-i18next";
+import {GlowEffect} from "@/components/ui/glow-effect";
 
 const LayoutPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -241,13 +242,22 @@ const LayoutPage = () => {
                 <FaArrowLeft />
                 {t("Choose another theme")}
               </Link>
-              <Link
-                href="/layout/capture"
-                className="flex text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full bg-green-700"
-              >
-                {t("Capture")}
-                <FaArrowRight />
-              </Link>
+              <div className="relative">
+                <GlowEffect
+                  colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
+                  mode="colorShift"
+                  blur="soft"
+                  duration={3}
+                  scale={1.02}
+                />
+                <Link
+                  href="/layout/capture"
+                  className="flex text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full bg-green-700 z-10 relative "
+                >
+                  {t("Capture")}
+                  <FaArrowRight />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

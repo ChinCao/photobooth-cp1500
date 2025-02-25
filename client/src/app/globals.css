@@ -291,3 +291,14 @@ body {
   -webkit-filter: sepia(0.45) contrast(1.25) brightness(1.75) saturate(1.3) hue-rotate(-5deg);
   filter: sepia(0.45) contrast(1.25) brightness(1.75) saturate(1.3) hue-rotate(-5deg);
 }
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
