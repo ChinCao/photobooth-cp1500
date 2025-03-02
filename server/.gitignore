@@ -13,9 +13,6 @@
 # testing
 /coverage
 
-# next.js
-/client/.next/
-/out/
 
 # production
 /server/build
@@ -23,6 +20,9 @@
 # misc
 .DS_Store
 *.pem
+/images
+/videos
+/logs
 
 # debug
 npm-debug.log*
