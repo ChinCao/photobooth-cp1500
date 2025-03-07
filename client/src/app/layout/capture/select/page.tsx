@@ -18,6 +18,8 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import SelectInstruction from "@/components/SelectInstruction";
 import {useSocket} from "@/context/SocketContext";
 import {useTranslation} from "react-i18next";
+import {GlowEffect} from "@/components/ui/glow-effect";
+import {SlidingNumber} from "@/components/ui/sliding-number";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -79,7 +81,7 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(Infinity);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
@@ -319,14 +321,20 @@ const PrintPage = () => {
               </Stage>
             )}
 
-            <SelectInstruction />
+            <SelectInstruction open={isTimeOver} />
           </div>
         </div>
         <div className="flex flex-wrap w-[55%] gap-4 items-start justify-center ">
           {photo && (
-            <h1 className="text-5xl font-bold mb-4">
-              {t("Choose pictures")} <span className="text-rose-500">{timeLeft}s</span>
-            </h1>
+            <div className="flex gap-2">
+              <h1 className="text-5xl font-bold mb-4 flex gap-2">{t("Choose pictures")} </h1>
+              <span className="text-rose-500 text-5xl font-bold ">
+                <SlidingNumber
+                  value={timeLeft}
+                  padStart={true}
+                />
+              </span>
+            </div>
           )}
 
           <div className="flex gap-4 items-center justify-center flex-wrap ">
@@ -357,30 +365,45 @@ const PrintPage = () => {
         </div>
       </div>
       {photo && (
-        <Button asChild>
-          <Link
-            href="/layout/capture/select/filter"
-            className={cn(
-              "flex items-center justify-center gap-2 text-2xl self-end px-14 py-6 w-full",
-              photo
-                ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded || !videoProcessed
-                  ? "pointer-events-none opacity-80"
-                  : null
-                : null
-            )}
-            onClick={() => handleContextSelect(filteredSelectedImages)}
+        <div className="relative w-full">
+          {((photo!.theme.frame.imageSlot - filteredSelectedImages.length == 0 && lastImageUploaded && videoProcessed) || isTimeOver) && (
+            <GlowEffect
+              colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
+              mode="colorShift"
+              blur="soft"
+              duration={3}
+              scale={1}
+              className="z-[-1]"
+            />
+          )}
+          <Button
+            asChild
+            className="relative"
           >
-            {t("Choose a filter")}
-            {!lastImageUploaded || !videoProcessed ? (
-              <LoadingSpinner size={15} />
-            ) : (
-              <MdOutlineCloudDone
-                size={15}
-                color="white"
-              />
-            )}
-          </Link>
-        </Button>
+            <Link
+              href="/layout/capture/select/filter"
+              className={cn(
+                "flex items-center justify-center gap-2 text-2xl px-14 py-6 w-full",
+                photo
+                  ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded || !videoProcessed
+                    ? "pointer-events-none opacity-80"
+                    : null
+                  : null
+              )}
+              onClick={() => handleContextSelect(filteredSelectedImages)}
+            >
+              {t("Choose a filter")}
+              {!lastImageUploaded || !videoProcessed ? (
+                <LoadingSpinner size={15} />
+              ) : (
+                <MdOutlineCloudDone
+                  size={15}
+                  color="white"
+                />
+              )}
+            </Link>
+          </Button>
+        </div>
       )}
     </div>
   );

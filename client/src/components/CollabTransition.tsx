@@ -113,7 +113,7 @@ const CollabTransition = () => {
           />
           <image
             href="/vectr.png"
-            x="730"
+            x="710"
             y="90"
             width="125"
             height="125"

@@ -9,6 +9,7 @@ import {ImCamera} from "react-icons/im";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {uploadImageToR2} from "@/lib/r2";
 import {useTranslation} from "react-i18next";
+import {SlidingNumber} from "@/components/ui/sliding-number";
 
 const CapturePage = () => {
   const duration = 5;
@@ -309,7 +310,10 @@ const CapturePage = () => {
                     !isCameraReady || cycles > maxCycles || count === 0 ? "hidden" : null
                   )}
                 >
-                  {count}
+                  <SlidingNumber
+                    value={count}
+                    padStart={false}
+                  />
                 </h1>
 
                 <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count === 0 ? "flash-efect" : null)}></div>
@@ -317,9 +321,15 @@ const CapturePage = () => {
             )}
           </div>
           {isCameraReady && (
-            <h1 className="font-bold text-4xl text-center mt-3 absolute left-[calc(50%-15px)] bottom-[-3%]">
-              {cycles}/{maxCycles}
-            </h1>
+            <div className="mt-3 absolute left-[calc(50%-15px)] bottom-[-3%]  flex">
+              <span className="font-bold text-4xl">
+                <SlidingNumber
+                  value={cycles}
+                  padStart={false}
+                />
+              </span>
+              <h1 className="font-bold text-4xl text-center">/{maxCycles}</h1>
+            </div>
           )}
           {!isCameraReady && (
             <div className="flex items-center justify-center gap-16 flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">

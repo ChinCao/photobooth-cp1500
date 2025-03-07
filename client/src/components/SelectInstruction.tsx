@@ -1,18 +1,23 @@
 "use client";
 import {usePhoto} from "@/context/StyleContext";
 import {Button} from "./ui/button";
-import {Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose} from "./ui/drawer";
+import {Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose, DrawerTrigger} from "./ui/drawer";
 import {useTranslation} from "react-i18next";
 import Image from "next/image";
 import {Card} from "./ui/card";
+import {useState} from "react";
 
-const SelectInstruction = () => {
+const SelectInstruction = ({open}: {open: boolean}) => {
   const {photo} = usePhoto();
   const {t} = useTranslation();
+  const [isOpened, setIsOpened] = useState(false);
   return (
     <>
       {photo && (
-        <Drawer>
+        <Drawer
+          open={open ? false : isOpened}
+          onOpenChange={setIsOpened}
+        >
           <DrawerTrigger asChild>
             <Button className="w-full -mt-4 z-10 relative">{t("Instruction")}</Button>
           </DrawerTrigger>
@@ -29,14 +34,14 @@ const SelectInstruction = () => {
                       src="/chosen.jpg"
                       alt="instruction"
                       width={300}
-                      height={300}
+                      height={221}
                     />
                     <Image
                       className="min-w-[300px]"
                       src="/unselected.jpg"
                       alt="instruction"
                       width={300}
-                      height={300}
+                      height={221}
                     />
                   </div>
                   <h3 className="text-lg text-center font-bold">{t("Click on image to unselect")}</h3>
@@ -47,7 +52,7 @@ const SelectInstruction = () => {
                     src="/switch.jpg"
                     alt="instruction"
                     width={300}
-                    height={300}
+                    height={442}
                   />
                   <h3 className="text-lg text-center font-bold">{t("Drag to switch images position")}</h3>
                 </Card>

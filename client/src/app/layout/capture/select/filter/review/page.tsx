@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import Image from "next/image";
 import {useTranslation} from "react-i18next";
+import {SlidingNumber} from "@/components/ui/sliding-number";
 const ReviewPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
@@ -45,8 +46,15 @@ const ReviewPage = () => {
             }}
           />
           <div className="flex flex-col gap-5 items-center justify-center">
-            <h1 className="text-4xl font-bold text-center">{t("Please go outside to take the photo")}</h1>
-            <p className="text-4xl font-bold text-center text-red-500">💫 {timeLeft}s</p>
+            <div className="flex gap-2 flex-col items-center justify-center">
+              <h1 className="text-4xl font-bold text-center">{t("Please go outside to take the photo")}</h1>
+              <span className="text-rose-500 text-4xl font-bold ">
+                <SlidingNumber
+                  value={timeLeft}
+                  padStart={true}
+                />
+              </span>
+            </div>
             <div className="flex items-center justify-center">
               <Image
                 src="/dance.gif"

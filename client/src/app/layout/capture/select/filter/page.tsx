@@ -15,6 +15,8 @@ import {Stage as StageElement} from "konva/lib/Stage";
 import {useSocket} from "@/context/SocketContext";
 import {PiPrinter} from "react-icons/pi";
 import {useTranslation} from "react-i18next";
+import {GlowEffect} from "@/components/ui/glow-effect";
+import {SlidingNumber} from "@/components/ui/sliding-number";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -157,9 +159,15 @@ const FilterPage = () => {
                 </Stage>
               </div>
               <div className="flex items-center justify-center flex-col gap-5">
-                <h1 className="text-4xl font-bold mb-4 uppercase">
-                  {t("Choose a filter")} <span className="text-rose-500">{timeLeft}s</span>
-                </h1>
+                <div className="flex gap-2 items-center justify-center mb-4">
+                  <h1 className="text-4xl font-bold  uppercase">{t("Choose a filter")}</h1>
+                  <span className="text-rose-500 text-4xl font-bold ">
+                    <SlidingNumber
+                      value={timeLeft}
+                      padStart={true}
+                    />
+                  </span>
+                </div>
                 <ScrollArea className=" h-[60vh] w-[100%] ">
                   <div className="flex-wrap flex gap-4 items-center justify-center">
                     {FILTERS.map((item, index) => (
@@ -200,16 +208,27 @@ const FilterPage = () => {
                 </div>
               </div>
             </div>
-            <Button
-              className="flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full"
-              disabled={printed}
-              onClick={printImage}
-            >
-              <>
-                {t("Print")}
-                <PiPrinter size={15} />
-              </>
-            </Button>
+            <div className="relative w-full">
+              <GlowEffect
+                colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
+                mode="colorShift"
+                blur="soft"
+                duration={3}
+                scale={1}
+              />
+              <Button
+                className={cn(
+                  "flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full relative z-10",
+                  printed ? "pointer-events-none opacity-[85%]" : null
+                )}
+                onClick={printImage}
+              >
+                <>
+                  {t("Print")}
+                  <PiPrinter size={15} />
+                </>
+              </Button>
+            </div>
           </>
         )}
       </div>
