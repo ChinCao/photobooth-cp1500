@@ -4,7 +4,7 @@ import {motion, AnimatePresence} from "motion/react";
 import {usePathname} from "next/navigation";
 import {LayoutRouterContext} from "next/dist/shared/lib/app-router-context.shared-runtime";
 import {useContext, useRef} from "react";
-import NavBar from "./NavBar/NavBar";
+import NavBar from "./NavBar";
 
 function FrozenRouter(props: {children: React.ReactNode}) {
   const context = useContext(LayoutRouterContext ?? {});
