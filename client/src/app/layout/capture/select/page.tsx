@@ -79,7 +79,7 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(Infinity);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
@@ -240,11 +240,16 @@ const PrintPage = () => {
         <div className="flex flex-col items-center justify-center">
           <div className="relative">
             <div
-              className="flex  absolute flex-col "
+              className="flex absolute flex-col "
               style={{
-                top: photo ? photo!.theme.frame.slotPositions[0].y + OFFSET_Y : 0,
-                left: photo ? photo!.theme.frame.slotPositions[0].x + OFFSET_X : 0,
-                gap: photo ? photo!.theme.frame.slotPositions[0].y : 0,
+                top: photo ? photo.theme.frame.slotPositions[0].y + OFFSET_Y / isSingle : 0,
+                left: OFFSET_X / isSingle,
+                gap:
+                  isSingle == 2 && photo
+                    ? (photo.theme.frame.slotPositions[0].y / isSingle) * 0.7
+                    : photo
+                    ? OFFSET_Y * 2 + photo.theme.frame.slotPositions[0].y
+                    : 0,
               }}
               ref={containerRef}
             >
@@ -262,8 +267,8 @@ const PrintPage = () => {
                   <div
                     style={{
                       zIndex: 100,
-                      width: photo?.theme.frame.slotDimensions.width,
-                      height: photo?.theme.frame.slotDimensions.height,
+                      width: FRAME_WIDTH / isSingle,
+                      height: photo ? photo.theme.frame.slotDimensions.height : 0,
                     }}
                     className="bg-transparent hover:cursor-pointer"
                     data-swapy-item={itemId}
