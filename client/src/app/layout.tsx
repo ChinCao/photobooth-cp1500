@@ -53,7 +53,8 @@ export default function RootLayout({
               <Card
                 className={cn(
                   "bg-background w-[85%] h-[90vh] mb-8 flex items-center p-8 flex-col gap-9",
-                  pathname === "/" ? "justify-start" : "justify-center"
+                  pathname === "/" ? "justify-start" : "justify-center",
+                  pathname === "/layout/capture" ? "w-[95%] h-[92vh] " : "w-[85%] h-[90vh] "
                 )}
               >
                 <PageTransitionEffect>{children}</PageTransitionEffect>

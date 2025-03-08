@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 
 const CapturePage = () => {
-  const duration = 7;
+  const duration = 4;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -293,46 +293,49 @@ const CapturePage = () => {
     <div className="relative w-full h-full flex items-center justify-center">
       {photo && (
         <>
-          <div className="w-[80%] relative">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-contain -scale-x-100"
-            />
+          <div className="w-full h-full  flex items-center justify-evenly">
+            <div className="relative w-max h-full">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="h-full object-contain -scale-x-100"
+              />
+              {isCameraReady && (
+                <>
+                  <div
+                    className={cn(
+                      "absolute top-1/2  left-1/2 text-8xl text-white text-center w-full",
+                      !isCameraReady || cycles > maxCycles || count === 0 ? "hidden" : null
+                    )}
+                    style={{
+                      fontFamily: "var(--font-buffalo)",
+                    }}
+                  >
+                    <SlidingNumber
+                      value={count}
+                      padStart={false}
+                    />
+                  </div>
+
+                  <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count === 0 ? "flash-efect" : null)}></div>
+                </>
+              )}
+            </div>
             {isCameraReady && (
-              <>
-                <div
-                  className={cn(
-                    "absolute top-1/2 line-clamp-1 left-[calc(50%-15px)] text-8xl text-white text-center",
-                    !isCameraReady || cycles > maxCycles || count === 0 ? "hidden" : null
-                  )}
-                  style={{
-                    fontFamily: "var(--font-buffalo)",
-                  }}
-                >
+              <div className="mt-3  flex items-center justify-center">
+                <span className="font-bold text-4xl">
                   <SlidingNumber
-                    value={count}
+                    value={cycles}
                     padStart={false}
                   />
-                </div>
-
-                <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count === 0 ? "flash-efect" : null)}></div>
-              </>
+                </span>
+                <h1 className="font-bold text-4xl text-center">/{maxCycles}</h1>
+              </div>
             )}
           </div>
-          {isCameraReady && (
-            <div className="mt-3 absolute left-[calc(50%-15px)] bottom-[-2%] flex items-center justify-center">
-              <span className="font-bold text-4xl">
-                <SlidingNumber
-                  value={cycles}
-                  padStart={false}
-                />
-              </span>
-              <h1 className="font-bold text-4xl text-center">/{maxCycles}</h1>
-            </div>
-          )}
+
           {!isCameraReady && (
             <div className="flex items-center justify-center gap-16 flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
               <div className="relative">
