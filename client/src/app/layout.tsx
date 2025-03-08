@@ -12,6 +12,14 @@ import {Card} from "@/components/ui/card";
 import {usePathname} from "next/navigation";
 import {cn} from "@/lib/utils";
 import CollabTransitionOverlay from "@/components/CollabTransitionOverlay";
+import {TextShimmer} from "@/components/text-shimmer";
+import localFont from "next/font/local";
+
+const Buffalo = localFont({
+  src: "./fonts/BuffaloDemoVersionRegular-axZ1R.ttf",
+  variable: "--font-buffalo",
+  weight: "100 900",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +45,7 @@ export default function RootLayout({
         <I18nextProvider i18n={i18n}>
           <html lang="en">
             <body
-              className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col w-full`}
+              className={`${geistSans.variable} ${geistMono.variable} ${Buffalo.variable} font-sans antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col w-full`}
             >
               <title>Photobooth</title>
 
@@ -50,16 +58,19 @@ export default function RootLayout({
               >
                 <PageTransitionEffect>{children}</PageTransitionEffect>
               </Card>
-              <footer className="w-full fixed bottom-0">
-                <p className=" flex items-center justify-center min-w-screen bg-black text-orange-500 text-center text-md p-2 gap-3">
+              <footer className="w-full fixed bottom-0 flex items-center justify-center bg-black">
+                <TextShimmer
+                  className="  min-w-screen   [--base-color:#f97316] [--base-gradient-color:#fdba74] text-center text-md p-2 gap-3"
+                  duration={6}
+                >
                   {t("This application is developed and sponsored by VECTR")}
-                  <Image
-                    width={25}
-                    height={25}
-                    src="/vectr.png"
-                    alt="Vectr logo"
-                  />
-                </p>
+                </TextShimmer>
+                <Image
+                  width={25}
+                  height={25}
+                  src="/vectr.png"
+                  alt="Vectr logo"
+                />
               </footer>
             </body>
           </html>

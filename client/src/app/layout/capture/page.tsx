@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 
 const CapturePage = () => {
-  const duration = 5;
+  const duration = 7;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -65,11 +65,10 @@ const CapturePage = () => {
       if (!selectedDevice || !photo?.theme.frame.slotDimensions || !window) return;
 
       try {
-        const aspectRatio = window.innerWidth / window.innerHeight;
-
-        const multiplier =
-          Math.min(window.innerWidth / photo.theme.frame.slotDimensions.width, window.innerHeight / photo.theme.frame.slotDimensions.height) /
-          aspectRatio;
+        const multiplier = Math.min(
+          window.innerWidth / photo.theme.frame.slotDimensions.width,
+          window.innerHeight / photo.theme.frame.slotDimensions.height
+        );
 
         setCameraConstraints({
           deviceId: {exact: selectedDevice},
@@ -304,24 +303,27 @@ const CapturePage = () => {
             />
             {isCameraReady && (
               <>
-                <h1
+                <div
                   className={cn(
-                    "absolute top-1/2 left-[calc(50%-15px)] text-8xl text-white text-center",
+                    "absolute top-1/2 line-clamp-1 left-[calc(50%-15px)] text-8xl text-white text-center",
                     !isCameraReady || cycles > maxCycles || count === 0 ? "hidden" : null
                   )}
+                  style={{
+                    fontFamily: "var(--font-buffalo)",
+                  }}
                 >
                   <SlidingNumber
                     value={count}
                     padStart={false}
                   />
-                </h1>
+                </div>
 
                 <div className={cn("absolute w-full h-full bg-white top-0 opacity-0", count === 0 ? "flash-efect" : null)}></div>
               </>
             )}
           </div>
           {isCameraReady && (
-            <div className="mt-3 absolute left-[calc(50%-15px)] bottom-[-3%]  flex">
+            <div className="mt-3 absolute left-[calc(50%-15px)] bottom-[-2%] flex items-center justify-center">
               <span className="font-bold text-4xl">
                 <SlidingNumber
                   value={cycles}

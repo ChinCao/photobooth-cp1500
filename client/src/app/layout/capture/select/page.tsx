@@ -81,7 +81,7 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(Infinity);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
@@ -91,6 +91,7 @@ const PrintPage = () => {
   }, [photo]);
   const containerRef = useRef<HTMLDivElement>(null);
   const swapyRef = useRef<Swapy | null>(null);
+  const [selected, setSelected] = useState(false);
   const placeHolderDivs = useMemo(
     () =>
       Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, (_, _index) => {
@@ -366,19 +367,22 @@ const PrintPage = () => {
       </div>
       {photo && (
         <div className="relative w-full">
-          {((photo!.theme.frame.imageSlot - filteredSelectedImages.length == 0 && lastImageUploaded && videoProcessed) || isTimeOver) && (
-            <GlowEffect
-              colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
-              mode="colorShift"
-              blur="soft"
-              duration={3}
-              scale={1}
-              className="z-[-1]"
-            />
+          {(photo!.theme.frame.imageSlot - filteredSelectedImages.length == 0 || isTimeOver) && (
+            <>
+              <GlowEffect
+                colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
+                mode="colorShift"
+                blur="soft"
+                duration={3}
+                scale={1}
+                className="z-[0]"
+              />
+            </>
           )}
           <Button
             asChild
             className="relative"
+            onClick={() => setSelected(true)}
           >
             <Link
               href="/layout/capture/select/filter"
@@ -388,7 +392,8 @@ const PrintPage = () => {
                   ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded || !videoProcessed
                     ? "pointer-events-none opacity-80"
                     : null
-                  : null
+                  : null,
+                selected ? "pointer-events-none opacity-[85%]" : null
               )}
               onClick={() => handleContextSelect(filteredSelectedImages)}
             >
