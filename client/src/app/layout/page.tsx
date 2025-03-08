@@ -1,5 +1,4 @@
 "use client";
-import {Button} from "@/components/ui/button";
 import {Carousel, CarouselContent, CarouselItem, type CarouselApi} from "@/components/ui/carousel";
 import {FrameOptions, ValidTheme} from "@/constants/constants";
 import {usePhoto} from "@/context/StyleContext";
@@ -7,12 +6,14 @@ import {cn} from "@/lib/utils";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import Image from "next/image";
 import Link from "next/link";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {FaArrowLeft, FaArrowRight} from "react-icons/fa6";
 import {IoIosArrowBack, IoIosArrowForward, IoIosCheckmark} from "react-icons/io";
 import {useRouter} from "next/navigation";
 import {useTranslation} from "react-i18next";
 import {GlowEffect} from "@/components/ui/glow-effect";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {AnimatedBackground} from "@/components/ui/animated-background";
 
 const LayoutPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -26,6 +27,7 @@ const LayoutPage = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [apiPreview, setApiPreview] = useState<CarouselApi>();
   const [current, setCurrent] = useState(1);
+  const thumbnailRefs = useRef<(HTMLDivElement | null)[]>([]);
   const handleQuantityChange = (quantity: number) => {
     setPhoto!((prevStyle) => {
       if (prevStyle) {
@@ -34,6 +36,7 @@ const LayoutPage = () => {
           quantity: quantity,
         };
       }
+      return prevStyle;
     });
   };
 
@@ -75,30 +78,41 @@ const LayoutPage = () => {
       return;
     }
 
-    const handleSelect = () => {
+    const handleAPISelect = () => {
       setCurrent(api.selectedScrollSnap() + 1);
       handleCarouselItemClick(api.selectedScrollSnap());
       handleFrameChange(FrameOptions[photo!.theme.name][api.selectedScrollSnap()]);
+      thumbnailRefs.current[api.selectedScrollSnap()]?.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
     };
 
-    api.on("select", handleSelect);
+    const handlePreviewAPISelect = () => {
+      setCurrent(apiPreview.selectedScrollSnap() + 1);
+      handleCarouselItemClick(apiPreview.selectedScrollSnap());
+      handleFrameChange(FrameOptions[photo!.theme.name][apiPreview.selectedScrollSnap()]);
+      thumbnailRefs.current[apiPreview.selectedScrollSnap()]?.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+    };
+
+    api.on("select", handleAPISelect);
+    apiPreview.on("select", handlePreviewAPISelect);
     return () => {
-      api.off("select", handleSelect);
+      api.off("select", handleAPISelect);
+      apiPreview.off("select", handlePreviewAPISelect);
     };
   }, [api, apiPreview, handleCarouselItemClick, handleFrameChange, photo]);
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <>
       {photo && (
-        <div className="flex items-stretch justify-center gap-10 ">
+        <div className="flex items-center justify-center gap-10 h-full">
           <div className="flex items-start flex-col justify-center gap-4 w-max">
             <h1 className="text-4xl font-bold uppercase">{t("Choose a frame")}</h1>
-            <div
-              className={cn(
-                "rounded border-2 border-gray-500 flex items-center justify-center py-8 px-2 bg-gray-100",
-                photo!.theme.frame.type == "singular" ? "w-[550px]" : "w-[650px]"
-              )}
-            >
+            <div className="rounded border-2 border-gray-500 flex items-center justify-center py-8 px-2 bg-gray-100 w-[40vw]">
               <IoIosArrowBack
                 size={60}
                 className="text-primary hover:cursor-pointer carousel-pointer"
@@ -125,8 +139,8 @@ const LayoutPage = () => {
                             src={item.src}
                             alt="Frame"
                             height={235}
-                            width={photo!.theme.frame.type == "singular" ? 235 : 150}
-                            className="bg-white"
+                            width={photo!.theme.frame.type == "singular" ? 235 : 120}
+                            className={cn(photo!.theme.frame.type == "singular" ? "w-[17vw]" : "w-[9vw]")}
                           />
                         );
                       })}
@@ -140,7 +154,7 @@ const LayoutPage = () => {
                 onClick={handleRightClick}
               />
             </div>
-            <div className={cn(photo!.theme.frame.type == "singular" ? "w-[550px]" : "w-[650px]")}>
+            <div className="w-[40vw]">
               <Carousel
                 setApi={setApiPreview}
                 plugins={[WheelGesturesPlugin()]}
@@ -182,30 +196,44 @@ const LayoutPage = () => {
               </Carousel>
             </div>
           </div>
-          <div className="flex gap-10 items-center flex-col justify-between">
-            <div className="flex flex-col items-center justify-center gap-8">
-              <div className="flex flex-col items-center justify-center gap-4">
-                <h1 className="text-4xl font-bold uppercase text-nowrap">{t("Choose number of copies")}</h1>
-                <div className="flex gap-4 flex-wrap items-center justify-center w-[60%]">
+          <div className="flex flex-col items-center justify-center gap-8 h-full">
+            <div className="flex flex-col items-center justify-center gap-4">
+              <h1 className="text-4xl font-bold uppercase text-nowrap">{t("Choose number of copies")}</h1>
+              <div className="flex gap-2 flex-wrap items-center justify-center w-[75%]">
+                <AnimatedBackground
+                  defaultValue={photo?.quantity?.toString()}
+                  className="rounded-lg bg-green-700"
+                  transition={{
+                    ease: "easeInOut",
+                    duration: 0.2,
+                  }}
+                >
                   {Array.from({length: maxQuantity}, (_, index) => {
                     const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
                     return (
-                      <Button
+                      <div
+                        className={cn(" text-2xl text-white w-[90px] h-[90px] flex items-center justify-center mb-3 rounded-lg border bg-black")}
                         key={index}
+                        data-id={quantiy.toString()}
                         onClick={() => handleQuantityChange(quantiy)}
-                        className={cn("text-2xl p-9 px-8 hover:bg-unset", photo?.quantity == quantiy ? "bg-green-700" : "bg-black")}
                       >
                         {quantiy}
-                      </Button>
+                      </div>
                     );
                   })}
-                </div>
+                </AnimatedBackground>
               </div>
-              <div className="flex gap-4 flex-wrap items-center justify-center w-[350px]">
+            </div>
+            <ScrollArea className="w-[350px] h-[35%]">
+              <div className="flex gap-4 flex-wrap items-center justify-center w-full">
                 {FrameOptions[photo!.theme.name].map((item, index) => {
-                  const thumbnail = item.thumbnail!;
+                  const thumbnail = item.thumbnail;
+                  if (!thumbnail) return null;
                   return (
                     <div
+                      ref={(el) => {
+                        thumbnailRefs.current[index] = el;
+                      }}
                       key={index}
                       onClick={() => {
                         handleFrameChange(item);
@@ -230,7 +258,7 @@ const LayoutPage = () => {
                   );
                 })}
               </div>
-            </div>
+            </ScrollArea>
             <div className="flex flex-col gap-4 w-[75%]">
               <Link
                 href="/"
@@ -259,7 +287,7 @@ const LayoutPage = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

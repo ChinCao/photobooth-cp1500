@@ -12,7 +12,7 @@ import {Card} from "@/components/ui/card";
 import {usePathname} from "next/navigation";
 import {cn} from "@/lib/utils";
 import CollabTransitionOverlay from "@/components/CollabTransitionOverlay";
-import {TextShimmer} from "@/components/text-shimmer";
+import {TextShimmer} from "@/components/ui/text-shimmer";
 import localFont from "next/font/local";
 
 const Buffalo = localFont({

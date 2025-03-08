@@ -91,12 +91,10 @@ const FilterPage = () => {
     const randomIndex = Math.floor(Math.random() * FILTERS.length);
     setFilter(FILTERS[randomIndex].value);
 
-    setTimeout(() => {
-      filterRefs.current[randomIndex]?.scrollIntoView({
-        behavior: "instant",
-        block: "center",
-      });
-    }, 100);
+    filterRefs.current[randomIndex]?.scrollIntoView({
+      behavior: "instant",
+      block: "center",
+    });
   }, []);
 
   return (
