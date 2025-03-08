@@ -17,11 +17,14 @@ import {PiPrinter} from "react-icons/pi";
 import {useTranslation} from "react-i18next";
 import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
+import {useViewportScale} from "@/hooks/useViewportScale";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
   const router = useRouter();
   const filterRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const scaleContainerRef = useViewportScale();
+
   const {t} = useTranslation();
   useEffect(() => {
     if (!photo) return router.push("/");
@@ -33,7 +36,7 @@ const FilterPage = () => {
   const stageRef = useRef<StageElement | null>(null);
   const {socket, isConnected} = useSocket();
 
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(99999);
   const [printed, setPrinted] = useState(false);
 
   const printImage = useCallback(() => {
@@ -98,12 +101,15 @@ const FilterPage = () => {
   }, []);
 
   return (
-    <div className={cn(!timeLeft ? "pointer-events-none" : null)}>
-      <div className="self-center">
-        {photo && frameImg && (
-          <>
-            <div className="flex items-start justify-evenly gap-6 mb-8 w-full">
-              <div className="self-center">
+    <div className={cn(!timeLeft ? "pointer-events-none" : null, "w-full h-full flex items-center justify-center flex-col")}>
+      {photo && frameImg && (
+        <>
+          <div className="flex items-start justify-evenly gap-3 w-full h-full">
+            <div className="h-full flex items-center justify-center">
+              <div
+                ref={scaleContainerRef}
+                className="transform-gpu scale-[calc(var(--scale-factor,0.75))] origin-center"
+              >
                 <Stage
                   ref={stageRef}
                   width={IMAGE_WIDTH}
@@ -156,80 +162,80 @@ const FilterPage = () => {
                   ))}
                 </Stage>
               </div>
-              <div className="flex items-center justify-center flex-col gap-5">
-                <div className="flex gap-2 items-center justify-center mb-4">
-                  <h1 className="text-4xl font-bold  uppercase">{t("Choose a filter")}</h1>
-                  <span className="text-rose-500 text-4xl font-bold ">
-                    <SlidingNumber
-                      value={timeLeft}
-                      padStart={true}
-                    />
-                  </span>
+            </div>
+            <div className="flex items-center justify-center flex-col gap-5">
+              <div className="flex gap-2 items-center justify-center mb-4">
+                <h1 className="text-4xl font-bold  uppercase">{t("Choose a filter")}</h1>
+                <span className="text-rose-500 text-4xl font-bold ">
+                  <SlidingNumber
+                    value={timeLeft}
+                    padStart={true}
+                  />
+                </span>
+              </div>
+              <ScrollArea className=" h-[60vh] w-[100%] ">
+                <div className="flex-wrap flex gap-4 items-center justify-center">
+                  {FILTERS.map((item, index) => (
+                    <div
+                      ref={(el) => {
+                        filterRefs.current[index] = el;
+                      }}
+                      className={cn(
+                        "basis-1/6 flex flex-col gap-2 items-center justify-center border-[4px] cursor-pointer rounded hover:border-black",
+                        filter == item.value ? "border-rose-500 hover:border-rose-500" : null
+                      )}
+                      key={index}
+                      onClick={() => setFilter(item.value)}
+                    >
+                      <img
+                        src={photo?.selectedImages[0]?.data}
+                        alt="filtered image"
+                        className={cn(item.filter, "w-full")}
+                      />
+                      <p>{item.name}</p>
+                    </div>
+                  ))}
                 </div>
-                <ScrollArea className=" h-[60vh] w-[100%] ">
-                  <div className="flex-wrap flex gap-4 items-center justify-center">
-                    {FILTERS.map((item, index) => (
-                      <div
-                        ref={(el) => {
-                          filterRefs.current[index] = el;
-                        }}
-                        className={cn(
-                          "basis-1/6 flex flex-col gap-2 items-center justify-center border-[4px] cursor-pointer rounded hover:border-black",
-                          filter == item.value ? "border-rose-500 hover:border-rose-500" : null
-                        )}
-                        key={index}
-                        onClick={() => setFilter(item.value)}
-                      >
-                        <img
-                          src={photo?.selectedImages[0]?.data}
-                          alt="filtered image"
-                          className={cn(item.filter, "w-full")}
-                        />
-                        <p>{item.name}</p>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-                <div className="flex gap-2 w-full">
-                  <Button
-                    className="w-full mt-2"
-                    onClick={selectRandomFilter}
-                  >
-                    {t("Random filter")} - {FILTERS.find((item) => item.value == filter)?.name}
-                  </Button>
-                  <Button
-                    className="w-full mt-2"
-                    onClick={() => setFilter(null)}
-                  >
-                    {t("Reset filter")}
-                  </Button>
-                </div>
+              </ScrollArea>
+              <div className="flex gap-2 w-full">
+                <Button
+                  className="w-full mt-2"
+                  onClick={selectRandomFilter}
+                >
+                  {t("Random filter")} - {FILTERS.find((item) => item.value == filter)?.name}
+                </Button>
+                <Button
+                  className="w-full mt-2"
+                  onClick={() => setFilter(null)}
+                >
+                  {t("Reset filter")}
+                </Button>
               </div>
             </div>
-            <div className="relative w-full">
-              <GlowEffect
-                colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
-                mode="colorShift"
-                blur="soft"
-                duration={3}
-                scale={1}
-              />
-              <Button
-                className={cn(
-                  "flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full relative z-10",
-                  printed ? "pointer-events-none opacity-[85%]" : null
-                )}
-                onClick={printImage}
-              >
-                <>
-                  {t("Print")}
-                  <PiPrinter size={15} />
-                </>
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
+          </div>
+          <div className="relative w-full">
+            <GlowEffect
+              colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
+              mode="colorShift"
+              blur="soft"
+              duration={3}
+              scale={1}
+            />
+            <Button
+              className={cn(
+                "flex text-xl text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-6 hover:opacity-[85%] w-full relative z-10",
+                printed ? "pointer-events-none opacity-[85%]" : null
+              )}
+              onClick={printImage}
+            >
+              <>
+                {t("Print")}
+                <PiPrinter size={15} />
+              </>
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

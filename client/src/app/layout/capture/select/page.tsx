@@ -20,6 +20,7 @@ import {useSocket} from "@/context/SocketContext";
 import {useTranslation} from "react-i18next";
 import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
+import {useViewportScale} from "@/hooks/useViewportScale";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -81,7 +82,7 @@ const PrintPage = () => {
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
     Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
   );
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(99999);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
   const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
@@ -92,6 +93,7 @@ const PrintPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const swapyRef = useRef<Swapy | null>(null);
   const [selected, setSelected] = useState(false);
+  const scaleContainerRef = useViewportScale();
   const placeHolderDivs = useMemo(
     () =>
       Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, (_, _index) => {
@@ -238,94 +240,99 @@ const PrintPage = () => {
   }, [isTimeOver, filteredSelectedImages, handleContextSelect, lastImageUploaded, videoProcessed]);
 
   return (
-    <div className="w-full h-full flex items-center justify-center gap-6 flex-col">
-      <div className={cn("flex items-center justify-evenly w-full", isTimeOver ? "pointer-events-none" : null)}>
-        <div className="flex flex-col items-center justify-center">
-          <div className="relative">
+    <div className="w-full h-full flex items-center justify-center gap-3 flex-col">
+      <div className={cn("flex items-center justify-evenly w-full h-full", isTimeOver ? "pointer-events-none" : null)}>
+        <div className="flex flex-col items-center justify-center h-full">
+          <div className="relative h-full flex items-center justify-center">
             <div
-              className="flex absolute flex-col "
-              style={{
-                top: photo ? photo.theme.frame.slotPositions[0].y + OFFSET_Y / isSingle : 0,
-                left: OFFSET_X / isSingle,
-                gap:
-                  isSingle == 2 && photo
-                    ? (photo.theme.frame.slotPositions[0].y / isSingle) * 0.7
-                    : photo
-                    ? OFFSET_Y * 2 + photo.theme.frame.slotPositions[0].y
-                    : 0,
-              }}
-              ref={containerRef}
+              ref={scaleContainerRef}
+              className="transform-gpu scale-[calc(var(--scale-factor,0.75))] origin-center"
             >
-              {slottedItems.map(({slotId, itemId}) => (
-                <div
-                  className="z-50"
-                  key={slotId}
-                  data-swapy-slot={slotId}
-                  onClick={() => {
-                    if (selectedImage[Number(slotId)]) {
-                      handleSelect(selectedImage[Number(slotId)]);
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      zIndex: 100,
-                      width: FRAME_WIDTH / isSingle,
-                      height: photo ? photo.theme.frame.slotDimensions.height : 0,
-                    }}
-                    className="bg-transparent hover:cursor-pointer"
-                    data-swapy-item={itemId}
-                    key={itemId}
-                  ></div>
-                </div>
-              ))}
-            </div>
-
-            {frameImg && photo && (
-              <Stage
-                width={IMAGE_WIDTH / isSingle}
-                height={IMAGE_HEIGHT}
+              <div
+                className="flex absolute flex-col"
+                style={{
+                  top: photo ? photo.theme.frame.slotPositions[0].y + OFFSET_Y / isSingle : 0,
+                  left: OFFSET_X / isSingle,
+                  gap:
+                    isSingle == 2 && photo
+                      ? (photo.theme.frame.slotPositions[0].y / isSingle) * 0.7
+                      : photo
+                      ? OFFSET_Y * 2 + photo.theme.frame.slotPositions[0].y
+                      : 0,
+                }}
+                ref={containerRef}
               >
-                <Layer>
-                  <Rect
-                    width={IMAGE_WIDTH / isSingle}
-                    height={IMAGE_HEIGHT}
-                    fill="white"
-                  />
-                </Layer>
-                <Layer
-                  x={OFFSET_X / isSingle}
-                  y={OFFSET_Y / isSingle}
-                >
-                  {slottedItems.map(({slotId}) => (
-                    <SelectedImage
-                      key={slotId}
-                      url={selectedImage[Number(slotId)]?.data}
-                      y={photo.theme.frame.slotPositions[Number(slotId)].y}
-                      x={photo.theme.frame.slotPositions[Number(slotId)].x}
-                      filter={null}
-                      height={photo.theme.frame.slotDimensions.height}
-                      width={photo.theme.frame.slotDimensions.width}
-                    />
-                  ))}
-                </Layer>
-                <Layer
-                  x={OFFSET_X / isSingle}
-                  y={OFFSET_Y / isSingle}
-                >
-                  <KonvaImage
-                    image={frameImg}
-                    height={FRAME_HEIGHT}
-                    width={FRAME_WIDTH / isSingle}
-                  />
-                </Layer>
-              </Stage>
-            )}
+                {slottedItems.map(({slotId, itemId}) => (
+                  <div
+                    className="z-50"
+                    key={slotId}
+                    data-swapy-slot={slotId}
+                    onClick={() => {
+                      if (selectedImage[Number(slotId)]) {
+                        handleSelect(selectedImage[Number(slotId)]);
+                      }
+                    }}
+                  >
+                    <div
+                      style={{
+                        zIndex: 100,
+                        width: FRAME_WIDTH / isSingle,
+                        height: photo ? photo.theme.frame.slotDimensions.height : 0,
+                      }}
+                      className="bg-transparent hover:cursor-pointer"
+                      data-swapy-item={itemId}
+                      key={itemId}
+                    ></div>
+                  </div>
+                ))}
+              </div>
 
-            <SelectInstruction open={isTimeOver} />
+              {frameImg && photo && (
+                <Stage
+                  width={IMAGE_WIDTH / isSingle}
+                  height={IMAGE_HEIGHT}
+                >
+                  <Layer>
+                    <Rect
+                      width={IMAGE_WIDTH / isSingle}
+                      height={IMAGE_HEIGHT}
+                      fill="white"
+                    />
+                  </Layer>
+                  <Layer
+                    x={OFFSET_X / isSingle}
+                    y={OFFSET_Y / isSingle}
+                  >
+                    {slottedItems.map(({slotId}) => (
+                      <SelectedImage
+                        key={slotId}
+                        url={selectedImage[Number(slotId)]?.data}
+                        y={photo.theme.frame.slotPositions[Number(slotId)].y}
+                        x={photo.theme.frame.slotPositions[Number(slotId)].x}
+                        filter={null}
+                        height={photo.theme.frame.slotDimensions.height}
+                        width={photo.theme.frame.slotDimensions.width}
+                      />
+                    ))}
+                  </Layer>
+                  <Layer
+                    x={OFFSET_X / isSingle}
+                    y={OFFSET_Y / isSingle}
+                  >
+                    <KonvaImage
+                      image={frameImg}
+                      height={FRAME_HEIGHT}
+                      width={FRAME_WIDTH / isSingle}
+                    />
+                  </Layer>
+                </Stage>
+              )}
+
+              <SelectInstruction open={isTimeOver} />
+            </div>
           </div>
         </div>
-        <div className="flex flex-wrap w-[55%] gap-4 items-start justify-center ">
+        <div className="flex flex-wrap w-[55%] items-start justify-center ">
           {photo && (
             <div className="flex gap-2">
               <h1 className="text-5xl font-bold mb-4 flex gap-2">{t("Choose pictures")} </h1>
@@ -356,7 +363,7 @@ const PrintPage = () => {
                       src={item.data}
                       alt="image"
                       priority
-                      className="w-[280px] pointer-events-none"
+                      className="h-[22vh] pointer-events-none"
                     />
                   </div>
                 ))}

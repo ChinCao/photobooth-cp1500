@@ -145,7 +145,7 @@ const CollabTransition = () => {
 
           <text
             className="text-6xl font-bold w-full"
-            text-anchor="middle"
+            textAnchor="middle"
             x="50%"
             y="50%"
             style={{fill: "url(#pattern)"}}
