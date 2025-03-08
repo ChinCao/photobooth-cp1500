@@ -25,7 +25,7 @@ const LayoutPage = () => {
   const maxQuantity = 5;
   const [api, setApi] = useState<CarouselApi>();
   const [apiPreview, setApiPreview] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(1);
   const handleQuantityChange = (quantity: number) => {
     setPhoto!((prevStyle) => {
       if (prevStyle) {
@@ -56,13 +56,11 @@ const LayoutPage = () => {
 
   const handleLeftClick = useCallback(() => {
     api?.scrollPrev();
-    apiPreview?.scrollPrev();
-  }, [api, apiPreview]);
+  }, [api]);
 
   const handleRightClick = useCallback(() => {
     api?.scrollNext();
-    apiPreview?.scrollNext();
-  }, [api, apiPreview]);
+  }, [api]);
 
   const handleCarouselItemClick = useCallback(
     (index: number) => {
@@ -77,10 +75,9 @@ const LayoutPage = () => {
       return;
     }
 
-    setCurrent(api.selectedScrollSnap() + 1);
-
     const handleSelect = () => {
       setCurrent(api.selectedScrollSnap() + 1);
+      handleCarouselItemClick(api.selectedScrollSnap());
       handleFrameChange(FrameOptions[photo!.theme.name][api.selectedScrollSnap()]);
     };
 
@@ -88,7 +85,7 @@ const LayoutPage = () => {
     return () => {
       api.off("select", handleSelect);
     };
-  }, [api, apiPreview, handleFrameChange, photo]);
+  }, [api, apiPreview, handleCarouselItemClick, handleFrameChange, photo]);
 
   return (
     <div className="flex items-center justify-center h-full">

@@ -45,7 +45,7 @@ export default function RootLayout({
         <I18nextProvider i18n={i18n}>
           <html lang="en">
             <body
-              className={`${geistSans.variable} ${geistMono.variable} ${Buffalo.variable} font-sans antialiased bg-[url(/background.jpg)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col w-full`}
+              className={`${geistSans.variable} ${geistMono.variable} ${Buffalo.variable} font-sans antialiased bg-[url(/background.webp)] bg-no-repeat bg-cover min-h-screen flex items-center justify-center flex-col w-full`}
             >
               <title>Photobooth</title>
 
