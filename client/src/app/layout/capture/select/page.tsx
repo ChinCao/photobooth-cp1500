@@ -95,6 +95,7 @@ const PrintPage = () => {
   }, [photo]);
   const [selected, setSelected] = useState(false);
   const scaleContainerRef = useViewportScale();
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const [slots, setSlots] = useState<number[]>(() => Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, (_, index) => index));
 
@@ -105,12 +106,10 @@ const PrintPage = () => {
 
     const sourceIndex = update.source.index;
     const destinationIndex = update.destination.index;
-
-    console.log(sourceIndex, destinationIndex);
-
+    setSelectedImageIndex(destinationIndex);
     setSelectedImage((prevImages) => {
-      const reorderedImages = Array.from(prevImages);
-      const [removed] = reorderedImages.splice(sourceIndex, 1);
+      const reorderedImages = [...prevImages];
+      const [removed] = reorderedImages.splice(selectedImageIndex ? selectedImageIndex : sourceIndex, 1);
       reorderedImages.splice(destinationIndex, 0, removed);
       return reorderedImages;
     });
@@ -129,18 +128,11 @@ const PrintPage = () => {
     if (sourceIndex === destinationIndex && sourceDroppableId === destinationDroppableId) {
       return;
     }
-
     const reorderedSlots = Array.from(slots);
     const [removed] = reorderedSlots.splice(sourceIndex, 1);
     reorderedSlots.splice(destinationIndex, 0, removed);
     setSlots(reorderedSlots);
-
-    setSelectedImage((prevImages) => {
-      const reorderedImages = [...prevImages];
-      const [removed] = reorderedImages.splice(sourceIndex, 1);
-      reorderedImages.splice(destinationIndex, 0, removed);
-      return reorderedImages;
-    });
+    setSelectedImageIndex(null);
   };
 
   const handleContextSelect = useCallback(
@@ -286,16 +278,12 @@ const PrintPage = () => {
                           draggableId={`slot-${slotIndex}`}
                           index={index}
                         >
-                          {(provided, snapshot) => (
+                          {(provided) => (
                             <div
                               className="z-50"
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              style={{
-                                ...provided.draggableProps.style,
-                                opacity: snapshot.isDragging ? 0.8 : 1,
-                              }}
                               onClick={() => {
                                 if (selectedImage[index]) {
                                   handleSelect(selectedImage[index]);
@@ -309,9 +297,7 @@ const PrintPage = () => {
                                   backgroundColor: "transparent",
                                 }}
                                 className="hover:cursor-grab active:cursor-grabbing z-50"
-                              >
-                                {slotIndex}
-                              </div>
+                              ></div>
                             </div>
                           )}
                         </Draggable>
