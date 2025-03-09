@@ -199,7 +199,7 @@ const LayoutPage = () => {
           <div className="flex flex-col items-center justify-center gap-8 h-full">
             <div className="flex flex-col items-center justify-center gap-4">
               <h1 className="text-4xl font-bold uppercase text-nowrap">{t("Choose number of copies")}</h1>
-              <div className="flex gap-2 flex-wrap items-center justify-center w-[75%]">
+              <div className="flex gap-2 flex-wrap items-center justify-center w-[350px]">
                 <AnimatedBackground
                   defaultValue={photo?.quantity?.toString()}
                   className="rounded-lg bg-green-700"
@@ -261,7 +261,7 @@ const LayoutPage = () => {
                 })}
               </div>
             </ScrollArea>
-            <div className="flex flex-col gap-4 w-[75%]">
+            <div className="flex flex-col gap-4 w-full">
               <Link
                 href="/"
                 className="flex  text-center items-center justify-center gap-2 bg-foreground text-background rounded px-4 py-2 hover:opacity-[85%] w-full"

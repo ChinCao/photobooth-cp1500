@@ -1,4 +1,10 @@
-export type ValidTheme = "prom" | "usagyuun";
+export const VALID_THEMES = ["prom", "usagyuun"] as const;
+
+export type ValidTheme = (typeof VALID_THEMES)[number];
+
+export const VALID_FRAME_TYPES = ["singular", "double"] as const;
+
+export type ValidFrameType = (typeof VALID_FRAME_TYPES)[number];
 
 export const ThemeSelectButton: {
   title: string;
@@ -47,10 +53,10 @@ const PROM_Y_SLOT_SEPERATION = (index: number) => {
 
 export const FrameOptions: {
   [key in ValidTheme]: Array<{
-    type: "singular" | "double";
+    type: ValidFrameType;
     src: `/frame/${key}/${key}_${number}.png`;
     thumbnail?: `/frame/${key}/thumbnail/${key}_${number}.${string}`;
-    imageSlot: number;
+    slotCount: number;
     slotDimensions: {
       width: number;
       height: number;
@@ -66,7 +72,7 @@ export const FrameOptions: {
       type: "singular",
       src: "/frame/prom/prom_1.png",
       thumbnail: "/frame/prom/thumbnail/prom_1.jpg",
-      imageSlot: 2,
+      slotCount: 2,
       slotDimensions: {
         height: PROM_IMAGE_HEIGHT,
         width: PROM_IMAGE_WIDTH,
@@ -87,7 +93,7 @@ export const FrameOptions: {
       type: "singular",
       src: "/frame/prom/prom_2.png",
       thumbnail: "/frame/prom/thumbnail/prom_2.jpg",
-      imageSlot: 2,
+      slotCount: 2,
       slotDimensions: {
         height: PROM_IMAGE_HEIGHT,
         width: PROM_IMAGE_WIDTH,
@@ -108,7 +114,7 @@ export const FrameOptions: {
       type: "singular",
       src: "/frame/prom/prom_3.png",
       thumbnail: "/frame/prom/thumbnail/prom_3.jpg",
-      imageSlot: 2,
+      slotCount: 2,
       slotDimensions: {
         height: PROM_IMAGE_HEIGHT,
         width: PROM_IMAGE_WIDTH,
@@ -129,7 +135,7 @@ export const FrameOptions: {
       type: "singular",
       src: "/frame/prom/prom_4.png",
       thumbnail: "/frame/prom/thumbnail/prom_4.jpg",
-      imageSlot: 2,
+      slotCount: 2,
       slotDimensions: {
         height: PROM_IMAGE_HEIGHT,
         width: PROM_IMAGE_WIDTH,
@@ -151,7 +157,7 @@ export const FrameOptions: {
       type: "singular",
       src: "/frame/prom/prom_5.png",
       thumbnail: "/frame/prom/thumbnail/prom_5.jpg",
-      imageSlot: 2,
+      slotCount: 2,
       slotDimensions: {
         height: PROM_IMAGE_HEIGHT,
         width: PROM_IMAGE_WIDTH,
@@ -172,7 +178,7 @@ export const FrameOptions: {
       type: "singular",
       src: "/frame/prom/prom_6.png",
       thumbnail: "/frame/prom/thumbnail/prom_6.jpg",
-      imageSlot: 2,
+      slotCount: 2,
       slotDimensions: {
         height: PROM_IMAGE_HEIGHT,
         width: PROM_IMAGE_WIDTH,
@@ -195,7 +201,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_1.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_1.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,
@@ -226,7 +232,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_2.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_2.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,
@@ -257,7 +263,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_3.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_3.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,
@@ -288,7 +294,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_4.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_4.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,
@@ -319,7 +325,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_5.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_5.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,
@@ -350,7 +356,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_6.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_6.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,
@@ -381,7 +387,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_7.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_7.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,
@@ -412,7 +418,7 @@ export const FrameOptions: {
       type: "double",
       src: "/frame/usagyuun/usagyuun_8.png",
       thumbnail: "/frame/usagyuun/thumbnail/usagyuun_8.png",
-      imageSlot: 4,
+      slotCount: 4,
       slotDimensions: {
         height: USAGYUUN_IMAGE_HEIGHT,
         width: USAGYUUN_IMAGE_WIDTH,

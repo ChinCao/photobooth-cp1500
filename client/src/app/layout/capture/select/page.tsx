@@ -63,7 +63,7 @@ const PrintPage = () => {
 
   useEffect(() => {
     if (!photo) return navigateTo("/");
-    if (photo!.selectedImages.length == photo!.theme.frame.imageSlot) return navigateTo("/layout/capture/select/filter");
+    if (photo!.selectedImages.length == photo!.theme.frame.slotCount) return navigateTo("/layout/capture/select/filter");
 
     const uploadImage = async () => {
       const r2Response = await uploadImageToR2(photo!.images[photo!.images.length - 1].data);
@@ -83,12 +83,12 @@ const PrintPage = () => {
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
 
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
-    Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, () => null)
+    Array.from({length: photo ? photo!.theme.frame.slotCount : 0}, () => null)
   );
   const [timeLeft, setTimeLeft] = useState(99999);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const photoRef = useRef(photo);
-  const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.imageSlot - 1 : 0);
+  const [lastRemovedImage, setLastRemovedImage] = useState<number>(photo ? photo!.theme.frame.slotCount - 1 : 0);
   const isSingle = useMemo(() => {
     if (!photo) return 1;
     return photo.theme.frame.type == "singular" ? 1 : 2;
@@ -97,7 +97,7 @@ const PrintPage = () => {
   const scaleContainerRef = useViewportScale();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
-  const [slots, setSlots] = useState<number[]>(() => Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, (_, index) => index));
+  const [slots, setSlots] = useState<number[]>(() => Array.from({length: photo ? photo!.theme.frame.slotCount : 0}, (_, index) => index));
 
   const handleDragUpdate = (update: DragUpdate) => {
     if (!update.destination) {
@@ -169,7 +169,7 @@ const PrintPage = () => {
     (image: {id: string; data: string; href: string} | null) => {
       if (photo && image !== null) {
         const isSelected = selectedImage.some((img) => img?.id === image.id);
-        const maxImages = photo.theme.frame.imageSlot;
+        const maxImages = photo.theme.frame.slotCount;
         const currentSelectedImages = selectedImage.filter((img) => img !== null);
         if (!isSelected && maxImages - currentSelectedImages.length > 0) {
           setSelectedImage((prevImages) => {
@@ -209,7 +209,7 @@ const PrintPage = () => {
   useEffect(() => {
     if (!isTimeOver || !photoRef.current) return;
 
-    const itemLeft = photoRef.current!.theme.frame.imageSlot - filteredSelectedImages.length;
+    const itemLeft = photoRef.current!.theme.frame.slotCount - filteredSelectedImages.length;
     if (itemLeft > 0) {
       const unselectedImage = photoRef.current!.images.filter((item) => !filteredSelectedImages.includes(item));
 
@@ -395,7 +395,7 @@ const PrintPage = () => {
       </div>
       {photo && (
         <div className="relative w-full">
-          {(photo!.theme.frame.imageSlot - filteredSelectedImages.length == 0 || isTimeOver) && (
+          {(photo!.theme.frame.slotCount - filteredSelectedImages.length == 0 || isTimeOver) && (
             <>
               <GlowEffect
                 colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
@@ -417,7 +417,7 @@ const PrintPage = () => {
               className={cn(
                 "flex items-center justify-center gap-2 text-2xl px-14 py-6 w-full",
                 photo
-                  ? photo!.theme.frame.imageSlot - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded || !videoProcessed
+                  ? photo!.theme.frame.slotCount - filteredSelectedImages.length != 0 || isTimeOver || !lastImageUploaded || !videoProcessed
                     ? "pointer-events-none opacity-80"
                     : null
                   : null,

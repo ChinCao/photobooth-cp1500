@@ -12,6 +12,7 @@ import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {useTranslation} from "react-i18next";
 import CollabTransition from "@/components/CollabTransition";
+import usePreventNavigation from "@/hooks/usePreventNavigation";
 
 const language = [
   {
@@ -39,6 +40,7 @@ const language = [
 const ThemePage = () => {
   const {photo, setPhoto} = usePhoto();
   const {t, i18n} = useTranslation();
+  usePreventNavigation();
 
   const handleThemeChange = (name: ValidTheme) => {
     setPhoto!(() => {
