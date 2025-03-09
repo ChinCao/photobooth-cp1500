@@ -1,7 +1,7 @@
 "use client";
 import {Button} from "@/components/ui/button";
 import {usePhoto} from "@/context/StyleContext";
-import {cn, findChangedIndices, updateMap} from "@/lib/utils";
+import {cn} from "@/lib/utils";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Layer, Rect, Stage} from "react-konva";
 import useImage from "use-image";
@@ -10,7 +10,7 @@ import Image from "next/image";
 import SelectedImage from "@/components/SelectedImage";
 import Link from "next/link";
 import {FRAME_HEIGHT, FRAME_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, OFFSET_X, OFFSET_Y} from "@/constants/constants";
-import {createSwapy, SlotItemMapArray, Swapy, utils} from "swapy";
+import {DragDropContext, Droppable, Draggable, DropResult, DragUpdate} from "react-beautiful-dnd";
 import {uploadImageToR2} from "@/lib/r2";
 import {MdOutlineCloudDone} from "react-icons/md";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -93,53 +93,55 @@ const PrintPage = () => {
     if (!photo) return 1;
     return photo.theme.frame.type == "singular" ? 1 : 2;
   }, [photo]);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const swapyRef = useRef<Swapy | null>(null);
   const [selected, setSelected] = useState(false);
   const scaleContainerRef = useViewportScale();
-  const placeHolderDivs = useMemo(
-    () =>
-      Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, (_, _index) => {
-        return {
-          id: _index,
-        };
-      }),
-    [photo]
-  );
 
-  const [slotItemMap, setSlotItemMap] = useState<SlotItemMapArray>(utils.initSlotItemMap(placeHolderDivs, "id"));
-  const slottedItems = useMemo(() => utils.toSlottedItems(placeHolderDivs, "id", slotItemMap), [placeHolderDivs, slotItemMap]);
-  useEffect(() => {
-    utils.dynamicSwapy(swapyRef.current, placeHolderDivs, "id", slotItemMap, setSlotItemMap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [placeHolderDivs]);
+  const [slots, setSlots] = useState<number[]>(() => Array.from({length: photo ? photo!.theme.frame.imageSlot : 0}, (_, index) => index));
 
-  useEffect(() => {
-    if (containerRef.current) {
-      swapyRef.current = createSwapy(containerRef.current!, {
-        manualSwap: true,
-        animation: "none",
-        autoScrollOnDrag: true,
-        swapMode: "hover",
-        enabled: true,
-        dragAxis: "both",
-        dragOnHold: false,
-      });
-      swapyRef.current.onSwap((event) => {
-        setSlotItemMap(event.newSlotItemMap.asArray);
-        setSelectedImage((prevImages) => {
-          const slotChange = findChangedIndices(event.oldSlotItemMap.asArray, event.newSlotItemMap.asArray);
-          if (slotChange) {
-            return updateMap(prevImages, slotChange);
-          }
-          return prevImages;
-        });
-      });
+  const handleDragUpdate = (update: DragUpdate) => {
+    if (!update.destination) {
+      return;
     }
-    return () => {
-      swapyRef.current?.destroy();
-    };
-  }, []);
+
+    const sourceIndex = update.source.index;
+    const destinationIndex = update.destination.index;
+
+    console.log(sourceIndex, destinationIndex);
+
+    setSelectedImage((prevImages) => {
+      const reorderedImages = Array.from(prevImages);
+      const [removed] = reorderedImages.splice(sourceIndex, 1);
+      reorderedImages.splice(destinationIndex, 0, removed);
+      return reorderedImages;
+    });
+  };
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+    const sourceDroppableId = result.source.droppableId;
+    const destinationDroppableId = result.destination.droppableId;
+
+    if (sourceIndex === destinationIndex && sourceDroppableId === destinationDroppableId) {
+      return;
+    }
+
+    const reorderedSlots = Array.from(slots);
+    const [removed] = reorderedSlots.splice(sourceIndex, 1);
+    reorderedSlots.splice(destinationIndex, 0, removed);
+    setSlots(reorderedSlots);
+
+    setSelectedImage((prevImages) => {
+      const reorderedImages = [...prevImages];
+      const [removed] = reorderedImages.splice(sourceIndex, 1);
+      reorderedImages.splice(destinationIndex, 0, removed);
+      return reorderedImages;
+    });
+  };
 
   const handleContextSelect = useCallback(
     async (images: Array<{id: string; data: string; href: string}>) => {
@@ -251,44 +253,74 @@ const PrintPage = () => {
               ref={scaleContainerRef}
               className="transform-gpu scale-[calc(var(--scale-factor,0.75))] origin-center"
             >
-              <div
-                className="flex absolute flex-col"
-                style={{
-                  top: photo ? photo.theme.frame.slotPositions[0].y + OFFSET_Y / isSingle : 0,
-                  left: OFFSET_X / isSingle,
-                  gap:
-                    isSingle == 2 && photo
-                      ? (photo.theme.frame.slotPositions[0].y / isSingle) * 0.7
-                      : photo
-                      ? OFFSET_Y * 2 + photo.theme.frame.slotPositions[0].y
-                      : 0,
-                }}
-                ref={containerRef}
+              <DragDropContext
+                onDragEnd={handleDragEnd}
+                onDragUpdate={handleDragUpdate}
               >
-                {slottedItems.map(({slotId, itemId}) => (
-                  <div
-                    className="z-50"
-                    key={slotId}
-                    data-swapy-slot={slotId}
-                    onClick={() => {
-                      if (selectedImage[Number(slotId)]) {
-                        handleSelect(selectedImage[Number(slotId)]);
-                      }
-                    }}
-                  >
+                <Droppable
+                  droppableId="photo-slots"
+                  direction="vertical"
+                  isDropDisabled={false}
+                  isCombineEnabled={false}
+                  ignoreContainerClipping={false}
+                >
+                  {(provided) => (
                     <div
+                      className="flex absolute flex-col"
                       style={{
-                        zIndex: 100,
-                        width: FRAME_WIDTH / isSingle,
-                        height: photo ? photo.theme.frame.slotDimensions.height : 0,
+                        top: photo ? photo.theme.frame.slotPositions[0].y + OFFSET_Y / isSingle : 0,
+                        left: OFFSET_X / isSingle,
+                        gap:
+                          isSingle == 2 && photo
+                            ? (photo.theme.frame.slotPositions[0].y / isSingle) * 0.7
+                            : photo
+                            ? OFFSET_Y * 2 + photo.theme.frame.slotPositions[0].y
+                            : 0,
                       }}
-                      className="bg-transparent hover:cursor-pointer"
-                      data-swapy-item={itemId}
-                      key={itemId}
-                    ></div>
-                  </div>
-                ))}
-              </div>
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                    >
+                      {slots.map((slotIndex, index) => (
+                        <Draggable
+                          key={`slot-${slotIndex}`}
+                          draggableId={`slot-${slotIndex}`}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              className="z-50"
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                ...provided.draggableProps.style,
+                                opacity: snapshot.isDragging ? 0.8 : 1,
+                              }}
+                              onClick={() => {
+                                if (selectedImage[index]) {
+                                  handleSelect(selectedImage[index]);
+                                }
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: FRAME_WIDTH / isSingle,
+                                  height: photo ? photo.theme.frame.slotDimensions.height : 0,
+                                  backgroundColor: "transparent",
+                                }}
+                                className="hover:cursor-grab active:cursor-grabbing z-50"
+                              >
+                                {slotIndex}
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
 
               {frameImg && photo && (
                 <Stage
@@ -306,12 +338,12 @@ const PrintPage = () => {
                     x={OFFSET_X / isSingle}
                     y={OFFSET_Y / isSingle}
                   >
-                    {slottedItems.map(({slotId}) => (
+                    {slots.map((slotIndex) => (
                       <SelectedImage
-                        key={slotId}
-                        url={selectedImage[Number(slotId)]?.data}
-                        y={photo.theme.frame.slotPositions[Number(slotId)].y}
-                        x={photo.theme.frame.slotPositions[Number(slotId)].x}
+                        key={`image-${slotIndex}`}
+                        url={selectedImage[slotIndex]?.data}
+                        y={photo.theme.frame.slotPositions[slotIndex].y}
+                        x={photo.theme.frame.slotPositions[slotIndex].x}
                         filter={null}
                         height={photo.theme.frame.slotDimensions.height}
                         width={photo.theme.frame.slotDimensions.width}
