@@ -1,3 +1,5 @@
+"use client";
+
 import React, {useState} from "react";
 import {AnimatePresence, motion} from "framer-motion";
 import {createPortal} from "react-dom";
@@ -20,7 +22,7 @@ const variants = {
 const EndTransition = () => {
   const [visible, setVisible] = useState(true);
 
-  if (typeof window === "undefined" || !visible) return null;
+  if (!visible) return null;
 
   return createPortal(
     <AnimatePresence>

@@ -325,14 +325,14 @@ const CapturePage = () => {
               )}
             </div>
             {isCameraReady && (
-              <div className="mt-3  flex items-center justify-center">
-                <span className="font-bold text-4xl">
+              <div className="mt-3 flex items-center justify-center">
+                <span className="font-bold text-6xl">
                   <SlidingNumber
                     value={cycles}
                     padStart={false}
                   />
                 </span>
-                <h1 className="font-bold text-4xl text-center">/{maxCycles}</h1>
+                <h1 className="font-bold text-6xl text-center">/{maxCycles}</h1>
               </div>
             )}
           </div>

@@ -1,5 +1,8 @@
+"use client";
+
 import {AnimatePresence, motion} from "framer-motion";
 import {createPortal} from "react-dom";
+import {useState, useEffect} from "react";
 
 const blackBox = {
   initial: {
@@ -74,7 +77,14 @@ const textContainer = {
   },
 };
 const CollabTransition = () => {
-  if (typeof window === "undefined") return null;
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  if (!isMounted) return null;
 
   return createPortal(
     <AnimatePresence mode="wait">
