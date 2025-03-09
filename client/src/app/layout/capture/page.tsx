@@ -10,6 +10,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import {uploadImageToR2} from "@/lib/r2";
 import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
+import {TextShimmer} from "@/components/ui/text-shimmer";
 
 const CapturePage = () => {
   const duration = 4;
@@ -348,7 +349,13 @@ const CapturePage = () => {
                   size={80}
                 />
               </div>
-              <h1 className="font-bold text-3xl uppercase text-center whitespace-nowrap">{t("Waiting for camera...")}</h1>
+              <TextShimmer
+                className=" font-bold text-3xl uppercase text-center whitespace-nowrap  [--base-color:black] [--base-gradient-color:gray]"
+                duration={1.5}
+                spread={4}
+              >
+                {t("Waiting for camera...")}
+              </TextShimmer>
             </div>
           )}
         </>

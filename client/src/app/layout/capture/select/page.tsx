@@ -241,7 +241,7 @@ const PrintPage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-center gap-3 flex-col">
-      <div className={cn("flex items-center justify-evenly w-full h-full", isTimeOver ? "pointer-events-none" : null)}>
+      <div className={cn("flex items-center justify-evenly w-full h-full", isTimeOver || selected ? "pointer-events-none" : null)}>
         <div className="flex flex-col items-center justify-center h-full">
           <div className="relative h-full flex items-center justify-center">
             <div

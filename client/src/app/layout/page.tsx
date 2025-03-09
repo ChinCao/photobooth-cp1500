@@ -212,7 +212,9 @@ const LayoutPage = () => {
                     const quantiy = (index + 1) * (photo?.theme.frame.type == "singular" ? 1 : 2);
                     return (
                       <div
-                        className={cn(" text-2xl text-white w-[90px] h-[90px] flex items-center justify-center mb-3 rounded-lg border bg-black")}
+                        className={cn(
+                          " text-2xl text-white w-[90px] hover:cursor-pointer h-[90px] flex items-center justify-center mb-3 rounded-lg border bg-black"
+                        )}
                         key={index}
                         data-id={quantiy.toString()}
                         onClick={() => handleQuantityChange(quantiy)}

@@ -101,7 +101,7 @@ const FilterPage = () => {
   }, []);
 
   return (
-    <div className={cn(!timeLeft ? "pointer-events-none" : null, "w-full h-full flex items-center justify-center flex-col")}>
+    <div className={cn(!timeLeft || printed ? "pointer-events-none" : null, "w-full h-full flex items-center justify-center flex-col")}>
       {photo && frameImg && (
         <>
           <div className="flex items-start justify-evenly gap-3 w-full h-full">
