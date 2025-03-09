@@ -294,7 +294,7 @@ const CapturePage = () => {
     <div className="relative w-full h-full flex items-center justify-center">
       {photo && (
         <>
-          <div className="w-full h-full  flex items-center justify-evenly">
+          <div className="w-full h-full gap-2 flex items-center justify-evenly">
             <div className="relative w-max h-full">
               <video
                 ref={videoRef}
@@ -326,13 +326,13 @@ const CapturePage = () => {
             </div>
             {isCameraReady && (
               <div className="mt-3 flex items-center justify-center">
-                <span className="font-bold text-6xl">
+                <span className="font-bold text-5xl">
                   <SlidingNumber
                     value={cycles}
                     padStart={false}
                   />
                 </span>
-                <h1 className="font-bold text-6xl text-center">/{maxCycles}</h1>
+                <h1 className="font-bold text-5xl text-center">/{maxCycles}</h1>
               </div>
             )}
           </div>
