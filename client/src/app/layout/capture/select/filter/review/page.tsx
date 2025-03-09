@@ -1,19 +1,21 @@
 "use client";
 import {usePhoto} from "@/context/StyleContext";
-import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import Image from "next/image";
 import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
+import usePreventNavigation from "@/hooks/usePreventNavigation";
+
 const ReviewPage = () => {
   const {photo, setPhoto} = usePhoto();
-  const router = useRouter();
+  const {navigateTo} = usePreventNavigation();
   const [timeLeft, setTimeLeft] = useState(6);
   const {t} = useTranslation();
+
   useEffect(() => {
-    if (!photo) return router.push("/");
-    if (!photo!.video.r2_url) return router.push("/");
-  }, [photo, router, setPhoto]);
+    if (!photo) return navigateTo("/");
+    if (!photo!.video.r2_url) return navigateTo("/");
+  }, [photo, navigateTo, setPhoto]);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -26,9 +28,9 @@ const ReviewPage = () => {
       return () => clearInterval(timerId);
     } else {
       setPhoto!(undefined);
-      router.push("/");
+      navigateTo("/");
     }
-  }, [, router, setPhoto, timeLeft]);
+  }, [navigateTo, setPhoto, timeLeft]);
 
   return (
     <div className="w-full h-full flex items-center justify-center gap-6 flex-col">

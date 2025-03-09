@@ -2,7 +2,6 @@
 import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
 import {useState, useEffect, useRef, useCallback} from "react";
-import {useRouter} from "next/navigation";
 import useSound from "use-sound";
 import {NUM_OF_IMAGE} from "@/constants/constants";
 import {ImCamera} from "react-icons/im";
@@ -11,6 +10,7 @@ import {uploadImageToR2} from "@/lib/r2";
 import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {TextShimmer} from "@/components/ui/text-shimmer";
+import usePreventNavigation from "@/hooks/usePreventNavigation";
 
 const CapturePage = () => {
   const duration = 4;
@@ -25,17 +25,17 @@ const CapturePage = () => {
   const [, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string | undefined>();
   const [cameraSize, setCameraSize] = useState<{width: number; height: number} | undefined>(undefined);
-  const router = useRouter();
   const [playCameraShutterSound] = useSound("/shutter.mp3", {volume: 1});
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
   const [uploadedImages, setUploadedImages] = useState<Array<{id: string; href: string}>>([]);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const {t} = useTranslation();
+  const {navigateTo} = usePreventNavigation();
 
   useEffect(() => {
-    if (!photo) return router.push("/");
-    if (photo!.images!.length == maxCycles) return router.push("/layout/capture/select");
-  }, [photo, router, maxCycles]);
+    if (!photo) return navigateTo("/");
+    if (photo!.images!.length == maxCycles) return navigateTo("/layout/capture/select");
+  }, [photo, navigateTo, maxCycles]);
 
   useEffect(() => {
     const getVideoDevices = async () => {
@@ -246,7 +246,7 @@ const CapturePage = () => {
               }
             });
             setIsCountingDown(false);
-            router.push("/layout/capture/select");
+            navigateTo("/layout/capture/select");
           }
         }
       }, 1000);
@@ -263,7 +263,7 @@ const CapturePage = () => {
     maxCycles,
     mediaRecorder,
     playCameraShutterSound,
-    router,
+    navigateTo,
     setPhoto,
     uploadedImages,
   ]);

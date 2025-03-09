@@ -2,7 +2,6 @@
 import {Button} from "@/components/ui/button";
 import {usePhoto} from "@/context/StyleContext";
 import {cn, findChangedIndices, updateMap} from "@/lib/utils";
-import {useRouter} from "next/navigation";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {Layer, Rect, Stage} from "react-konva";
 import useImage from "use-image";
@@ -21,13 +20,17 @@ import {useTranslation} from "react-i18next";
 import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
+import usePreventNavigation from "@/hooks/usePreventNavigation";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
-  const router = useRouter();
+  const {navigateTo} = usePreventNavigation();
   const {socket, isConnected} = useSocket();
   const [videoProcessed, setVideoProcessed] = useState(false);
   const {t} = useTranslation();
+
+  usePreventNavigation();
+
   const lastImageUploaded = useMemo(() => {
     if (photo) {
       return photo!.images[photo!.images.length - 1].href != "";
@@ -59,8 +62,8 @@ const PrintPage = () => {
   }, [isConnected, photo, setPhoto, socket]);
 
   useEffect(() => {
-    if (!photo) return router.push("/");
-    if (photo!.selectedImages.length == photo!.theme.frame.imageSlot) return router.push("/layout/capture/select/filter");
+    if (!photo) return navigateTo("/");
+    if (photo!.selectedImages.length == photo!.theme.frame.imageSlot) return navigateTo("/layout/capture/select/filter");
 
     const uploadImage = async () => {
       const r2Response = await uploadImageToR2(photo!.images[photo!.images.length - 1].data);
@@ -76,7 +79,7 @@ const PrintPage = () => {
     if (!lastImageUploaded) {
       uploadImage();
     }
-  }, [photo, router, setPhoto, lastImageUploaded]);
+  }, [photo, navigateTo, setPhoto, lastImageUploaded]);
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
 
   const [selectedImage, setSelectedImage] = useState<Array<{id: string; data: string; href: string} | null>>(
@@ -149,12 +152,12 @@ const PrintPage = () => {
             };
           }
         });
-        router.push("/layout/capture/select/filter");
+        navigateTo("/layout/capture/select/filter");
       } catch (error) {
         console.error("Failed to upload images:", error);
       }
     },
-    [router, setPhoto]
+    [navigateTo, setPhoto]
   );
 
   useEffect(() => {
@@ -392,7 +395,7 @@ const PrintPage = () => {
             onClick={() => setSelected(true)}
           >
             <Link
-              href="/layout/capture/select/filter"
+              href="#"
               className={cn(
                 "flex items-center justify-center gap-2 text-2xl px-14 py-6 w-full",
                 photo
@@ -402,7 +405,10 @@ const PrintPage = () => {
                   : null,
                 selected ? "pointer-events-none opacity-[85%]" : null
               )}
-              onClick={() => handleContextSelect(filteredSelectedImages)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleContextSelect(filteredSelectedImages);
+              }}
             >
               {t("Choose a filter")}
               {!lastImageUploaded || !videoProcessed ? (

@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import {usePhoto} from "@/context/StyleContext";
-import {useRouter} from "next/navigation";
 import {useCallback, useEffect, useRef, useState} from "react";
 import useImage from "use-image";
 import {Image as KonvaImage, Rect} from "react-konva";
@@ -18,18 +17,20 @@ import {useTranslation} from "react-i18next";
 import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
+import usePreventNavigation from "@/hooks/usePreventNavigation";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
-  const router = useRouter();
+  const {navigateTo} = usePreventNavigation();
   const filterRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scaleContainerRef = useViewportScale();
 
   const {t} = useTranslation();
+
   useEffect(() => {
-    if (!photo) return router.push("/");
-    if (photo!.selectedImages.length == 0) return router.push("/");
-  }, [photo, router, setPhoto]);
+    if (!photo) return navigateTo("/");
+    if (photo!.selectedImages.length == 0) return navigateTo("/");
+  }, [photo, navigateTo, setPhoto]);
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
   const [filter, setFilter] = useState<string | null>(null);
@@ -73,11 +74,11 @@ const FilterPage = () => {
           }
           await videoPreload;
 
-          router.push("/layout/capture/select/filter/review");
+          navigateTo("/layout/capture/select/filter/review");
         }
       );
     }
-  }, [photo, socket, isConnected, printed, router]);
+  }, [photo, socket, isConnected, printed, navigateTo]);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -88,7 +89,7 @@ const FilterPage = () => {
     } else {
       printImage();
     }
-  }, [printImage, router, setPhoto, timeLeft]);
+  }, [printImage, navigateTo, setPhoto, timeLeft]);
 
   const selectRandomFilter = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * FILTERS.length);
