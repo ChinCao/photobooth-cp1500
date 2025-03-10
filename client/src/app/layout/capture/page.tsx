@@ -11,6 +11,7 @@ import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {TextShimmer} from "@/components/ui/text-shimmer";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
+import {createProcessedImage} from "@/server/actions";
 
 const CapturePage = () => {
   const duration = 4;
@@ -36,6 +37,34 @@ const CapturePage = () => {
     if (!photo) return navigateTo("/");
     if (photo!.images!.length == maxCycles) return navigateTo("/layout/capture/select");
   }, [photo, navigateTo, maxCycles]);
+
+  useEffect(() => {
+    const initializeProcessedImage = async () => {
+      if (photo) {
+        if (photo.id) return;
+        const processedImageId = crypto.randomUUID();
+        setPhoto!((prevStyle) => {
+          if (prevStyle) {
+            return {...prevStyle, id: processedImageId};
+          }
+          return prevStyle;
+        });
+        const response = await createProcessedImage(processedImageId);
+        if (response.error) {
+          setPhoto!((prevStyle) => {
+            if (prevStyle) {
+              return {...prevStyle, error: true, id: null};
+            }
+            return prevStyle;
+          });
+          navigateTo("/layout");
+          return;
+        }
+        console.log("Processed image created successfully: ", processedImageId);
+      }
+    };
+    initializeProcessedImage();
+  }, [navigateTo, photo, setPhoto]);
 
   useEffect(() => {
     const getVideoDevices = async () => {

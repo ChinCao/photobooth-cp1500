@@ -472,6 +472,8 @@ export interface PhotoOptions<T extends ValidTheme> {
     data: Blob;
     r2_url: string | null;
   };
+  id: string | null;
+  error: boolean;
   isTransition: boolean;
 }
 

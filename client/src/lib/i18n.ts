@@ -25,6 +25,8 @@ const i18nConfig = {
         "Random filter": "Random filter",
         "Click on image to unselect": "Click on image to unselect",
         "Drag to switch images position": "Drag to switch images position",
+        "An error occurred": "An error occurred",
+        "Please try again": "Please try again",
       },
     },
     vi: {
@@ -47,6 +49,8 @@ const i18nConfig = {
         "Random filter": "Filter ngẫu nhiên",
         "Click on image to unselect": "Bấm vào hình không thích để xóa",
         "Drag to switch images position": "Kéo để đổi vị trí hình ảnh",
+        "An error occurred": "Đã xảy ra lỗi",
+        "Please try again": "Vui lòng thử lại",
       },
     },
     fr: {
@@ -69,6 +73,8 @@ const i18nConfig = {
         "Random filter": "Filtre aléatoire",
         "Click on image to unselect": "Cliquer sur l'image pour désélectionner",
         "Drag to switch images position": "Glisser pour changer la position des images",
+        "An error occurred": "Une erreur est survenue",
+        "Please try again": "Veuillez réessayer",
       },
     },
     cn: {
@@ -91,6 +97,8 @@ const i18nConfig = {
         "Random filter": "随机滤镜",
         "Click on image to unselect": "点击图片取消选择",
         "Drag to switch images position": "拖动以切换图片位置",
+        "An error occurred": "发生错误",
+        "Please try again": "请重试",
       },
     },
   },

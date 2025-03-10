@@ -57,6 +57,8 @@ const ThemePage = () => {
           r2_url: null,
         },
         isTransition: false,
+        id: null,
+        error: false,
       };
     });
   };

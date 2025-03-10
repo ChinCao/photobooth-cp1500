@@ -8,22 +8,22 @@ export const FrameType = pgEnum("frame_type", VALID_FRAME_TYPES);
 
 export const QueueStatus = pgEnum("queueStatus", ["pending", "processing", "completed", "failed"]);
 
-export const ProcessedImage = pgTable("processed_image", {
-  id: uuid("id").primaryKey().defaultRandom().notNull(),
-  theme: Theme("theme").notNull(),
-  type: FrameType("type").notNull(),
-  slotCount: integer("slotCount").notNull(),
-  quantity: integer("quantity").notNull(),
-  filter: text("filter").notNull(),
+export const ProcessedImageTable = pgTable("processedImage", {
+  id: uuid("id").primaryKey().notNull(),
+  theme: Theme("theme"),
+  type: FrameType("type"),
+  slotCount: integer("slotCount"),
+  quantity: integer("quantity"),
+  filter: text("filter"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt")
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-  queueId: uuid("queueId").references(() => Queue.id, {onDelete: "cascade"}),
+  queueId: uuid("queueId").references(() => QueueTable.id, {onDelete: "cascade"}),
 });
 
-export const Queue = pgTable("queue", {
+export const QueueTable = pgTable("queue", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
   status: QueueStatus("status").default("pending").notNull(),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
@@ -39,7 +39,7 @@ export const ImageTable = pgTable("images", {
   slotPosition: integer("slotPosition"),
   proccessedImageId: uuid("proccessedImageId")
     .notNull()
-    .references(() => ProcessedImage.id, {onDelete: "cascade"}),
+    .references(() => ProcessedImageTable.id, {onDelete: "cascade"}),
 });
 
 export const VideoTable = pgTable("videos", {
@@ -47,32 +47,32 @@ export const VideoTable = pgTable("videos", {
   url: text("url").notNull(),
   proccessedImageId: uuid("proccessedImageId")
     .notNull()
-    .references(() => ProcessedImage.id, {onDelete: "cascade"}),
+    .references(() => ProcessedImageTable.id, {onDelete: "cascade"}),
 });
 
 export const ImageRelation = relations(ImageTable, ({one}) => ({
-  frame: one(ProcessedImage, {
+  frame: one(ProcessedImageTable, {
     fields: [ImageTable.proccessedImageId],
-    references: [ProcessedImage.id],
+    references: [ProcessedImageTable.id],
   }),
 }));
 
-export const ProcessedImageRelation = relations(ProcessedImage, ({many, one}) => ({
+export const ProcessedImageRelation = relations(ProcessedImageTable, ({many, one}) => ({
   images: many(ImageTable),
   video: one(VideoTable),
-  queue: one(Queue, {
-    fields: [ProcessedImage.queueId],
-    references: [Queue.id],
+  queue: one(QueueTable, {
+    fields: [ProcessedImageTable.queueId],
+    references: [QueueTable.id],
   }),
 }));
 
 export const VideoRelation = relations(VideoTable, ({one}) => ({
-  frame: one(ProcessedImage, {
+  frame: one(ProcessedImageTable, {
     fields: [VideoTable.proccessedImageId],
-    references: [ProcessedImage.id],
+    references: [ProcessedImageTable.id],
   }),
 }));
 
-export const QueueRelation = relations(Queue, ({many}) => ({
-  processedImages: many(ProcessedImage),
+export const QueueRelation = relations(QueueTable, ({many}) => ({
+  processedImages: many(ProcessedImageTable),
 }));

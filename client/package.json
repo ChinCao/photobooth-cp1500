@@ -46,6 +46,7 @@
     "tailwindcss-animate": "^1.0.7",
     "use-image": "^1.1.1",
     "use-sound": "^4.0.3",
+    "uuid": "^11.1.0",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
