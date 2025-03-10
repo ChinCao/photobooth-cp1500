@@ -10,9 +10,10 @@ export const QueueStatus = pgEnum("queueStatus", ["pending", "processing", "comp
 
 export const ProcessedImageTable = pgTable("processedImage", {
   id: uuid("id").primaryKey().notNull(),
-  theme: Theme("theme"),
-  type: FrameType("type"),
-  slotCount: integer("slotCount"),
+  theme: Theme("theme").notNull(),
+  frameURL: text("frameURL").notNull(),
+  type: FrameType("type").notNull(),
+  slotCount: integer("slotCount").notNull(),
   quantity: integer("quantity"),
   filter: text("filter").default("Original"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),

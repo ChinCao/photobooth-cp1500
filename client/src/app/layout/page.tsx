@@ -1,6 +1,6 @@
 "use client";
 import {Carousel, CarouselContent, CarouselItem, type CarouselApi} from "@/components/ui/carousel";
-import {FrameOptions, ValidTheme} from "@/constants/constants";
+import {FrameOptions, ValidThemeType} from "@/constants/constants";
 import {usePhoto} from "@/context/StyleContext";
 import {cn} from "@/lib/utils";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
@@ -43,7 +43,7 @@ const LayoutPage = () => {
   };
 
   const handleFrameChange = useCallback(
-    (frameAttribute: (typeof FrameOptions)[ValidTheme][number]) => {
+    (frameAttribute: (typeof FrameOptions)[ValidThemeType][number]) => {
       setPhoto!((prevStyle) => {
         if (prevStyle) {
           return {

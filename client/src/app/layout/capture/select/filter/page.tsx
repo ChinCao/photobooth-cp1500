@@ -18,6 +18,7 @@ import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
+import {createImage, updateFilter} from "@/server/actions";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -36,11 +37,11 @@ const FilterPage = () => {
   const [filter, setFilter] = useState<string | null>(null);
   const stageRef = useRef<StageElement | null>(null);
   const {socket, isConnected} = useSocket();
-
+  const [isAllImageUploaded, setIsAllImageUploaded] = useState(false);
   const [timeLeft, setTimeLeft] = useState(99999);
   const [printed, setPrinted] = useState(false);
 
-  const printImage = useCallback(() => {
+  const printImage = useCallback(async () => {
     if (stageRef.current && photo && socket) {
       if (!isConnected) {
         console.error("Socket not connected. Cannot print.");
@@ -48,6 +49,13 @@ const FilterPage = () => {
       }
       if (printed) return;
       setPrinted(true);
+      const filterReponse = await updateFilter(photo.id!, filter ? filter : "Original");
+      if (filterReponse.error) {
+        console.error("Failed to update filter");
+      } else {
+        console.log("Filter updated sucessfully to database!");
+      }
+
       const dataURL = stageRef.current.toDataURL({pixelRatio: 5});
       const videoPreload = new Promise((resolve) => {
         if (photo.video.r2_url) {
@@ -73,12 +81,24 @@ const FilterPage = () => {
             console.error("Print failed:", response.message);
           }
           await videoPreload;
-
-          navigateTo("/layout/capture/select/filter/review");
+          if (isAllImageUploaded) {
+            navigateTo("/layout/capture/select/filter/review");
+          }
         }
       );
     }
-  }, [photo, socket, isConnected, printed, navigateTo]);
+  }, [photo, socket, isConnected, printed, filter, isAllImageUploaded, navigateTo]);
+
+  useEffect(() => {
+    async function uploadImageToDatabase() {
+      for (const image of photo!.images) {
+        const slotPosition = photo!.selectedImages.findIndex((selectedImage) => selectedImage.id == image.id);
+        await createImage(image.data, photo!.id!, slotPosition);
+      }
+      setIsAllImageUploaded(true);
+    }
+    uploadImageToDatabase();
+  }, [isAllImageUploaded, photo]);
 
   useEffect(() => {
     if (timeLeft > 0) {

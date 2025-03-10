@@ -21,7 +21,7 @@ import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
-import {createImage, createVideo} from "@/server/actions";
+import {createVideo} from "@/server/actions";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -46,11 +46,15 @@ const PrintPage = () => {
         "process-video",
         {
           dataURL: photo.video.data,
+          id: photo.id!,
         },
         async (response: {success: boolean; r2_url: string}) => {
           if (response.success) {
             console.log("Video processed", response.r2_url);
-            await createVideo(response.r2_url, photo.id!);
+            const videoResponse = await createVideo(response.r2_url, photo.id!);
+            if (videoResponse.error) {
+              socket.emit("upload-video-error", {url: response.r2_url, id: photo.id!});
+            }
             setPhoto!((prevStyle) => {
               if (prevStyle) {
                 return {...prevStyle, video: {...prevStyle.video, r2_url: response.r2_url}};
@@ -71,29 +75,22 @@ const PrintPage = () => {
       if (!lastImageUploaded) {
         const latestImage = photo.images[photo.images.length - 1];
         const r2Response = await uploadImageToR2(latestImage.data);
-        const handleError = () => {
-          setPhoto!((prevStyle) => prevStyle && {...prevStyle, error: true, images: []});
-          navigateTo("/layout");
-        };
+
         if (r2Response.ok) {
           const data = await r2Response.json();
           const imageUrl = data.url;
           console.log("Image URL:", imageUrl);
-          const response = await createImage(imageUrl, photo!.id!);
-          if (response.error) {
-            handleError();
-          }
+          setPhoto!(
+            (prevStyle) =>
+              prevStyle && {
+                ...prevStyle,
+                images: prevStyle.images.map((item) => (item.id === latestImage.id ? {...item, href: r2Response.url} : item)),
+              }
+          );
         } else {
-          handleError();
+          setPhoto!((prevStyle) => prevStyle && {...prevStyle, error: true, images: []});
+          navigateTo("/layout");
         }
-
-        setPhoto!(
-          (prevStyle) =>
-            prevStyle && {
-              ...prevStyle,
-              images: prevStyle.images.map((item) => (item.id === latestImage.id ? {...item, href: r2Response.url} : item)),
-            }
-        );
       }
     };
 

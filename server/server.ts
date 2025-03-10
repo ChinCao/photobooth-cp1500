@@ -1,7 +1,7 @@
 import {Server} from "socket.io";
 import path from "path";
 import fs from "fs";
-import {currentTime, updatePrinterRegistry, getCP1500Printer, logger} from "./utils";
+import {currentTime, updatePrinterRegistry, getCP1500Printer, logger, logFailedVideoUpload} from "./utils";
 import {exec} from "child_process";
 import {Blob} from "buffer";
 import {S3Client, PutObjectCommand} from "@aws-sdk/client-s3";
@@ -134,7 +134,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("process-video", async (message: {dataURL: Blob}, callback) => {
+  socket.on("process-video", async (message: {dataURL: Blob; id: string}, callback) => {
     const videoJobId = `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     logger.info("Video processing job received", {
@@ -231,10 +231,13 @@ io.on("connection", (socket) => {
         logger.error("R2 upload failed", {
           jobId: videoJobId,
           error: error instanceof Error ? error.message : "Unknown error",
+          id: message.id,
         });
 
+        logFailedVideoUpload(message.id, processedFilePath, error instanceof Error ? error.message : "Unknown error");
+
         callback({
-          success: true,
+          success: false,
           r2_url: "",
         });
       }
@@ -253,5 +256,14 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     logger.info("Client disconnected", {socketId: socket.id});
+  });
+
+  socket.on("upload-video-error", (message: {url: string; id: string}) => {
+    logger.error("Video upload failed", {
+      jobId: message.id,
+      url: message.url,
+    });
+
+    logFailedVideoUpload(message.id, message.url);
   });
 });

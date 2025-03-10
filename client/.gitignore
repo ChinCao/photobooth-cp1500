@@ -3,7 +3,7 @@
 # dependencies
 /node_modules
 
-/drizzle/migrations
+/src/drizzle/migrations
 /.pnp
 .pnp.*
 .yarn/*

@@ -1,6 +1,6 @@
 export const VALID_THEMES = ["prom", "usagyuun"] as const;
 
-export type ValidTheme = (typeof VALID_THEMES)[number];
+export type ValidThemeType = (typeof VALID_THEMES)[number];
 
 export const VALID_FRAME_TYPES = ["singular", "double"] as const;
 
@@ -9,7 +9,7 @@ export type ValidFrameType = (typeof VALID_FRAME_TYPES)[number];
 export const ThemeSelectButton: {
   title: string;
   image_src: string;
-  theme: ValidTheme;
+  theme: ValidThemeType;
   style?: {[key: string]: string};
 }[] = [
   {
@@ -52,7 +52,7 @@ const PROM_Y_SLOT_SEPERATION = (index: number) => {
 };
 
 export const FrameOptions: {
-  [key in ValidTheme]: Array<{
+  [key in ValidThemeType]: Array<{
     type: ValidFrameType;
     src: `/frame/${key}/${key}_${number}.png`;
     thumbnail?: `/frame/${key}/thumbnail/${key}_${number}.${string}`;
@@ -449,10 +449,10 @@ export const FrameOptions: {
 };
 
 export const FrameDefaults: {
-  [key in ValidTheme]: (typeof FrameOptions)[key][number];
+  [key in ValidThemeType]: (typeof FrameOptions)[key][number];
 } = {prom: FrameOptions.prom[0], usagyuun: FrameOptions.usagyuun[0]};
 
-export interface PhotoOptions<T extends ValidTheme> {
+export interface PhotoOptions<T extends ValidThemeType> {
   theme: {
     name: T;
     frame: (typeof FrameOptions)[T][number];

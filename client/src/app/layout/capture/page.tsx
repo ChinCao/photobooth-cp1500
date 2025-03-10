@@ -11,7 +11,7 @@ import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {TextShimmer} from "@/components/ui/text-shimmer";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
-import {createImage, createProcessedImage} from "@/server/actions";
+import {createProcessedImage} from "@/server/actions";
 
 const CapturePage = () => {
   const duration = 2;
@@ -49,7 +49,13 @@ const CapturePage = () => {
           }
           return prevStyle;
         });
-        const response = await createProcessedImage(processedImageId);
+        const response = await createProcessedImage(
+          processedImageId,
+          photo.theme.name,
+          photo.theme.frame.src,
+          photo.theme.frame.type,
+          photo.theme.frame.slotCount
+        );
         if (response.error) {
           setPhoto!((prevStyle) => {
             if (prevStyle) {
@@ -130,23 +136,15 @@ const CapturePage = () => {
 
         const r2Response = await uploadImageToR2(dataURL);
 
-        const handleError = () => {
-          setPhoto!((prevStyle) => prevStyle && {...prevStyle, error: true});
-          setUploadedImages([]);
-          navigateTo("/layout");
-        };
-
         if (r2Response.ok) {
           const data = await r2Response.json();
           const imageUrl = data.url;
           console.log("Image URL:", imageUrl);
-          const response = await createImage(imageUrl, photo!.id!);
           setUploadedImages((prevItems) => [...prevItems, {id: cycles.toString(), href: imageUrl}]);
-          if (response.error) {
-            handleError();
-          }
         } else {
-          handleError();
+          setPhoto!((prevStyle) => prevStyle && {...prevStyle, error: true});
+          setUploadedImages([]);
+          navigateTo("/layout");
         }
       }
     }
