@@ -102,9 +102,9 @@ const FilterPage = () => {
         const slotPosition = photo.selectedImages.findIndex((selectedImage) => selectedImage.id == image.id);
         const imageResponse = await createImage(image.href, photo!.id!, slotPosition);
         if (imageResponse.error) {
-          console.error("Failed to upload image to database");
+          console.error("Failed to upload media to database");
         } else {
-          console.log("Image uploaded to database successfully");
+          console.log("Media uploaded to database successfully");
         }
       }
       const videoResponse = await createVideo(photo.video.r2_url, photo.id!);
@@ -187,7 +187,6 @@ const FilterPage = () => {
         ctx.drawImage(img, 0, 0);
 
         const dataUrl = canvas.toDataURL("image/png");
-        console.log("QR Code URL:", dataUrl);
         setQrCodeURL(dataUrl);
 
         URL.revokeObjectURL(url);
