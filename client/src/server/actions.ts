@@ -34,7 +34,7 @@ export const createProcessedImage = async (
     return {error: true};
   }
 
-  if (!frameURL || !isValidURL(frameURL)) {
+  if (!frameURL) {
     return {error: true};
   }
 

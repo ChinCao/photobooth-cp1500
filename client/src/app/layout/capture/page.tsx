@@ -19,15 +19,14 @@ const CapturePage = () => {
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [cycles, setCycles] = useState(1);
+  const photoRef = useRef(photo);
   const maxCycles = NUM_OF_IMAGE;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [image, setImage] = useState<Array<{id: string; data: string}>>([]);
-  const [, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string | undefined>();
   const [cameraSize, setCameraSize] = useState<{width: number; height: number} | undefined>(undefined);
   const [playCameraShutterSound] = useSound("/shutter.mp3", {volume: 1});
-  const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints | null>(null);
   const [uploadedImages, setUploadedImages] = useState<Array<{id: string; href: string}>>([]);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const {t} = useTranslation();
@@ -57,6 +56,7 @@ const CapturePage = () => {
           photo.theme.frame.slotCount
         );
         if (response.error) {
+          console.log("Error creating processed image: ", response.error);
           setPhoto!((prevStyle) => {
             if (prevStyle) {
               return {...prevStyle, error: true, id: null};
@@ -78,10 +78,8 @@ const CapturePage = () => {
         await navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
           stream.getTracks().forEach((track) => track.stop());
         });
-
         const deviceInfos = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = deviceInfos.filter((device) => device.kind === "videoinput");
-        setDevices(videoDevices);
         if (videoDevices.length > 0) {
           setSelectedDevice(videoDevices[0].deviceId);
         }
@@ -91,33 +89,10 @@ const CapturePage = () => {
       }
     };
 
-    if (photo) {
+    if (!selectedDevice) {
       getVideoDevices();
     }
-  }, [photo]);
-
-  useEffect(() => {
-    const calculateConstraints = async () => {
-      if (!selectedDevice || !photo?.theme.frame.slotDimensions || !window) return;
-
-      try {
-        const multiplier = Math.min(
-          window.innerWidth / photo.theme.frame.slotDimensions.width,
-          window.innerHeight / photo.theme.frame.slotDimensions.height
-        );
-
-        setCameraConstraints({
-          deviceId: {exact: selectedDevice},
-          width: {ideal: photo.theme.frame.slotDimensions.width * multiplier},
-          height: {ideal: photo.theme.frame.slotDimensions.height * multiplier},
-        });
-      } catch (err) {
-        console.error("Error calculating constraints:", err);
-      }
-    };
-
-    calculateConstraints();
-  }, [selectedDevice, photo?.theme.frame.slotDimensions]);
+  }, [selectedDevice]);
 
   const handleCapture = useCallback(async () => {
     if (videoRef.current) {
@@ -217,15 +192,20 @@ const CapturePage = () => {
 
   useEffect(() => {
     const getVideo = async () => {
-      if (!selectedDevice || !cameraConstraints) {
-        console.log("No device or constraints available");
-        return;
-      }
+      if (!photoRef.current?.theme.frame.slotDimensions) return;
+      const multiplier = Math.min(
+        window.innerWidth / photoRef.current?.theme.frame.slotDimensions.width,
+        window.innerHeight / photoRef.current?.theme.frame.slotDimensions.height
+      );
 
       try {
         console.log("Attempting to access camera...");
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: cameraConstraints,
+          video: {
+            deviceId: {exact: selectedDevice},
+            width: {ideal: photoRef.current?.theme.frame.slotDimensions.width * multiplier},
+            height: {ideal: photoRef.current?.theme.frame.slotDimensions.height * multiplier},
+          },
         });
 
         if (videoRef.current) {
@@ -252,15 +232,12 @@ const CapturePage = () => {
         }
       } catch (err) {
         console.error("Error accessing the camera: ", err);
-        if (err instanceof DOMException) {
-          console.error("Error name:", err.name);
-          console.error("Error message:", err.message);
-        }
       }
     };
-
-    getVideo();
-  }, [selectedDevice, cameraConstraints, handleRecording]);
+    if (!isCameraReady && selectedDevice) {
+      getVideo();
+    }
+  }, [handleRecording, selectedDevice, isCameraReady]);
 
   useEffect(() => {
     if (cycles < maxCycles + 1) {

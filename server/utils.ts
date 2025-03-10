@@ -93,7 +93,7 @@ export const logger = winston.createLogger({
   ],
 });
 
-export function logFailedVideoUpload(id: string, url: string, error?: string) {
+export function logFailedFileUpload(id: string, url: string, error?: string) {
   const failedUploadsDir = path.join(process.cwd(), "logs/failed-uploads");
   if (!fs.existsSync(failedUploadsDir)) {
     fs.mkdirSync(failedUploadsDir, {recursive: true});

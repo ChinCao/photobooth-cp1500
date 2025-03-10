@@ -19,6 +19,8 @@ import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
 import {createImage, updateFilter} from "@/server/actions";
+import QRCode from "react-qr-code";
+import ReactDOM from "react-dom/client";
 
 const FilterPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -34,10 +36,14 @@ const FilterPage = () => {
   }, [photo, navigateTo, setPhoto]);
 
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
+
+  const [qrCodeURL, setQrCodeURL] = useState<string>("");
+  const [qrCodeImage] = useImage(qrCodeURL);
+
   const [filter, setFilter] = useState<string | null>(null);
   const stageRef = useRef<StageElement | null>(null);
   const {socket, isConnected} = useSocket();
-  const [isAllImageUploaded, setIsAllImageUploaded] = useState(false);
+  const [isImageUploaded, setIsImageUploaded] = useState(false);
   const [timeLeft, setTimeLeft] = useState(99999);
   const [printed, setPrinted] = useState(false);
 
@@ -81,24 +87,32 @@ const FilterPage = () => {
             console.error("Print failed:", response.message);
           }
           await videoPreload;
-          if (isAllImageUploaded) {
+          if (isImageUploaded) {
             navigateTo("/layout/capture/select/filter/review");
           }
         }
       );
     }
-  }, [photo, socket, isConnected, printed, filter, isAllImageUploaded, navigateTo]);
+  }, [photo, socket, isConnected, printed, filter, isImageUploaded, navigateTo]);
 
   useEffect(() => {
     async function uploadImageToDatabase() {
-      for (const image of photo!.images) {
-        const slotPosition = photo!.selectedImages.findIndex((selectedImage) => selectedImage.id == image.id);
-        await createImage(image.data, photo!.id!, slotPosition);
+      if (!photo) return;
+      for (const image of photo.images) {
+        const slotPosition = photo.selectedImages.findIndex((selectedImage) => selectedImage.id == image.id);
+        const imageResponse = await createImage(image.data, photo!.id!, slotPosition);
+        if (imageResponse.error) {
+          console.error("Failed to upload image to database");
+        } else {
+          console.log("Image uploaded to database successfully");
+        }
       }
-      setIsAllImageUploaded(true);
+      setIsImageUploaded(true);
     }
-    uploadImageToDatabase();
-  }, [isAllImageUploaded, photo]);
+    if (!isImageUploaded) {
+      uploadImageToDatabase();
+    }
+  }, [isImageUploaded, photo]);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -120,6 +134,42 @@ const FilterPage = () => {
       block: "center",
     });
   }, []);
+
+  // Update QR code generation to use setState
+  useEffect(() => {
+    if (!photo?.id) return;
+
+    // Create a temporary div to render the QR code
+    const tempDiv = document.createElement("div");
+    const root = ReactDOM.createRoot(tempDiv);
+    const qrSize = 256; // Size for good quality QR code
+
+    root.render(
+      <QRCode
+        size={qrSize}
+        value={process.env.NEXT_PUBLIC_QR_DOMAIN! + photo.id}
+        viewBox={`0 0 ${qrSize} ${qrSize}`}
+      />
+    );
+
+    requestAnimationFrame(() => {
+      const svg = tempDiv.querySelector("svg");
+      if (svg) {
+        const svgString = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([svgString], {type: "image/svg+xml"});
+        const url = URL.createObjectURL(blob);
+        console.log("QR Code URL:", url);
+        setQrCodeURL(url);
+      }
+    });
+
+    return () => {
+      root.unmount();
+      if (qrCodeURL) {
+        URL.revokeObjectURL(qrCodeURL);
+      }
+    };
+  }, [photo, qrCodeURL]);
 
   return (
     <div className={cn(!timeLeft || printed ? "pointer-events-none" : null, "w-full h-full flex items-center justify-center flex-col")}>
@@ -181,6 +231,15 @@ const FilterPage = () => {
                       />
                     </Layer>
                   ))}
+                  <Layer>
+                    <KonvaImage
+                      image={qrCodeImage}
+                      x={20}
+                      y={0}
+                      height={70}
+                      width={70}
+                    />
+                  </Layer>
                 </Stage>
               </div>
             </div>

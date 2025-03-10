@@ -1,7 +1,7 @@
 import {Server} from "socket.io";
 import path from "path";
 import fs from "fs";
-import {currentTime, updatePrinterRegistry, getCP1500Printer, logger, logFailedVideoUpload} from "./utils";
+import {currentTime, updatePrinterRegistry, getCP1500Printer, logger, logFailedFileUpload} from "./utils";
 import {exec} from "child_process";
 import {Blob} from "buffer";
 import {S3Client, PutObjectCommand} from "@aws-sdk/client-s3";
@@ -234,7 +234,7 @@ io.on("connection", (socket) => {
           id: message.id,
         });
 
-        logFailedVideoUpload(message.id, processedFilePath, error instanceof Error ? error.message : "Unknown error");
+        logFailedFileUpload(message.id, processedFilePath, error instanceof Error ? error.message : "Unknown error");
 
         callback({
           success: false,
@@ -264,6 +264,14 @@ io.on("connection", (socket) => {
       url: message.url,
     });
 
-    logFailedVideoUpload(message.id, message.url);
+    logFailedFileUpload(message.id, message.url);
+  });
+
+  socket.on("upload-image-error", (message: {url: string; id: string}) => {
+    logger.error("Image upload failed", {
+      jobId: message.id,
+      url: message.url,
+    });
+    logFailedFileUpload(message.id, message.url);
   });
 });
