@@ -2,16 +2,8 @@
 
 # dependencies
 /node_modules
-/client/node_modules
-/client/out
-/web/node_modules
-/client/vcp-photobooth/node_modules
-/client/.wrangler
-/client/wrangler.toml
-/server/node_modules
-/server/images
-/server/videos
-/server/logs
+
+/drizzle/migrations
 /.pnp
 .pnp.*
 .yarn/*
@@ -24,7 +16,6 @@
 /coverage
 
 # next.js
-/client/.next/
 /out/
 
 # production

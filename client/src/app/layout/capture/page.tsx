@@ -11,10 +11,10 @@ import {useTranslation} from "react-i18next";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {TextShimmer} from "@/components/ui/text-shimmer";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
-import {createProcessedImage} from "@/server/actions";
+import {createImage, createProcessedImage} from "@/server/actions";
 
 const CapturePage = () => {
-  const duration = 4;
+  const duration = 2;
   const {setPhoto, photo} = usePhoto();
   const [count, setCount] = useState(duration);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -63,7 +63,7 @@ const CapturePage = () => {
         console.log("Processed image created successfully: ", processedImageId);
       }
     };
-    initializeProcessedImage();
+    if (!photo?.id) initializeProcessedImage();
   }, [navigateTo, photo, setPhoto]);
 
   useEffect(() => {
@@ -127,13 +127,30 @@ const CapturePage = () => {
         const dataURL = canvas.toDataURL("image/jpeg", 1.0);
         setImage((prevItems) => [...prevItems, {id: cycles.toString(), data: dataURL}]);
         if (cycles == maxCycles) return;
+
         const r2Response = await uploadImageToR2(dataURL);
-        const imageUrl = r2Response.url;
-        setUploadedImages((prevItems) => [...prevItems, {id: cycles.toString(), href: imageUrl}]);
-        console.log("Image URL:", imageUrl);
+
+        const handleError = () => {
+          setPhoto!((prevStyle) => prevStyle && {...prevStyle, error: true});
+          setUploadedImages([]);
+          navigateTo("/layout");
+        };
+
+        if (r2Response.ok) {
+          const data = await r2Response.json();
+          const imageUrl = data.url;
+          console.log("Image URL:", imageUrl);
+          const response = await createImage(imageUrl, photo!.id!);
+          setUploadedImages((prevItems) => [...prevItems, {id: cycles.toString(), href: imageUrl}]);
+          if (response.error) {
+            handleError();
+          }
+        } else {
+          handleError();
+        }
       }
     }
-  }, [cameraSize, cycles, maxCycles, photo]);
+  }, [cameraSize, cycles, maxCycles, navigateTo, photo, setPhoto]);
 
   const handleRecording = useCallback(() => {
     if (!videoRef.current?.srcObject) return;
@@ -258,7 +275,7 @@ const CapturePage = () => {
               playCameraShutterSound();
             }
           }
-          if (count == 0 && cycles < maxCycles) {
+          if (count == 0 && cycles < maxCycles && photo?.id) {
             setCycles((prevCycle) => prevCycle + 1);
             setCount(duration);
           }
@@ -295,6 +312,7 @@ const CapturePage = () => {
     navigateTo,
     setPhoto,
     uploadedImages,
+    photo?.id,
   ]);
 
   useEffect(() => {

@@ -14,7 +14,7 @@ export const ProcessedImageTable = pgTable("processedImage", {
   type: FrameType("type"),
   slotCount: integer("slotCount"),
   quantity: integer("quantity"),
-  filter: text("filter"),
+  filter: text("filter").default("Original"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt")
     .notNull()

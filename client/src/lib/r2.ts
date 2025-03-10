@@ -37,11 +37,11 @@ export const uploadImageToR2 = async (image: string) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Upload failed: ${errorData.error || "Unknown error"}`);
+      return Response.json({success: false, error: errorData.error || "Unknown error"});
     }
-    return await response.json();
+    return response;
   } catch (error) {
     console.error("Upload error:", error);
-    throw error;
+    return Response.json({success: false, error: "Unknown error"});
   }
 };

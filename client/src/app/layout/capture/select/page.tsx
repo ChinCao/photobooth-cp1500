@@ -21,6 +21,7 @@ import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
+import {createImage, createVideo} from "@/server/actions";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -46,9 +47,10 @@ const PrintPage = () => {
         {
           dataURL: photo.video.data,
         },
-        (response: {success: boolean; r2_url: string}) => {
+        async (response: {success: boolean; r2_url: string}) => {
           if (response.success) {
             console.log("Video processed", response.r2_url);
+            await createVideo(response.r2_url, photo.id!);
             setPhoto!((prevStyle) => {
               if (prevStyle) {
                 return {...prevStyle, video: {...prevStyle.video, r2_url: response.r2_url}};
@@ -63,22 +65,39 @@ const PrintPage = () => {
 
   useEffect(() => {
     if (!photo) return navigateTo("/");
-    if (photo!.selectedImages.length == photo!.theme.frame.slotCount) return navigateTo("/layout/capture/select/filter");
+    if (photo?.selectedImages.length === photo.theme.frame.slotCount) return navigateTo("/layout/capture/select/filter");
 
     const uploadImage = async () => {
-      const r2Response = await uploadImageToR2(photo!.images[photo!.images.length - 1].data);
-      setPhoto!((prevStyle) => {
-        if (prevStyle) {
-          return {
-            ...prevStyle,
-            images: prevStyle.images.map((item) => (item.id == photo!.images[photo!.images.length - 1].id ? {...item, href: r2Response.url} : item)),
-          };
+      if (!lastImageUploaded) {
+        const latestImage = photo.images[photo.images.length - 1];
+        const r2Response = await uploadImageToR2(latestImage.data);
+        const handleError = () => {
+          setPhoto!((prevStyle) => prevStyle && {...prevStyle, error: true, images: []});
+          navigateTo("/layout");
+        };
+        if (r2Response.ok) {
+          const data = await r2Response.json();
+          const imageUrl = data.url;
+          console.log("Image URL:", imageUrl);
+          const response = await createImage(imageUrl, photo!.id!);
+          if (response.error) {
+            handleError();
+          }
+        } else {
+          handleError();
         }
-      });
+
+        setPhoto!(
+          (prevStyle) =>
+            prevStyle && {
+              ...prevStyle,
+              images: prevStyle.images.map((item) => (item.id === latestImage.id ? {...item, href: r2Response.url} : item)),
+            }
+        );
+      }
     };
-    if (!lastImageUploaded) {
-      uploadImage();
-    }
+
+    uploadImage();
   }, [photo, navigateTo, setPhoto, lastImageUploaded]);
   const [frameImg] = useImage(photo ? photo!.theme.frame.src : "");
 
