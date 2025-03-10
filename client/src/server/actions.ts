@@ -10,15 +10,6 @@ const isValidUUID = (id: string): boolean => {
   return uuidRegex.test(id);
 };
 
-const isValidURL = (url: string): boolean => {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 export const createProcessedImage = async (
   id: string,
   theme: ValidThemeType,
@@ -80,7 +71,7 @@ export const createImage = async (href: string, processedImageId: string, slotPo
 };
 
 export const createVideo = async (href: string, processedImageId: string): Promise<{error: boolean}> => {
-  if (!href || !isValidURL(href)) {
+  if (!href) {
     return {error: true};
   }
 

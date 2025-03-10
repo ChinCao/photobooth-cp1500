@@ -21,7 +21,6 @@ import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
-import {createVideo} from "@/server/actions";
 
 const PrintPage = () => {
   const {photo, setPhoto} = usePhoto();
@@ -51,10 +50,7 @@ const PrintPage = () => {
         async (response: {success: boolean; r2_url: string}) => {
           if (response.success) {
             console.log("Video processed", response.r2_url);
-            const videoResponse = await createVideo(response.r2_url, photo.id!);
-            if (videoResponse.error) {
-              socket.emit("upload-video-error", {url: response.r2_url, id: photo.id!});
-            }
+
             setPhoto!((prevStyle) => {
               if (prevStyle) {
                 return {...prevStyle, video: {...prevStyle.video, r2_url: response.r2_url}};

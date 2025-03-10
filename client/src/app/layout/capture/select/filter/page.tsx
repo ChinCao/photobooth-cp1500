@@ -18,7 +18,7 @@ import {GlowEffect} from "@/components/ui/glow-effect";
 import {SlidingNumber} from "@/components/ui/sliding-number";
 import {useViewportScale} from "@/hooks/useViewportScale";
 import usePreventNavigation from "@/hooks/usePreventNavigation";
-import {createImage, updateFilter} from "@/server/actions";
+import {createImage, createVideo, updateFilter} from "@/server/actions";
 import QRCode from "react-qr-code";
 import ReactDOM from "react-dom/client";
 
@@ -43,7 +43,7 @@ const FilterPage = () => {
   const [filter, setFilter] = useState<string | null>(null);
   const stageRef = useRef<StageElement | null>(null);
   const {socket, isConnected} = useSocket();
-  const [isImageUploaded, setIsImageUploaded] = useState(false);
+  const [isMediaUploaded, setIsMediaUploaded] = useState(false);
   const [timeLeft, setTimeLeft] = useState(99999);
   const [printed, setPrinted] = useState(false);
 
@@ -87,32 +87,36 @@ const FilterPage = () => {
             console.error("Print failed:", response.message);
           }
           await videoPreload;
-          if (isImageUploaded) {
+          if (isMediaUploaded) {
             navigateTo("/layout/capture/select/filter/review");
           }
         }
       );
     }
-  }, [photo, socket, isConnected, printed, filter, isImageUploaded, navigateTo]);
+  }, [photo, socket, isConnected, printed, filter, isMediaUploaded, navigateTo]);
 
   useEffect(() => {
     async function uploadImageToDatabase() {
-      if (!photo) return;
+      if (!photo || !socket || !photo.video.r2_url) return;
       for (const image of photo.images) {
         const slotPosition = photo.selectedImages.findIndex((selectedImage) => selectedImage.id == image.id);
-        const imageResponse = await createImage(image.data, photo!.id!, slotPosition);
+        const imageResponse = await createImage(image.href, photo!.id!, slotPosition);
         if (imageResponse.error) {
           console.error("Failed to upload image to database");
         } else {
           console.log("Image uploaded to database successfully");
         }
       }
-      setIsImageUploaded(true);
+      const videoResponse = await createVideo(photo.video.r2_url, photo.id!);
+      if (videoResponse.error) {
+        socket.emit("upload-video-error", {url: photo.video.r2_url, id: photo.id!});
+      }
+      setIsMediaUploaded(true);
     }
-    if (!isImageUploaded) {
+    if (!isMediaUploaded) {
       uploadImageToDatabase();
     }
-  }, [isImageUploaded, photo]);
+  }, [isMediaUploaded, photo, socket]);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -135,15 +139,33 @@ const FilterPage = () => {
     });
   }, []);
 
-  // Update QR code generation to use setState
   useEffect(() => {
-    if (!photo?.id) return;
+    if (!photo?.id || qrCodeURL != "") return;
 
-    // Create a temporary div to render the QR code
-    const tempDiv = document.createElement("div");
-    const root = ReactDOM.createRoot(tempDiv);
-    const qrSize = 256; // Size for good quality QR code
+    const canvas = document.createElement("canvas");
+    const qrSize = 256;
+    canvas.width = qrSize;
+    canvas.height = qrSize;
 
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+
+    const waitForSVG = new Promise<SVGElement>((resolve) => {
+      const observer = new MutationObserver((_, obs) => {
+        const svg = container.querySelector("svg");
+        if (svg) {
+          obs.disconnect();
+          resolve(svg as SVGElement);
+        }
+      });
+
+      observer.observe(container, {
+        childList: true,
+        subtree: true,
+      });
+    });
+
+    const root = ReactDOM.createRoot(container);
     root.render(
       <QRCode
         size={qrSize}
@@ -152,19 +174,30 @@ const FilterPage = () => {
       />
     );
 
-    requestAnimationFrame(() => {
-      const svg = tempDiv.querySelector("svg");
-      if (svg) {
-        const svgString = new XMLSerializer().serializeToString(svg);
-        const blob = new Blob([svgString], {type: "image/svg+xml"});
-        const url = URL.createObjectURL(blob);
-        console.log("QR Code URL:", url);
-        setQrCodeURL(url);
-      }
+    waitForSVG.then((svg) => {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const svgBlob = new Blob([svgData], {type: "image/svg+xml;charset=utf-8"});
+      const url = URL.createObjectURL(svgBlob);
+
+      const img = new Image();
+      img.onload = () => {
+        const ctx = canvas.getContext("2d")!;
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, qrSize, qrSize);
+        ctx.drawImage(img, 0, 0);
+
+        const dataUrl = canvas.toDataURL("image/png");
+        console.log("QR Code URL:", dataUrl);
+        setQrCodeURL(dataUrl);
+
+        URL.revokeObjectURL(url);
+        root.unmount();
+        document.body.removeChild(container);
+      };
+      img.src = url;
     });
 
     return () => {
-      root.unmount();
       if (qrCodeURL) {
         URL.revokeObjectURL(qrCodeURL);
       }
@@ -231,14 +264,22 @@ const FilterPage = () => {
                       />
                     </Layer>
                   ))}
+
                   <Layer>
-                    <KonvaImage
-                      image={qrCodeImage}
-                      x={20}
-                      y={0}
-                      height={70}
-                      width={70}
-                    />
+                    {Array.from({length: photo.theme.frame.type == "singular" ? 1 : 2}, (_, index) => (
+                      <KonvaImage
+                        key={index}
+                        image={qrCodeImage}
+                        x={
+                          photo.theme.frame.type == "singular"
+                            ? FRAME_WIDTH - OFFSET_X - 19
+                            : (FRAME_WIDTH / 2) * index + OFFSET_X + FRAME_WIDTH / 2.6
+                        }
+                        y={FRAME_HEIGHT - OFFSET_Y - 7}
+                        height={40}
+                        width={40}
+                      />
+                    ))}
                   </Layer>
                 </Stage>
               </div>

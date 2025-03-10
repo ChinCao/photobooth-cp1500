@@ -265,6 +265,7 @@ const CapturePage = () => {
                   images: image.map((item) => ({...item, href: uploadedImages.find((image) => image.id == item.id)?.href || ""})),
                 };
               }
+              return prevStyle;
             });
             setIsCountingDown(false);
             navigateTo("/layout/capture/select");
